@@ -1,0 +1,39 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.1",
+  "name": "__MSG_appName__",
+  "description": "__MSG_appDesc__",
+  "default_locale": "fr",
+  "content_security_policy": "script-src 'self'; object-src 'self'",
+  "icons": {
+    "128": "ogameLive-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.ogame.gameforge.com/game/*"
+      ],
+      "js": [
+        "contribs/jquery.min.js",
+        "utilities.js",
+        "ogameLive.user.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    
+  ],
+  "background": {
+    "scripts": [
+      "contribs/jquery.min.js"
+    ]
+  },
+  "permissions": [],
+  "short_name": "ogameLive",
+  "browser_action": {
+    "default_title": "ogameLive",
+    "default_icon": "ogameLive-128.png",
+    "default_popup": "ogameLive.html"
+  }
+}

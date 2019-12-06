@@ -1,0 +1,10 @@
+{
+    "appDesc": {
+        "message": "Ogame Live allow real time display of planets production",
+        "description": "Description de l'application"
+    },
+    "appName": {
+        "message": "Ogame Live",
+        "description": "The title of the application, displayed in the web store."
+    }
+}

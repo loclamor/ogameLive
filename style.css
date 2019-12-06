@@ -1,0 +1,72 @@
+/*#menu_gauche, #menu_input_datas{
+	display:none;
+}*/
+
+body {
+	font-family: Arial, Tahoma, sans-serif;
+	font-size: 12px;
+	color: #555;
+	background: #FFF;
+	width: 320px;
+}
+
+th, td, button, input {
+	font-size: 12px;
+}
+
+h1 {
+	color: #93B300;
+	font-weight: bold;
+	font-size: 14px;
+	margin: 3px;
+	padding-bottom: 3px;
+	border-bottom: 1px dotted #CCC;
+}
+
+h2 {
+	color: #F90;
+	font-weight: bold;
+	font-size: 12px;
+	margin: 3px 3px 3px 0;
+}
+
+a {
+	font-weight:bold;
+	color: #666;
+	text-decoration: underline;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+img { border: none; }
+
+
+
+
+table {
+	border-collapse: collapse;
+	empty-cells : show;
+}
+
+table th {
+	font-weight: bold;
+	color: #000;
+	text-align:left;
+	border-bottom: 2px solid #93B300;
+}
+
+table td {
+	text-align:left;
+	border: 1px solid #DDD;
+}
+
+table tr.bottom th {
+	border-bottom: none;
+	border-top: 2px solid #93B300;
+}
+
+td.c, th.c { text-align: center; }
+td.r, th.r { text-align: right; }
+td.l, th.l { text-align: left; }

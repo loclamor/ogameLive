@@ -1,0 +1,10 @@
+{
+    "appDesc": {
+        "message": "Ogame Live permet l'affichage de la production de vos planètes en temps réél",
+        "description": "Description de l'application"
+    },
+    "appName": {
+        "message": "Ogame Live",
+        "description": "The title of the application, displayed in the web store."
+    }
+}
