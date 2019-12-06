@@ -50,15 +50,15 @@ log("Universe language: " + langUnivers);
 /******************************* Main ***********************************/
 
 jQuery("#resourcesbarcomponent, #planetList").ready(function() {
-	var planetsWidth = jQuery('#myWorlds').width() + 5;
+	var planetsWidth = jQuery('#planetList').width() + 5;
 	// push css
 	jQuery('head').append('<style>'
-		+ '.smallplanet>.prod {position: absolute; top: 5px; left: '+planetsWidth+'px; font-size: 11px; text-align: left; margin-top: 10px;}'
-		+ '.smallplanet>.prod>.capa {font-size: 9px;}'
+		+ '.smallplanet>.prod {position: absolute; top: 5px; left: '+planetsWidth+'px; font-size: 9px; text-align: left; margin-top: 4px;}'
+		+ '.smallplanet>.prod>.capa {font-size: 8px;}'
 		+ '.smallplanet>a {}'
 		+ '.smallplanet>span {text-align: center;}'
 		+ '#advicebarcomponent div#banner_skyscraper {left: '+(1005+planetsWidth)+'px}'
-		+ '#myWorlds #planetList .total_prod {margin-left: '+planetsWidth+'px; width: 150px; font-size: 12px; text-align: left; margin-top: 10px; position: absolute;}'
+		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px; width: 150px; font-size: 11px; text-align: left; margin-top: 10px; position: absolute;}'
 		+ '.tpd-tooltip {margin-left: '+(planetsWidth/1.1)+'px; }'
 	+ '</style>');
 	parseResources();

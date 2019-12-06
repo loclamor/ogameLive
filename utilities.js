@@ -190,7 +190,7 @@ function displayPlanetsProduction() {
 		}
 		planet.$d_dispo.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.d_dispo) + '</span>');
 	}
-	jQuery('#myWorlds #planetList .total_prod').html(
+	jQuery('#planetList .total_prod').html(
 			'Totaux :'
 			+ '<br/>M:&nbsp;' + formatInt(totalM)
 			+ '<br/>C:&nbsp;' + formatInt(totalC)
