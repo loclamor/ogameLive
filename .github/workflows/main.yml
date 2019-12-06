@@ -1,0 +1,19 @@
+name: Zip on Release
+
+on: [release]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Zip Release
+      uses: TheDoctor0/zip-release@v0.2.0
+      with:
+        # Filename for archive
+        filename: release.zip
+        # Base path for archive files
+        path: .
+        # List of excluded files/directories
+        exclusions: '*.git*'
