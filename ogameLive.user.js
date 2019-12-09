@@ -53,7 +53,8 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 	var planetsWidth = jQuery('#planetList').width() + 5;
 	// push css
 	jQuery('head').append('<style>'
-		+ '.smallplanet>.prod {position: absolute; top: 5px; left: '+planetsWidth+'px; font-size: 9px; text-align: left; margin-top: 4px;}'
+		+ '#planetbarcomponent #rechts #myPlanets .smallplanet {min-height: 62px !important}'
+		+ '.smallplanet>.prod {position: absolute; top: 5px; left: '+planetsWidth+'px; font-size: 9px; text-align: left; margin-top: 0px;}'
 		+ '.smallplanet>.prod>.capa {font-size: 8px;}'
 		+ '.smallplanet>a {}'
 		+ '.smallplanet>span {text-align: center;}'

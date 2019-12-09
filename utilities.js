@@ -120,6 +120,7 @@ function displayPlanetsProduction() {
 					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.m_capa)+'</span>'
 					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.c_capa)+'</span>'
 					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.d_capa)+'</span>'
+					+ '<br/><span id="s_dispo"></span>'
 					+ '<br/><span id="e_dispo"><span class="'+warnE+'">E:&nbsp;' + formatInt(planet.e_dispo)+'</span></span>'
 						+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.e_prod)+'</span>'
 				+ '</div>'
@@ -127,6 +128,7 @@ function displayPlanetsProduction() {
 			planet.$m_dispo = jQuery('#'+planetId + ' #m_dispo');
 			planet.$c_dispo = jQuery('#'+planetId + ' #c_dispo');
 			planet.$d_dispo = jQuery('#'+planetId + ' #d_dispo');
+			planet.$s_dispo = jQuery('#'+planetId + ' #s_dispo');
 			document.planetList.push(planet);
 		}
 		jQuery('#planetList').append('<div class="total_prod"></div>');
@@ -189,12 +191,15 @@ function displayPlanetsProduction() {
 			}
 		}
 		planet.$d_dispo.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.d_dispo) + '</span>');
+		//sum
+		planet.$s_dispo.html('<span class="">&Sigma;:&nbsp;' + formatInt(planet.m_dispo + planet.c_dispo + planet.d_dispo) + '</span>');
 	}
 	jQuery('#planetList .total_prod').html(
 			'Totaux :'
 			+ '<br/>M:&nbsp;' + formatInt(totalM)
 			+ '<br/>C:&nbsp;' + formatInt(totalC)
 			+ '<br/>D:&nbsp;' + formatInt(totalD)
+			+ '<br/>&Sigma;:&nbsp;' + formatInt(totalM + totalC + totalD)
 		);
 		
 	// set Now as last render time
