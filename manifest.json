@@ -15,6 +15,7 @@
       ],
       "js": [
         "contribs/jquery.min.js",
+		"constants.js",
         "utilities.js",
         "ogameLive.user.js"
       ],

@@ -60,7 +60,10 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 		+ '.smallplanet>span {text-align: center;}'
 		+ '#advicebarcomponent div#banner_skyscraper {left: '+(1005+planetsWidth)+'px}'
 		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px; width: 150px; font-size: 11px; text-align: left; margin-top: 10px; position: absolute;}'
-		//+ '.tpd-tooltip {margin-left: '+(planetsWidth/1.1)+'px; }'
+		+ '#technologies li .icon .speed {display: inline-block; position: absolute; box-sizing: border-box; width: 100%; padding: 0 5px; text-align: left; font-size: 11px; line-height: 15px; z-index: 2; left: 0; top: 0; border-bottom-right-radius: 15px; background: linear-gradient(#0e1117,#1b222d); color: #ff9600;}'
+		+ '#moreInfoTable {display: inline-block; margin-left: 13px; font-size: 11px;}'
+		+ '#moreInfoTable th { padding: 3px; color: #6f9fc8; font-weight: 700;}'
+		+ '#moreInfoTable td { padding: 3px; color: white;}'
 	+ '</style>');
 	parseResources();
 	displayPlanetsProduction();

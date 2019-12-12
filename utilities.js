@@ -262,13 +262,7 @@ function parseResources() {
 	document.currentPlanetId = currentPlanetId;
 	// get current planet production
 	var myResourcesRes = Xpath.getOrderedSnapshotNodes(document,'//ul[contains(@id,"resources")]/li');
-	var resourceTypes = {
-		metal_box : 'M',
-		crystal_box : 'C',
-		deuterium_box : 'D',
-		energy_box : 'E',
-		darkmatter_box : 'A'
-	};
+	var resourceTypes = OgameConstants.resourceTypes;
 	for (var i = 0; i < myResourcesRes.snapshotLength; i++) {
 		var resType = resourceTypes[myResourcesRes.snapshotItem(i).id];
 		var htmlStr = myResourcesRes.snapshotItem(i).title.split('|')[1];
@@ -310,25 +304,26 @@ function parse_current_page() {
 		parse_resource_settings();
 	} else if (regResearch.test(url)) {
 		parse_research();
+		addTechDetailObserver();
 	} else if (regResources.test(url)) {
 		parse_resources();
+		addTechDetailObserver();
 	} else if (regInstallations.test(url)) {
 		parse_installations();
+		addTechDetailObserver();
 	} else if (regShipyard.test(url) || regFleet.test(url)) {
 		parse_fleet();
+		if (regFleet.test(url)) {
+			better_fleet_display();
+		}
+		else {
+			addTechDetailObserver();
+		}
 	}
 }
 
 function parse_resource_settings() {
-	var constants = {
-		metal: 1,
-		cristal: 2,
-		deut: 3,
-		ces: 4,
-		cef: 12,
-		sat: 212,
-		foreuse: 217
-	}
+	var constants = OgameConstants.resources;
 	// get percent of productions
 	var planetId = document.currentPlanetId;
 	var planetData = GM_getJsonValue('data.'+planetId, {});
@@ -343,24 +338,7 @@ function parse_resource_settings() {
 }
 
 function parse_research() {
-	var constants = {
-		energy: 113,
-		laser: 120,
-		ion: 121,
-		hyperspace: 114,
-		plasma: 122,
-		combustionDrive: 115,
-		impulseDrive: 117,
-		hyperspaceDrive: 118,
-		espionage: 106,
-		computer: 108,
-		astrophysics: 124,
-		researchNetwork: 123,
-		graviton: 199,
-		weapons: 109,
-		shielding: 110,
-		armor: 111
-	}
+	var constants = OgameConstants.research;
 	// get research levels
 	var researchData = GM_getJsonValue('data.research', {});
 	Object.keys(constants).forEach(function(k) {
@@ -368,22 +346,10 @@ function parse_research() {
 			Xpath.getNumberValue(document, '//div[contains(@id,"technologies")]/div/ul/li[contains(@class,"'+k+'Technology")]/span/span[contains(@class,"level")]/@data-value');
 	});
 	GM_setJsonValue('data.research', researchData);
-	
 }
 
 function parse_resources() {
-	var constants = {
-		metalMine: 1,
-		crystalMine: 2,
-		deuteriumSynthesizer: 3,
-		solarPlant: 4,
-		fusionPlant: 12,
-		solarSatellite: 112,
-		resbuggy: 217,
-		metalStorage: 22,
-		crystalStorage: 23,
-		deuteriumStorage: 24
-	}
+	var constants = OgameConstants.buildings.resources;
 	// get resources levels
 	var planetId = document.currentPlanetId;
 	var planetData = GM_getJsonValue('data.'+planetId, {});
@@ -398,16 +364,7 @@ function parse_resources() {
 }
 
 function parse_installations() {
-	var constants = {
-		roboticsFactory: 14,
-		shipyard: 21,
-		researchLaboratory: 31,
-		allianceDepot: 34,
-		missileSilo: 44,
-		naniteFactory: 15,
-		terraformer: 33,
-		repairDock: 36
-	}
+	var constants = OgameConstants.buildings.installations;
 	// get installations levels
 	var planetId = document.currentPlanetId;
 	var planetData = GM_getJsonValue('data.'+planetId, {});
@@ -422,25 +379,7 @@ function parse_installations() {
 }
 
 function parse_fleet() {
-	var constants = {
-		fighterLight: 204,
-		fighterHeavy: 205,
-		cruiser: 206,
-		battleship: 207,
-		interceptor: 215,
-		bomber: 211,
-		destroyer: 213,
-		deathstar: 214,
-		reaper: 218,
-		explorer: 219,
-		transporterSmall: 202,
-		transporterLarge: 203,
-		colonyShip: 208,
-		recycler: 209,
-		espionageProbe: 210,
-		solarSatellite: 212,
-		resbuggy: 217
-	}
+	var constants = OgameConstants.fleet;
 	// last fleetData parse more than 30 min ago ?
 	var elapsedSeconds = 0;
 	var nowTime = (new Date()).getTime();
@@ -464,7 +403,7 @@ function parse_fleet() {
 			Xpath.getNumberValue(document, '//div[contains(@id,"technologies")]/div/ul/li[contains(@class,"'+k+'")]/span/span[contains(@class,"amount")]/@data-value');
 		if (getFleetData) {
 			jQuery.get('https://s167-fr.ogame.gameforge.com/game/index.php?page=ajax&component=technologytree&ajax=1&technologyId='+constants[k]+'&tab=2', function(htmlStr) {
-				log("get response for " + k, htmlStr, LOG_LEVEL_TRACE);
+				log("get response for " + k, LOG_LEVEL_TRACE);
 				var fleetData = GM_getJsonValue('data.fleet', {});
 				if (!fleetData[k]) {
 					fleetData[k] = {speed: {}, structural: {}, shield: {}, attack: {}, capacity: {}, consumption: {}};
@@ -482,3 +421,76 @@ function parse_fleet() {
 	});
 	GM_setJsonValue('data.'+planetId, planetData);
 }
+
+
+function addTechDetailObserver() {
+	var techDetailWrapper = document.querySelector('#technologydetails_wrapper');
+	var techDetailWrapperObserver = new MutationObserver(function(mutations) {
+		console.log('changed ! Hope that all technologydetails have same html struct', mutations);
+	});
+	var config = { attributes: true, childList: true, characterData: true };
+	techDetailWrapperObserver.observe(techDetailWrapper, config);
+}
+
+function better_fleet_display() {
+	var constants = OgameConstants.fleet;
+	var selections = {};
+	var fleetData = GM_getJsonValue('data.fleet', {});
+	
+	// Add More Infos table structure of selected fleet
+	$moreInfoTable = jQuery(
+		'<table id="moreInfoTable">'
+			+ '<tr><th>Capacity</th><td class="capacity">0</td></tr>'
+			+ '<tr><th>Speed</th><td class="speed">0</td></tr>'
+		+ '</table>'
+	);
+	jQuery('#allornone .show_fleet_apikey').after($moreInfoTable);
+	
+		
+	function updateMoreInfoTable() {
+	
+		Object.keys(fleetData).forEach(function(ship) {
+			selections[ship] = parseInt(jQuery('#technologies li.'+ship+' input').val() || 0);
+		});
+		console.log(selections);
+		var fleetSpeed = 0;
+		var fleetCapacity = 0;
+		// compute minSpeed and sum capacities
+		Object.keys(selections).forEach(function(s) {
+			if (selections[s] > 0 && (fleetSpeed == 0 || fleetData[s].speed.value < fleetSpeed) ) {
+				fleetSpeed = fleetData[s].speed.value;
+			}
+			fleetCapacity += selections[s] * fleetData[s].capacity.value;
+		});
+		// update display
+		$moreInfoTable.find('.capacity').text(formatInt(fleetCapacity));
+		$moreInfoTable.find('.speed').text(formatInt(fleetSpeed));
+	}
+	
+	// Add fleetdata on every ship
+	Object.keys(fleetData).forEach(function(k) {
+		
+		jQuery('#technologies li.'+k).attr('title',
+			jQuery('#technologies li.'+k).attr('title')
+			+ '<br/>Speed : ' + formatInt(fleetData[k].speed.value)
+			+ '<br/>Capacity : ' + formatInt(fleetData[k].capacity.value)
+			+ '<br/>Consumption : ' + formatInt(fleetData[k].consumption.value)
+			+ '<br/>Struct : ' + formatInt(fleetData[k].structural.value)
+			+ '<br/>Attack : ' + formatInt(fleetData[k].attack.value)
+			+ '<br/>Shield : ' + formatInt(fleetData[k].shield.value)
+		);
+		
+		jQuery('#technologies li.'+k+' .icon').prepend(
+			'<span class="speed">'+formatInt(fleetData[k].speed.value)+'</span>'
+		);
+		
+		//attach event listeners on inputs
+		jQuery('#technologies li.'+k+' input').on('change keyup keydown', updateMoreInfoTable);
+		jQuery('#technologies li.'+k+' .icon').click(function() {
+			setTimeout(updateMoreInfoTable, 1);
+		});
+	});
+}
+
+
+	
