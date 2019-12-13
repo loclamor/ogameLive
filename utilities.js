@@ -1,5 +1,5 @@
 /**
- * Created by Anthony on 14/05/2016.
+ * Created by loclamor on 12/2019.
  */
 
 /*********************** Compatibilité Chrome ***************************/
@@ -96,6 +96,23 @@ function formatInt( val ) {
 	return parseInt(val).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 }
 
+function formatTime( time ) {
+	var sec_num =  Math.floor(time/1000);
+    var hours   = Math.floor(sec_num / 3600);
+    var minutes = Math.floor((sec_num % 3600) / 60)
+    var seconds = Math.floor(sec_num % 60);
+
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+	var retStr = '';
+	if (parseInt(hours) > 0) {
+		retStr += hours+':'
+	}
+	retStr += minutes+':'+seconds;
+    return retStr;
+}
+
 function displayPlanetsProduction() {
 	
 	// compute elapsed time after last call (normally 1s, but in case of browser tab not visible setInterval call seems to be paused)
@@ -136,8 +153,24 @@ function displayPlanetsProduction() {
 				d_capa: GM_getIntValue('production.'+planetId+'.D.capa', 0),
 				// energie
 				e_dispo: GM_getIntValue('production.'+planetId+'.E.dispo', 0),
-				e_prod: GM_getIntValue('production.'+planetId+'.E.prod', 0)
+				e_prod: GM_getIntValue('production.'+planetId+'.E.prod', 0),
+				//build
+				currentBuild: false,
 			};
+			// current build
+			var currentBuildNode = Xpath.getSingleNode(document,'//div[contains(@id,"planetList")]/div[contains(@id,"'+planetId+'")]/a[contains(@class,"constructionIcon")]');
+			if (currentBuildNode != null) {
+				planet.currentBuild = planetdata.currentBuild;
+				//get data from localstorage
+				if (planetdata.currentBuild) {
+					currentBuildNode.title += '&nbsp;('+planet.currentBuild.targetLevel+')';
+					jQuery('#'+planetId).append(
+						'<span class="planet_construction">'+currentBuildNode.title+'<br/><span class="timer"></span></span>'
+					);
+					planet.$buildTimer = jQuery('#'+planetId + ' .planet_construction .timer');
+				}
+			}
+			
 			// actualise planet (add a seconds of loadling gap)
 			elapsedSeconds = 2;
 			// energie
@@ -195,6 +228,11 @@ function displayPlanetsProduction() {
 		var warnC = '';
 		var warnD = '';
 		var planet = document.planetList[i];
+		// currentBuild timer
+		if (planet.currentBuild) {
+			var remainingTime = planet.currentBuild.end - nowTime;
+			planet.$buildTimer.text(formatTime(remainingTime));
+		}
 		// metal
 		planet.m_dispo += planet.m_prod/60/60 * elapsedSeconds;
 		totalM += planet.m_dispo;
@@ -356,9 +394,28 @@ function parse_resources() {
 	if (!planetData.resources) {
 		planetData.resources = {};
 	}
+	if (!planetData.installations) {
+		planetData.currentBuild = {
+			building: '',
+			targetLevel: 0,
+			start: 0,
+			end: 0
+		};
+	}
 	Object.keys(constants).forEach(function(k) {
+		// get current build level
 		planetData.resources[k] = 
 			Xpath.getNumberValue(document, '//div[contains(@id,"technologies")]/ul/li[contains(@class,"'+k+'")]/span/span[contains(@class,"level")]/@data-value');
+		// get current build if present
+		var buildTimerNode = Xpath.getSingleNode(document,'//div[contains(@id,"technologies")]/ul/li[contains(@class,"'+k+'")]/span/time[contains(@id,"countdownbuildingDetails")]');
+		if (buildTimerNode != null) {
+			planetData.currentBuild = {
+				building: k,
+				targetLevel: Xpath.getNumberValue(document,'//div[contains(@id,"technologies")]/ul/li[contains(@class,"'+k+'")]/span/span[contains(@class,"targetlevel")]/@data-value'),
+				start: buildTimerNode.dataset.start * 1000,
+				end: buildTimerNode.dataset.end * 1000
+			}
+		}
 	});
 	GM_setJsonValue('data.'+planetId, planetData);
 }
@@ -371,9 +428,28 @@ function parse_installations() {
 	if (!planetData.installations) {
 		planetData.installations = {};
 	}
+	if (!planetData.installations) {
+		planetData.currentBuild = {
+			building: '',
+			targetLevel: 0,
+			start: 0,
+			end: 0
+		};
+	}
 	Object.keys(constants).forEach(function(k) {
+		// get current build level
 		planetData.installations[k] = 
 			Xpath.getNumberValue(document, '//div[contains(@id,"technologies")]/ul/li[contains(@class,"'+k+'")]/span/span[contains(@class,"level")]/@data-value');
+		// get current build if present
+		var buildTimerNode = Xpath.getSingleNode(document,'//div[contains(@id,"technologies")]/ul/li[contains(@class,"'+k+'")]/span/time[contains(@id,"countdownbuildingDetails")]');
+		if (buildTimerNode != null) {
+			planetData.currentBuild = {
+				building: k,
+				targetLevel: Xpath.getNumberValue(document,'//div[contains(@id,"technologies")]/ul/li[contains(@class,"'+k+'")]/span/span[contains(@class,"targetlevel")]/@data-value'),
+				start: buildTimerNode.dataset.start * 1000,
+				end: buildTimerNode.dataset.end * 1000
+			}
+		}
 	});
 	GM_setJsonValue('data.'+planetId, planetData);
 }
@@ -457,10 +533,10 @@ function better_fleet_display() {
 		var fleetCapacity = 0;
 		// compute minSpeed and sum capacities
 		Object.keys(selections).forEach(function(s) {
-			if (selections[s] > 0 && (fleetSpeed == 0 || fleetData[s].speed.value < fleetSpeed) ) {
-				fleetSpeed = fleetData[s].speed.value;
+			if (selections[s] > 0 && (fleetSpeed == 0 || parseInt(fleetData[s].speed.value) < fleetSpeed) ) {
+				fleetSpeed = parseInt(fleetData[s].speed.value);
 			}
-			fleetCapacity += selections[s] * fleetData[s].capacity.value;
+			fleetCapacity += selections[s] * parseInt(fleetData[s].capacity.value);
 		});
 		// update display
 		$moreInfoTable.find('.capacity').text(formatInt(fleetCapacity));

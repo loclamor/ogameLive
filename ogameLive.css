@@ -1,0 +1,80 @@
+#planetbarcomponent #rechts #myPlanets .smallplanet {
+	min-height: 62px !important;
+}
+.smallplanet>.prod {
+	display: block !important;
+	float: right;
+	font-size: 9px;
+	text-align: left;
+	margin-top: 0px;
+}
+.smallplanet>.prod>.capa {
+	font-size: 8px;
+}
+.smallplanet>a {
+	
+}
+.smallplanet>span {
+	text-align: center;
+}
+#advicebarcomponent div#banner_skyscraper {
+	
+}
+#planetList .total_prod {
+	width: 150px;
+	font-size: 11px;
+	text-align: left;
+	margin-top: 10px;
+	position: absolute;
+}
+#technologies li .icon .speed {
+	display: inline-block;
+	position: absolute;
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0 5px;
+	text-align: left;
+	font-size: 11px;
+	line-height: 15px;
+	z-index: 2;
+	left: 0;
+	top: 0;
+	border-bottom-right-radius: 15px;
+	background: linear-gradient(#0e1117,#1b222d); color: #ff9600;
+}
+#moreInfoTable {
+	display: inline-block;
+	margin-left: 13px;
+	font-size: 11px;
+}
+#moreInfoTable th {
+	padding: 3px;
+	color: #6f9fc8;
+	font-weight: 700;
+}
+#moreInfoTable td {
+	padding:3px;
+	color: white;
+}
+#rechts #myPlanets div.smallplanet a.constructionIcon {
+	 /*same positionning than AGR */
+	left: 4px !important;
+	top: 0px !important;
+}
+#rechts #myPlanets .planet_construction {
+    left: 2px;
+    top: -13px;
+}
+#myPlanets .planet_construction,
+#myPlanets .planet_construction_moon {
+    font-size: 9px;
+    line-height: 9px;
+    color: #848484;
+    position: absolute;
+    white-space: nowrap;
+}
+
+.ago_planets_construction,
+.ago_planets_construction_moon {
+	display: none;
+}

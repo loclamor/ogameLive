@@ -21,7 +21,7 @@ var LOG_LEVEL_OFF = 10,
 	LOG_LEVEL_WARN = 5,
 	LOG_LEVEL_ERROR = 6,
 	LOG_LEVEL_FATAL = 7;
-//GM_setValue('debug.loglevel', LOG_LEVEL_INFO);
+GM_setValue('debug.loglevel', GM_getIntValue('debug.loglevel', LOG_LEVEL_INFO));
 // Navigateurs
 var isFirefox = (window.navigator.userAgent.indexOf('Firefox') > -1);
 var isChrome = (window.navigator.userAgent.indexOf('Chrome') > -1);
@@ -48,23 +48,25 @@ log("Universe language: " + langUnivers, LOG_LEVEL_TRACE);
 
 
 /******************************* Main ***********************************/
-
+jQuery("head").ready(function() {
+	// push css
+	var link = document.createElement("link");
+	link.href = chrome.extension.getURL("ogameLive.css");
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.getElementsByTagName("head")[0].appendChild(link);
+});
 jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 	var planetsWidth = jQuery('#planetList').width() + 5;
-	// push css
+	// dynamics css
 	jQuery('head').append('<style>'
-		+ '#planetbarcomponent #rechts #myPlanets .smallplanet {min-height: 62px !important; min-width: '+(planetsWidth*2)+'px;}'
-		+ '.smallplanet>.prod {float: right; width: '+planetsWidth+'px; font-size: 9px; text-align: left; margin-top: 0px;}'
-		+ '.smallplanet>.prod>.capa {font-size: 8px;}'
-		+ '.smallplanet>a {}'
-		+ '.smallplanet>span {text-align: center;}'
+		+ '#planetbarcomponent #rechts #myPlanets .smallplanet {min-width: '+(planetsWidth*2)+'px;}'
+		+ '.smallplanet>.prod {width: '+planetsWidth+'px; display: none;}'
 		+ '#advicebarcomponent div#banner_skyscraper {left: '+(1005+planetsWidth)+'px}'
-		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px; width: 150px; font-size: 11px; text-align: left; margin-top: 10px; position: absolute;}'
-		+ '#technologies li .icon .speed {display: inline-block; position: absolute; box-sizing: border-box; width: 100%; padding: 0 5px; text-align: left; font-size: 11px; line-height: 15px; z-index: 2; left: 0; top: 0; border-bottom-right-radius: 15px; background: linear-gradient(#0e1117,#1b222d); color: #ff9600;}'
-		+ '#moreInfoTable {display: inline-block; margin-left: 13px; font-size: 11px;}'
-		+ '#moreInfoTable th { padding: 3px; color: #6f9fc8; font-weight: 700;}'
-		+ '#moreInfoTable td { padding: 3px; color: white;}'
+		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px;}'
 	+ '</style>');
+
+	
 	parseResources();
 	displayPlanetsProduction();
 	setInterval(displayPlanetsProduction, 1000);
