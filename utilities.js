@@ -170,6 +170,10 @@ function displayPlanetsProduction() {
 					planet.$buildTimer = jQuery('#'+planetId + ' .planet_construction .timer');
 				}
 			}
+			else {
+				planetdata.currentBuild = null;
+				GM_setJsonValue('data.'+planetId, planetdata);
+			}
 			
 			// actualise planet (add a seconds of loadling gap)
 			elapsedSeconds = 2;
@@ -230,8 +234,14 @@ function displayPlanetsProduction() {
 		var planet = document.planetList[i];
 		// currentBuild timer
 		if (planet.currentBuild) {
-			var remainingTime = planet.currentBuild.end - nowTime;
-			planet.$buildTimer.text(formatTime(remainingTime));
+			var planetdata = GM_getJsonValue('data.'+planet.id, {});
+			var remainingTime = planetdata.currentBuild.end - nowTime;
+			if (remainingTime > 0) {
+				planet.$buildTimer.text(formatTime(remainingTime));
+			}
+			else {
+				planet.$buildTimer.text('Terminé');
+			}
 		}
 		// metal
 		planet.m_dispo += planet.m_prod/60/60 * elapsedSeconds;
