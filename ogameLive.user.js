@@ -66,12 +66,8 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px;}'
 	+ '</style>');
 
-	
-	parseResources();
-	displayPlanetsProduction();
-	setInterval(displayPlanetsProduction, 1000);
-	// next, parse page data
-	parse_current_page();
+	var ogameLive = new OgameLive();
+	ogameLive.start();
 	
 });
 

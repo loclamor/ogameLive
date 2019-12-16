@@ -16,7 +16,20 @@
       "js": [
         "contribs/jquery.min.js",
 		"constants.js",
-        "utilities.js",
+		"utilities.js",
+		"router.js",
+		"ogameLive.js",
+		"observers/techDetailObserver.js",
+		"observers/flyingFleetObserver.js",
+		"displays/betterFleetDisplay.js",
+		"displays/planetsProductionDisplay.js",
+		"parsers/resourcesParser.js",
+		"parsers/researchParser.js",
+		"parsers/installationsParser.js",
+		"parsers/flyingFleetParser.js",
+		"parsers/fleetParser.js",
+		"parsers/resourceSettingsParser.js",
+		"parsers/planetProductionParser.js",
         "ogameLive.user.js"
       ],
       "run_at": "document_start"
