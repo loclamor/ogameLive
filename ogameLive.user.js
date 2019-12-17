@@ -57,13 +57,14 @@ jQuery("head").ready(function() {
 	document.getElementsByTagName("head")[0].appendChild(link);
 });
 jQuery("#resourcesbarcomponent, #planetList").ready(function() {
-	var planetsWidth = jQuery('#planetList').width() + 5;
+	var planetsWidth = jQuery('#planetList').width() + 10;
+	var prodWidth = planetsWidth * 1.3;
 	// dynamics css
 	jQuery('head').append('<style>'
-		+ '#planetbarcomponent #rechts #myPlanets .smallplanet {min-width: '+(planetsWidth*2)+'px;}'
-		+ '.smallplanet>.prod {width: '+planetsWidth+'px; display: none;}'
-		+ '#advicebarcomponent div#banner_skyscraper {left: '+(1005+planetsWidth)+'px}'
-		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px;}'
+		+ '#planetbarcomponent #rechts #myPlanets .smallplanet {min-width: '+(planetsWidth + prodWidth)+'px;}'
+		+ '.smallplanet>.prod {width: '+(prodWidth)+'px; display: none;}'
+		+ '#advicebarcomponent div#banner_skyscraper {left: '+(1005+prodWidth+5)+'px}'
+		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px; width: '+(prodWidth)+'px;}'
 	+ '</style>');
 
 	var ogameLive = new OgameLive();

@@ -27,6 +27,12 @@
 	margin-top: 10px;
 	position: absolute;
 }
+#planetList .prod_per_hour,
+.needed_fleet {
+	font-size: 8px;
+	float: right;
+}
+
 #technologies li .icon .speed {
 	display: inline-block;
 	position: absolute;
