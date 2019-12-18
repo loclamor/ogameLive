@@ -62,14 +62,23 @@
 	padding:3px;
 	color: white;
 }
-#rechts #myPlanets div.smallplanet a.constructionIcon {
+#planetbarcomponent #rechts #myPlanets div.smallplanet a.constructionIcon {
 	 /*same positionning than AGR */
-	left: 4px !important;
-	top: 0px !important;
+	left: 4px;
+	top: 0px;
 }
 #rechts #myPlanets .planet_construction {
     left: 2px;
     top: -13px;
+}
+#planetbarcomponent #rechts #myPlanets div.smallplanet a.constructionIcon.moon {
+	/*same positionning than AGR */
+   left: 4px;
+   bottom: 0px;
+}
+#rechts #myPlanets .planet_construction_moon {
+    left: 2px;
+    bottom: 13px;
 }
 #myPlanets .planet_construction,
 #myPlanets .planet_construction_moon {

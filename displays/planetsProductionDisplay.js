@@ -57,17 +57,26 @@ class PlanetsProductionDisplay {
 			d_total_prod += planet.d_prod;
 
 			// current build
-			var currentBuildNode = Xpath.getSingleNode(document,'//div[contains(@id,"planetList")]/div[contains(@id,"'+planetId+'")]/a[contains(@class,"constructionIcon")]');
-			if (currentBuildNode != null) {
-				planet.currentBuild = planetdata.currentBuild;
-				//get data from localstorage
-				if (planetdata.currentBuild) {
-					currentBuildNode.title += '&nbsp;('+planet.currentBuild.targetLevel+')';
-					jQuery('#'+planetId).append(
-						'<span class="planet_construction">'+currentBuildNode.title+'<br/><span class="timer"></span></span>'
-					);
-					planet.$buildTimer = jQuery('#'+planetId + ' .planet_construction .timer');
+			var currentBuildNodes = Xpath.getOrderedSnapshotNodes(document,'//div[contains(@id,"planetList")]/div[contains(@id,"'+planetId+'")]/a[contains(@class,"constructionIcon")]');
+			if (currentBuildNodes.snapshotLength > 0) {
+				for(var cons= 0; cons < currentBuildNodes.snapshotLength; cons++) {
+					var currentBuildNode = currentBuildNodes.snapshotItem(cons);
+					if (currentBuildNode.classList.contains('moon')) {
+						// moon construction
+					}
+					else {
+						planet.currentBuild = planetdata.currentBuild;
+						//get data from localstorage
+						if (planetdata.currentBuild) {
+							currentBuildNode.title += '&nbsp;('+planet.currentBuild.targetLevel+')';
+							jQuery('#'+planetId).append(
+								'<span class="planet_construction">'+currentBuildNode.title+'<br/><span class="timer"></span></span>'
+							);
+							planet.$buildTimer = jQuery('#'+planetId + ' .planet_construction .timer');
+						}
+					}
 				}
+				
 			}
 			else {
 				planetdata.currentBuild = null;
