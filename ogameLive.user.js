@@ -63,7 +63,7 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 	jQuery('head').append('<style>'
 		+ '#planetbarcomponent #rechts #myPlanets .smallplanet {min-width: '+(planetsWidth + prodWidth)+'px;}'
 		+ '.smallplanet>.prod {width: '+(prodWidth)+'px; display: none;}'
-		+ '#advicebarcomponent div#banner_skyscraper {left: '+(1005+prodWidth+5)+'px}'
+		+ '#advicebarcomponent div#banner_skyscraper {left: '+(1005+prodWidth+5)+'px !important}'
 		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px; width: '+(prodWidth)+'px;}'
 	+ '</style>');
 
