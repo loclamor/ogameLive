@@ -1,18 +1,16 @@
 
 class OgameLive {
 
-	router;
-	url;
-
 	constructor() {
+		this.dataManager = new DataManager();
 		this.router = new Router(this);
 		this.url = location.href;
 	}
 
 	start() {
 
-		new PlanetProductionParser();
-		var productionDisplay = new PlanetsProductionDisplay();
+		new PlanetProductionParser(this.dataManager);
+		var productionDisplay = new PlanetsProductionDisplay(this.dataManager);
 		setInterval(function() {
 			productionDisplay.display();
 		}, 1000);

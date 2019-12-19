@@ -1,16 +1,19 @@
 class PlanetsProductionDisplay {
 
-	planetList = [];
-	elapsedSeconds = 1;
-	fleetData = {};
+	
 
-	constructor() {
-		this.fleetData = GM_getJsonValue('data.fleet', {});
+	constructor(dataManager) {
+		this.dataManager = dataManager;
+		this.planetList = [];
+		this.elapsedSeconds = 1;
+		this.lastTime = 0;
+		this.fleetData = {};
+		this.fleetData = this.dataManager.getFleetData();
 		// compute elapsed time after last call (normally 1s, but in case of browser tab not visible setInterval call seems to be paused)
 		var nowTime = (new Date()).getTime();
-		var lastTime = GM_getIntValue('production.last_render_time', 0);
-		if (lastTime > 0) {
-			this.elapsedSeconds = (nowTime - lastTime)/1000;
+		this.lastTime = this.dataManager.getLastRenderTime();
+		if (this.lastTime > 0) {
+			this.elapsedSeconds = (nowTime - this.lastTime)/1000;
 		}
 		//create planetList form Xpath and localStorage
 		// get planet list
@@ -23,7 +26,7 @@ class PlanetsProductionDisplay {
 
 		for (var i = 0; i < nbPlanets; i++) {
 			var planetId = myPlanetsRes.snapshotItem(i).textContent;
-			var planetdata = GM_getJsonValue('data.'+planetId, {});
+			var planetdata = this.dataManager.getPlanetData(planetId);
 			var warnM = '';
 			var warnC = '';
 			var warnD = '';
@@ -32,29 +35,16 @@ class PlanetsProductionDisplay {
 			var planet = {
 				id: planetId,
 				// metal
-				m_dispo: GM_getIntValue('production.'+planetId+'.M.dispo', 0),
-				m_prod: GM_getIntValue('production.'+planetId+'.M.prod', 0),
-				m_capa: GM_getIntValue('production.'+planetId+'.M.capa', 0),
-				// cristal
-				c_dispo: GM_getIntValue('production.'+planetId+'.C.dispo', 0),
-				c_prod: GM_getIntValue('production.'+planetId+'.C.prod', 0),
-				c_capa: GM_getIntValue('production.'+planetId+'.C.capa', 0),
-				// deut
-				d_dispo: GM_getIntValue('production.'+planetId+'.D.dispo', 0),
-				d_prod: GM_getIntValue('production.'+planetId+'.D.prod', 0),
-				d_capa: GM_getIntValue('production.'+planetId+'.D.capa', 0),
-				// energie
-				e_dispo: GM_getIntValue('production.'+planetId+'.E.dispo', 0),
-				e_prod: GM_getIntValue('production.'+planetId+'.E.prod', 0),
+				prod: this.dataManager.getPlanetProd(planetId),
 				//build
 				currentBuild: false,
 				data: planetdata
 			};
 			
 			//prods totaux
-			m_total_prod += planet.m_prod;
-			c_total_prod += planet.c_prod;
-			d_total_prod += planet.d_prod;
+			m_total_prod += planet.prod.M.prod;
+			c_total_prod += planet.prod.C.prod;
+			d_total_prod += planet.prod.D.prod;
 
 			// current build
 			var currentBuildNodes = Xpath.getOrderedSnapshotNodes(document,'//div[contains(@id,"planetList")]/div[contains(@id,"'+planetId+'")]/a[contains(@class,"constructionIcon")]');
@@ -80,16 +70,14 @@ class PlanetsProductionDisplay {
 			}
 			else {
 				planetdata.currentBuild = null;
-				GM_setJsonValue('data.'+planetId, planetdata);
+				this.dataManager.updatePlanetData(planetId, planetdata)
 			}
 			
-			// actualise planet (add a seconds of loadling gap)
-			this.elapsedSeconds = 2;
 			// energie
-			if (planet.e_dispo <= 5/100 * planet.e_prod) {
+			if (planet.prod.E.dispo <= 5/100 * planet.prod.E.prod) {
 				warnE = 'middlemark';
 			}
-			if (planet.e_dispo <= 0) {
+			if (planet.prod.E.dispo <= 0) {
 				warnE = 'overmark';
 			}
 			var cefPercent = '';
@@ -116,7 +104,7 @@ class PlanetsProductionDisplay {
 					m_prod_class = 'overmark';
 				}
 			}
-			if (planet.m_prod == 0)	{
+			if (planet.prod.M.prod == 0)	{
 				m_prod_class = 'overmark';
 			}
 			var c_prod_class = '';
@@ -128,7 +116,7 @@ class PlanetsProductionDisplay {
 					c_prod_class = 'overmark';
 				}
 			}
-			if (planet.c_prod == 0)	{
+			if (planet.prod.C.prod == 0)	{
 				c_prod_class = 'overmark';
 			}
 			var d_prod_class = '';
@@ -140,19 +128,19 @@ class PlanetsProductionDisplay {
 					d_prod_class = 'overmark';
 				}
 			}
-			if (planet.d_prod == 0)	{
+			if (planet.prod.D.prod == 0)	{
 				d_prod_class = 'overmark';
 			}
 			
 			// mount base html
 			jQuery('#'+planetId).prepend(
 				'<div class="prod">'
-					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.m_capa)+'</span><span class="prod_per_hour '+m_prod_class+'">+'+formatInt(planet.m_prod)+'/h</span>'
-					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.c_capa)+'</span><span class="prod_per_hour '+c_prod_class+'">+'+formatInt(planet.c_prod)+'/h</span>'
-					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.d_capa)+'</span><span class="prod_per_hour '+d_prod_class+'">+'+formatInt(planet.d_prod)+'/h</span>'
+					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.M.capa)+'</span><span class="prod_per_hour '+m_prod_class+'">+'+formatInt(planet.prod.M.prod)+'/h</span>'
+					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.C.capa)+'</span><span class="prod_per_hour '+c_prod_class+'">+'+formatInt(planet.prod.C.prod)+'/h</span>'
+					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.D.capa)+'</span><span class="prod_per_hour '+d_prod_class+'">+'+formatInt(planet.prod.D.prod)+'/h</span>'
 					+ '<br/><span id="s_dispo"></span></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
-					+ '<br/><span id="e_dispo"><span class="'+warnE+'">E:&nbsp;' + formatInt(planet.e_dispo)+'</span></span>'
-						+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.e_prod)+'</span>'
+					+ '<br/><span id="e_dispo"><span class="'+warnE+'">E:&nbsp;' + formatInt(planet.prod.E.dispo)+'</span></span>'
+						+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.E.prod)+'</span>'
 						+ cefPercent
 				+ '</div>'
 			);
@@ -199,14 +187,17 @@ class PlanetsProductionDisplay {
 		var totalGT = 0;
 		
 		var nowTime = (new Date()).getTime();
-		
+		if (this.lastTime > 0) {
+			this.elapsedSeconds = (nowTime - this.lastTime)/1000;
+		}
 		
 		for (var i =0; i<this.planetList.length; i++) {
 			var warnM = '';
 			var warnC = '';
 			var warnD = '';
 			var planet = this.planetList[i];
-			var planetdata = planet.data;
+			planet.prod = this.dataManager.getPlanetProd(planet.id);
+			var planetdata = this.dataManager.getPlanetData(planet.id);
 			// currentBuild timer
 			if (planet.currentBuild) {
 				var remainingTime = planetdata.currentBuild.end - nowTime;
@@ -218,57 +209,57 @@ class PlanetsProductionDisplay {
 				}
 			}
 			// metal
-			planet.m_dispo += planet.m_prod/60/60 * this.elapsedSeconds;
-			totalM += planet.m_dispo;
-			GM_setValue('production.'+planet.id+'.M.dispo', parseInt(planet.m_dispo))
-			if (planet.m_dispo >= (planet.m_capa - 10/100 * planet.m_capa)) {
+			planet.prod.M.dispo += planet.prod.M.prod/60/60 * this.elapsedSeconds;
+			totalM += planet.prod.M.dispo;
+			if (planet.prod.M.dispo >= (planet.prod.M.capa - 10/100 * planet.prod.M.capa)) {
 				warnM = 'middlemark';
 			}
-			if (planet.m_dispo >= planet.m_capa) {
+			if (planet.prod.M.dispo >= planet.prod.M.capa) {
 				warnM = 'overmark';
-				if (planet.m_prod > 0) {
-					planet.m_dispo = planet.m_capa;
-					planet.m_prod = 0;
+				if (planet.prod.M.prod > 0) {
+					planet.prod.M.dispo = planet.prod.M.capa;
+					planet.prod.M.prod = 0;
 				}
 			}
-			planet.$m_dispo.html('<span class="'+warnM+'">M:&nbsp;' + formatInt(planet.m_dispo) + '</span>');
+			planet.$m_dispo.html('<span class="'+warnM+'">M:&nbsp;' + formatInt(planet.prod.M.dispo) + '</span>');
 			// cristal
-			planet.c_dispo += planet.c_prod/60/60 * this.elapsedSeconds;
-			totalC += planet.c_dispo;
-			GM_setValue('production.'+planet.id+'.C.dispo', parseInt(planet.c_dispo))
-			if (planet.c_dispo >= (planet.c_capa - 10/100 * planet.c_capa)) {
+			planet.prod.C.dispo += planet.prod.C.prod/60/60 * this.elapsedSeconds;
+			totalC += planet.prod.C.dispo;
+			if (planet.prod.C.dispo >= (planet.prod.C.capa - 10/100 * planet.prod.C.capa)) {
 				warnC = 'middlemark';
 			}
-			if (planet.c_dispo >= planet.c_capa) {
+			if (planet.prod.C.dispo >= planet.prod.C.capa) {
 				warnC = 'overmark';
-				if (planet.c_prod > 0) {
-					planet.c_dispo = planet.c_capa;
-					planet.c_prod = 0;
+				if (planet.prod.C.prod > 0) {
+					planet.prod.C.dispo = planet.prod.C.capa;
+					planet.prod.C.prod = 0;
 				}
 			}
-			planet.$c_dispo.html('<span class="'+warnC+'">C:&nbsp;' + formatInt(planet.c_dispo) + '</span>');
+			planet.$c_dispo.html('<span class="'+warnC+'">C:&nbsp;' + formatInt(planet.prod.C.dispo) + '</span>');
 			// deut
-			planet.d_dispo += planet.d_prod/60/60 * this.elapsedSeconds;
-			totalD += planet.d_dispo;
-			GM_setValue('production.'+planet.id+'.D.dispo', parseInt(planet.d_dispo))
-			if (planet.d_dispo >= (planet.d_capa - 10/100 * planet.d_capa)) {
+			planet.prod.D.dispo += planet.prod.D.prod/60/60 * this.elapsedSeconds;
+			totalD += planet.prod.D.dispo;
+			if (planet.prod.D.dispo >= (planet.prod.D.capa - 10/100 * planet.prod.D.capa)) {
 				warnD = 'middlemark';
 			}
-			if (planet.d_dispo >= planet.d_capa) {
+			if (planet.prod.D.dispo >= planet.prod.D.capa) {
 				warnD = 'overmark';
-				if (planet.d_prod > 0) {
-					planet.d_dispo = planet.d_capa;
-					planet.d_prod = 0;
+				if (planet.prod.D.prod > 0) {
+					planet.prod.D.dispo = planet.prod.D.capa;
+					planet.prod.D.prod = 0;
 				}
 			}
-			planet.$d_dispo.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.d_dispo) + '</span>');
+			planet.$d_dispo.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.prod.D.dispo) + '</span>');
+			// store new dispos
+			this.dataManager.updatePlanetProd(planet.id, planet.prod);
 			//sum
-			planet.$s_dispo.html('<span class="">&Sigma;:&nbsp;' + formatInt(planet.m_dispo + planet.c_dispo + planet.d_dispo) + '</span>');
+			var sum_dispo = planet.prod.M.dispo + planet.prod.C.dispo + planet.prod.D.dispo;
+			planet.$s_dispo.html('<span class="">&Sigma;:&nbsp;' + formatInt(sum_dispo) + '</span>');
 			// neededFleet
-			var neededPT = this.computeNeededPT(planet.m_dispo + planet.c_dispo + planet.d_dispo);
+			var neededPT = this.computeNeededPT(sum_dispo);
 			var planetPT = planetdata.fleet && planetdata.fleet.transporterSmall ? planetdata.fleet.transporterSmall : 0;
 			totalPT += planetPT;
-			var neededGT = this.computeNeededGT(planet.m_dispo + planet.c_dispo + planet.d_dispo);
+			var neededGT = this.computeNeededGT(sum_dispo);
 			var planetGT = planetdata.fleet && planetdata.fleet.transporterLarge ? planetdata.fleet.transporterLarge : 0;
 			totalGT += planetGT;
 			planet.$needed_fleet.find('.pt').removeClass('overmark middlemark').text(formatInt(planetPT) + '/' + formatInt(neededPT));
@@ -294,6 +285,7 @@ class PlanetsProductionDisplay {
 		jQuery('#planetList .total_prod .needed_fleet .pt').text(formatInt(totalPT) + '/' + formatInt(this.computeNeededPT(totalM + totalC + totalD)));
 		jQuery('#planetList .total_prod .needed_fleet .gt').text(formatInt(totalGT) + '/' + formatInt(this.computeNeededGT(totalM + totalC + totalD)));
 		// set Now as last render time
-		GM_setValue('production.last_render_time', nowTime);
+		this.dataManager.updateLastRenderTime(nowTime);
+		this.lastTime = nowTime;
 	}
 }

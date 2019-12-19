@@ -16,6 +16,7 @@
       "js": [
         "contribs/jquery.min.js",
 		"constants.js",
+		"dataManager.js",
 		"utilities.js",
 		"router.js",
 		"ogameLive.js",

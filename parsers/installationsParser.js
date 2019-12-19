@@ -1,9 +1,9 @@
 class InstallationsParser {
-	constructor() {
+	constructor(dataManager) {
+		this.dataManager = dataManager;
 		var constants = OgameConstants.buildings.installations;
 		// get installations levels
-		var planetId = document.currentPlanetId;
-		var planetData = GM_getJsonValue('data.'+planetId, {});
+		var planetData = this.dataManager.getCurrentPlanetData();
 		if (!planetData.installations) {
 			planetData.installations = {};
 		}
@@ -30,6 +30,6 @@ class InstallationsParser {
 				}
 			}
 		});
-		GM_setJsonValue('data.'+planetId, planetData);
+		this.dataManager.updateCurrentPlanetData(planetData);
 	}
 }

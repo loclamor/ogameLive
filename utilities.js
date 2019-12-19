@@ -30,8 +30,8 @@ function GM_setJsonValue(key, value) {
 	GM_setValue(key, JSON.stringify(value));
 }
 
-function GM_deleteValue(value) {
-	localStorage.removeItem(value);
+function GM_deleteValue(key) {
+	localStorage.removeItem(key);
 }
 
 /**

@@ -1,9 +1,9 @@
 class ResourcesParser {
-	constructor() {
+	constructor(dataManager) {
+		this.dataManager = dataManager;
 		var constants = OgameConstants.buildings.resources;
 		// get resources levels
-		var planetId = document.currentPlanetId;
-		var planetData = GM_getJsonValue('data.'+planetId, {});
+		var planetData = this.dataManager.getCurrentPlanetData();
 		if (!planetData.resources) {
 			planetData.resources = {};
 		}
@@ -30,6 +30,6 @@ class ResourcesParser {
 				}
 			}
 		});
-		GM_setJsonValue('data.'+planetId, planetData);
+		this.dataManager.updateCurrentPlanetData(planetData);
 	}
 }

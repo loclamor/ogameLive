@@ -1,8 +1,9 @@
 class BetterFleetDisplay {
-	constructor() {
+	constructor(dataManager) {
+		this.dataManager = dataManager;
 		var constants = OgameConstants.fleet;
 		var selections = {};
-		var fleetData = GM_getJsonValue('data.fleet', {});
+		var fleetData = this.dataManager.getFleetData();
 		
 		// Add More Infos table structure of selected fleet
 		var $moreInfoTable = jQuery(
