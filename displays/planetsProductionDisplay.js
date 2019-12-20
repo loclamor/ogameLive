@@ -284,6 +284,43 @@ class PlanetsProductionDisplay {
 		// neededFleet
 		jQuery('#planetList .total_prod .needed_fleet .pt').text(formatInt(totalPT) + '/' + formatInt(this.computeNeededPT(totalM + totalC + totalD)));
 		jQuery('#planetList .total_prod .needed_fleet .gt').text(formatInt(totalGT) + '/' + formatInt(this.computeNeededGT(totalM + totalC + totalD)));
+		
+		var currentTechDetail = this.dataManager.getCurrentTechDetail();
+		if (currentTechDetail) {
+			var currentPlanetProd = this.dataManager.getCurrentPlanetProd();
+			var totalMissing = 0;
+			Object.keys(currentTechDetail.neededResources).forEach(jQuery.proxy(function(k) {
+				var $elt = null;
+				var missing = currentPlanetProd[k].dispo - currentTechDetail.neededResources[k];
+				switch(k) {
+					case 'M':
+						$elt = currentTechDetail.$elts.find('.metal .ol-value');
+					break;
+					case 'C':
+						$elt = currentTechDetail.$elts.find('.crystal .ol-value');
+					break;
+					case 'D':
+						$elt = currentTechDetail.$elts.find('.deuterium .ol-value');
+					break;
+					case 'E':
+						$elt = currentTechDetail.$elts.find('.energy .ol-value');
+					break;
+				}
+				if (k !== 'E') {
+					if (missing < 0) {
+						totalMissing += missing;
+					}
+					$elt.html(formatInt(Math.abs(missing)) + '<br/>(' + formatInt(this.computeNeededPT(Math.abs(missing))) + '&nbsp;PT&nbsp;-&nbsp;' + formatInt(this.computeNeededGT(Math.abs(missing))) + '&nbsp;GT)');
+				} else {
+					$elt.text(formatInt(Math.abs(missing)));
+				}
+
+			}, this));
+			// display total missing
+			currentTechDetail.$elts.find('.total .ol-value').html(formatInt(Math.abs(totalMissing)) + '<br/>(' + formatInt(this.computeNeededPT(Math.abs(totalMissing))) + '&nbsp;PT&nbsp;-&nbsp;' + formatInt(this.computeNeededGT(Math.abs(totalMissing))) + '&nbsp;GT)');
+		}
+		
+		
 		// set Now as last render time
 		this.dataManager.updateLastRenderTime(nowTime);
 		this.lastTime = nowTime;

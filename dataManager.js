@@ -7,6 +7,7 @@ class DataManager {
 		this.planetsProduction = {};
 		this.researchData = false;
 		this.lastRenderTime = false;
+		this.currentTechDetail = false;
 	}
 
 	getCurrentPlanetId() {
@@ -48,6 +49,10 @@ class DataManager {
 		this.setJsonValue('data.fleet', fleetData);
 	}
 
+	getCurrentPlanetProd() {
+		return this.getPlanetProd(this.getCurrentPlanetId());
+	}
+
 	getPlanetProd(planetId) {
 		if(!this.planetsProduction[planetId]) {
 			this.planetsProduction[planetId] = this.getJsonValue('production.'+planetId, {
@@ -87,6 +92,14 @@ class DataManager {
 	updateLastRenderTime(newTime) {
 		this.lastRenderTime = newTime;
 		this.setValue('production.last_render_time', newTime);
+	}
+
+	getCurrentTechDetail() {
+		return this.currentTechDetail;
+	}
+
+	setCurrentTechDetail(currentTechDetail) {
+		this.currentTechDetail = currentTechDetail;
 	}
 
 

@@ -93,3 +93,26 @@
 .ago_planets_construction_moon {
 	display: none;
 }
+
+
+
+#technologydetails .costs {
+	top: 115px;
+}
+
+#technologydetails li.resource.icon {
+	height: 63px;
+}
+
+#technologydetails li.resource.total.icon:before {
+	background: none;
+	content: 'Σ';
+	font-size: 25px;
+	line-height: 32px;
+}
+
+#technologydetails li.resource.icon .ol-value {
+	font-size: 8px;
+	line-height: 8px;
+	display: block;
+}
