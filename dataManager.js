@@ -1,6 +1,8 @@
 class DataManager {
 
 	constructor() {
+		this.planetsIdToCoords = false;
+		this.planetsCoordsToId = false;
 		this.currentPlanetId = false;
 		this.planets = {};
 		this.fleetData = false;
@@ -8,6 +10,30 @@ class DataManager {
 		this.researchData = false;
 		this.lastRenderTime = false;
 		this.currentTechDetail = false;
+		this.flights = {};
+	}
+
+	getPlanetCoords(p_id) {
+		if (!this.planetsIdToCoords) {
+			this.planetsIdToCoords = {};
+			this.planetsCoordsToId = {};
+			var planetNodes = Xpath.getUnorderedSnapshotNodes(document,'//div[contains(@id,"planetList")]/div[contains(@class,"smallplanet")]');
+			for (var i = 0; i < planetNodes.snapshotLength; i++) {
+				var planetNode = planetNodes.snapshotItem(i);
+				var planetId = planetNode.id;
+				var planetCoords = Xpath.getStringValue(document,'//div[contains(@id,"planetList")]/div[contains(@id,"'+planetId+'")]/a/span[contains(@class,"planet-koords")]');
+				this.planetsIdToCoords[planetId] = planetCoords.trim();
+				this.planetsCoordsToId[planetCoords.trim()] = planetId;
+			}
+		}
+		return this.planetsIdToCoords[p_id];
+	}
+
+	getPlanetId(p_coords) {
+		if (!this.planetsCoordsToId) {
+			this.getPlanetCoords();
+		}
+		return this.planetsCoordsToId[p_coords.trim()];
 	}
 
 	getCurrentPlanetId() {
@@ -100,6 +126,14 @@ class DataManager {
 
 	setCurrentTechDetail(currentTechDetail) {
 		this.currentTechDetail = currentTechDetail;
+	}
+
+	getFlights() {
+		return this.flights;
+	}
+
+	setFlights(flights) {
+		this.flights = flights;
 	}
 
 

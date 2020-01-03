@@ -151,7 +151,15 @@ class PlanetsProductionDisplay {
 			planet.$needed_fleet = jQuery('#'+planetId + ' .needed_fleet');
 			this.planetList.push(planet);
 		}
-		jQuery('#planetList').append('<div class="total_prod">Totaux :<br/>'
+
+		jQuery('#planetList').append('<div class="total_prod">'
+			+ 'En vol :<br/>'
+			+ 'M:&nbsp;<span class="in_flight_metal"></span><br/>'
+			+ 'C:&nbsp;<span class="in_flight_cristal"></span><br/>'
+			+ 'D:&nbsp;<span class="in_flight_deut"></span><br/>'
+			+ '&Sigma;:&nbsp;<span class="in_flight_total"></span><br/>'
+			+ '<br/>'
+			+ 'Totaux :<br/>'
 			+ 'M:&nbsp;<span class="total_prod_metal"></span><span class="prod_per_hour">+'+formatInt(m_total_prod)+'/h</span><br/>'
 			+ 'C:&nbsp;<span class="total_prod_cristal"></span><span class="prod_per_hour">+'+formatInt(c_total_prod)+'/h</span><br/>'
 			+ 'D:&nbsp;<span class="total_prod_deut"></span><span class="prod_per_hour">+'+formatInt(d_total_prod)+'/h</span><br/>'
@@ -190,7 +198,46 @@ class PlanetsProductionDisplay {
 		if (this.lastTime > 0) {
 			this.elapsedSeconds = (nowTime - this.lastTime)/1000;
 		}
+
+		var inFlight_M = 0;
+		var inFlight_C = 0;
+		var inFlight_D = 0;
+		// resolve terminated flights and sum flying resources
+		var flights = this.dataManager.getFlights();
+		var toDeleteFlightIds = [];
+		Object.keys(flights).forEach(jQuery.proxy(function(flightId) {
+			var flight = flights[flightId];
+			if (flight.arrivalTime <= nowTime) {
+				toDeleteFlightIds.push(flightId);
+				if (flight.destination) {
+					var planetProd = this.dataManager.getPlanetProd(flight.destination);
+					planetProd.M.dispo += flight.resources.M;
+					if (planetProd.M.dispo >= planetProd.M.capa) {
+						planetProd.M.prod = 0;
+					}
+					planetProd.C.dispo += flight.resources.C;
+					if (planetProd.C.dispo >= planetProd.C.capa) {
+						planetProd.C.prod = 0;
+					}
+					planetProd.D.dispo += flight.resources.D;
+					if (planetProd.D.dispo >= planetProd.D.capa) {
+						planetProd.D.prod = 0;
+					}
+				}
+			}
+			else {
+				inFlight_M += flight.resources.M;
+				inFlight_C += flight.resources.C;
+				inFlight_D += flight.resources.D;
+			}
+		}, this));
+		// delete terminated flights
+		for (var i = 0; i < toDeleteFlightIds.length; i++) {
+			delete flights[toDeleteFlightIds[i]];
+		}
+		this.dataManager.setFlights(flights);
 		
+		// display per planet
 		for (var i =0; i<this.planetList.length; i++) {
 			var warnM = '';
 			var warnC = '';
@@ -277,6 +324,17 @@ class PlanetsProductionDisplay {
 			}
 
 		}
+		
+		// in flight
+		jQuery('#planetList .total_prod .in_flight_metal').html(formatInt(inFlight_M));
+		jQuery('#planetList .total_prod .in_flight_cristal').html(formatInt(inFlight_C));
+		jQuery('#planetList .total_prod .in_flight_deut').html(formatInt(inFlight_D));
+		jQuery('#planetList .total_prod .in_flight_total').html(formatInt(inFlight_M + inFlight_C + inFlight_D));
+		totalM += inFlight_M;
+		totalC += inFlight_C;
+		totalD += inFlight_D;
+		
+		// total resources
 		jQuery('#planetList .total_prod .total_prod_metal').html(formatInt(totalM));
 		jQuery('#planetList .total_prod .total_prod_cristal').html(formatInt(totalC));
 		jQuery('#planetList .total_prod .total_prod_deut').html(formatInt(totalD));

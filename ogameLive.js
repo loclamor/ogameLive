@@ -13,9 +13,9 @@ class OgameLive {
 	}
 
 	start() {
-
 		new PlanetProductionParser(this.dataManager);
 		var productionDisplay = new PlanetsProductionDisplay(this.dataManager);
+		new FlyingFleetObserver(this.dataManager);
 		setInterval(function() {
 			productionDisplay.display();
 		}, 1000);
