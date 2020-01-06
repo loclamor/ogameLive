@@ -43,6 +43,7 @@ var urlUnivers = url.match(new RegExp('(.*)/game'))[1];
 var numUnivers = urlUnivers.match(new RegExp('\/s(.*)-[a-z]{2}.ogame'))[1];
 var langUnivers = urlUnivers.match(new RegExp('-(.*).ogame'))[1];
 var prefix_GMData = 'ogameLive.'+langUnivers + numUnivers + '.';
+log("Universe url: " + urlUnivers, LOG_LEVEL_TRACE);
 log("Universe Number: " + numUnivers, LOG_LEVEL_TRACE);
 log("Universe language: " + langUnivers, LOG_LEVEL_TRACE);
 

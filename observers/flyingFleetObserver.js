@@ -1,7 +1,7 @@
 class FlyingFleetObserver {
 	constructor(dataManager) {
 		this.dataManager = dataManager
-		jQuery.get('index.php?page=componentOnly&component=eventList&ajax=1', jQuery.proxy(function(dataHtml){
+		jQuery.get(urlUnivers + '/game/index.php?page=componentOnly&component=eventList&ajax=1', jQuery.proxy(function(dataHtml){
 			var $html = jQuery(dataHtml);
 			var flights = {};
 			var eventNodes = Xpath.getOrderedSnapshotNodes(document,'//table[contains(@id,"eventContent")]/tbody/tr', $html[0]);
