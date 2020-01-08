@@ -144,10 +144,12 @@ class PlanetsProductionDisplay {
 						+ cefPercent
 				+ '</div>'
 			);
+			jQuery('#'+planetId).append('<span class="incomming_fleet"></span>');
 			planet.$m_dispo = jQuery('#'+planetId + ' #m_dispo');
 			planet.$c_dispo = jQuery('#'+planetId + ' #c_dispo');
 			planet.$d_dispo = jQuery('#'+planetId + ' #d_dispo');
 			planet.$s_dispo = jQuery('#'+planetId + ' #s_dispo');
+			planet.$incomming_fleet = jQuery('#'+planetId + ' .incomming_fleet');
 			planet.$needed_fleet = jQuery('#'+planetId + ' .needed_fleet');
 			this.planetList.push(planet);
 		}
@@ -205,6 +207,7 @@ class PlanetsProductionDisplay {
 		// resolve terminated flights and sum flying resources
 		var flights = this.dataManager.getFlights();
 		var toDeleteFlightIds = [];
+		var flightsByPlanet = {};
 		Object.keys(flights).forEach(jQuery.proxy(function(flightId) {
 			var flight = flights[flightId];
 			if (flight.arrivalTime <= nowTime) {
@@ -229,6 +232,12 @@ class PlanetsProductionDisplay {
 				inFlight_M += flight.resources.M;
 				inFlight_C += flight.resources.C;
 				inFlight_D += flight.resources.D;
+				if (flight.destination) {
+					if (!flightsByPlanet[flight.destination]) {
+						flightsByPlanet[flight.destination] = [];
+					}
+					flightsByPlanet[flight.destination].push(flight);
+				}
 			}
 		}, this));
 		// delete terminated flights
@@ -321,6 +330,29 @@ class PlanetsProductionDisplay {
 				planet.$needed_fleet.find('.gt').addClass('overmark');
 			} else if (planetGT < (neededGT - 10/100*neededGT)) {
 				planet.$needed_fleet.find('.gt').addClass('middlemark');
+			}
+
+			planet.$incomming_fleet.html('');
+			if (flightsByPlanet[planet.id]) {
+				planet.$incomming_fleet.html('<span class="icon_movement_reserve tooltip tooltipRight tooltipClose"></span>');
+				var $elt = planet.$incomming_fleet.find('.icon_movement_reserve');
+				var incomming_rows = '';
+				for (var f = 0; f < flightsByPlanet[planet.id].length; f ++) {
+					var flight = flightsByPlanet[planet.id][f];
+					incomming_rows += '<tr><th colspan="2">Arrive dans '+formatTime(flight.arrivalTime-nowTime)+'</th></tr>'
+					incomming_rows += '<tr><td>M</td><td class="value">'+formatInt(flight.resources.M)+'</td></tr>';
+					incomming_rows += '<tr><td>C</td><td class="value">'+formatInt(flight.resources.C)+'</td></tr>';
+					incomming_rows += '<tr><td>D</td><td class="value">'+formatInt(flight.resources.D)+'</td></tr>';
+				}
+				$elt.attr('title',
+					'<div class="htmlTooltip">'
+						+ '<h1>Détails des flottes:</h1>'
+						+ '<div class="splitLine"></div>'
+						+ '<table cellpadding="0" cellspacing="0" class="fleetinfo">'
+						+ incomming_rows
+						+ '</table>'
+					+ '</div>'
+				);
 			}
 
 		}

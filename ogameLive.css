@@ -72,13 +72,13 @@
     top: -13px;
 }
 #planetbarcomponent #rechts #myPlanets div.smallplanet a.constructionIcon.moon {
-	/*same positionning than AGR */
-   left: 4px;
-   bottom: 0px;
+	/*same positionning than Ogame vanilla */
+	top: 35px;
+	left: 20px;
 }
 #rechts #myPlanets .planet_construction_moon {
-    left: 2px;
-    bottom: 13px;
+    left: 25px;
+    bottom: 35px;
 }
 #myPlanets .planet_construction,
 #myPlanets .planet_construction_moon {
@@ -115,4 +115,11 @@
 	font-size: 8px;
 	line-height: 8px;
 	display: block;
+}
+
+span.incomming_fleet {
+	position: absolute;
+	top: 15px;
+	left: 128px;
+	opacity: 0.5;
 }

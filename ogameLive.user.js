@@ -55,7 +55,7 @@ jQuery("head").ready(function() {
 	link.href = chrome.extension.getURL("ogameLive.css");
 	link.type = "text/css";
 	link.rel = "stylesheet";
-	document.getElementsByTagName("head")[0].appendChild(link);
+	document.head.appendChild(link);
 });
 jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 	var planetsWidth = jQuery('#planetList').width() + 10;
