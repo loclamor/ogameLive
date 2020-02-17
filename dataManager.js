@@ -38,6 +38,9 @@ class DataManager {
 
 	getCurrentPlanetId() {
 		if(!this.currentPlanetId) {
+			if (jQuery("#planetList .smallplanet").length === 1) {
+				jQuery("#planetList .smallplanet").addClass("hightlightPlanet");
+			}
 			this.currentPlanetId = Xpath.getStringValue(document,'//div[contains(@id,"planetList")]/div[contains(@class,"hightlightPlanet")]/@id');
 		}
 		return this.currentPlanetId;

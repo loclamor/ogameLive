@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "version": "1.4.2",
+  "version": "1.4.3",
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
   "default_locale": "fr",
@@ -37,7 +37,8 @@
     }
   ],
   "web_accessible_resources": [
-    "ogameLive.css"
+	"ogameLive.css",
+	"window.js"
   ],
   "background": {
     "scripts": [

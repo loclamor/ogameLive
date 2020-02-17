@@ -58,5 +58,14 @@ class BetterFleetDisplay {
 				setTimeout(updateMoreInfoTable, 1);
 			});
 		});
+
+		var $exploBtn = jQuery('<a class="explo" href="#" id="ebutton"><span class="textlabel">Exploration</span></a>');
+		jQuery("#fleet2 #target .target .clearfloat").before($exploBtn);
+		$exploBtn.click(function(e){
+			// jQuery('#target .coords input[name="position"]').val(16);
+			window.dispatchEvent(new CustomEvent('ogameLive.fleetDispatcher.selectExpedition'));
+			e.preventDefault();
+			e.stopPropagation();
+		});
 	}
 }

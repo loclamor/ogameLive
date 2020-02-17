@@ -123,3 +123,22 @@ span.incomming_fleet {
 	left: 128px;
 	opacity: 0.5;
 }
+
+
+/**
+  Fleet 2 improvments
+**/
+#fleet2 #target .target>a {
+	width: 42px;
+	margin-left: 0;
+}
+
+#fleet2 #target .target>a.explo {
+	background: url("https://gf2.geo.gfsrv.net/cdn14/f45a18b5e55d2d38e7bdc3151b1fee.jpg") no-repeat;
+    background-position: -3px -100px;
+    background-size: 515px;
+}
+
+#fleet2 #target .target>a.explo:hover {
+	background-position: -3px -53px;
+}

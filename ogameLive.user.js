@@ -56,6 +56,11 @@ jQuery("head").ready(function() {
 	link.type = "text/css";
 	link.rel = "stylesheet";
 	document.head.appendChild(link);
+	// push js
+	var script = document.createElement('script');
+	script.setAttribute('type', 'text/javascript');
+	script.setAttribute('src', chrome.extension.getURL("window.js"));
+	document.head.appendChild(script);
 });
 jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 	var planetsWidth = jQuery('#planetList').width() + 10;
