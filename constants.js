@@ -54,7 +54,10 @@ var OgameConstants = {
 			missileSilo: 44,
 			naniteFactory: 15,
 			terraformer: 33,
-			repairDock: 36
+			repairDock: 36,
+			moonbase: 41,
+			sensorPhalanx: 42,
+			jumpGate: 43
 		}
 	},
 	fleet: {

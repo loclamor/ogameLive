@@ -1,6 +1,12 @@
 #planetbarcomponent #rechts #myPlanets .smallplanet {
 	min-height: 62px !important;
 }
+
+/** less than 5 planets **/
+#planetbarcomponent #rechts #myWorlds .smallplanet a.planetlink img.planetPic{
+	float: left;
+}
+
 .smallplanet>.prod {
 	display: block !important;
 	float: right;
@@ -62,26 +68,32 @@
 	padding:3px;
 	color: white;
 }
-#planetbarcomponent #rechts #myPlanets div.smallplanet a.constructionIcon {
+#planetbarcomponent #rechts #myPlanets div.smallplanet a.constructionIcon,
+#planetbarcomponent #rechts #myWorlds div.smallplanet a.constructionIcon {
 	 /*same positionning than AGR */
 	left: 4px;
 	top: 0px;
 }
-#rechts #myPlanets .planet_construction {
+#rechts #myPlanets .planet_construction,
+#rechts #myWorlds .planet_construction {
     left: 2px;
     top: -13px;
 }
-#planetbarcomponent #rechts #myPlanets div.smallplanet a.constructionIcon.moon {
+#planetbarcomponent #rechts #myPlanets div.smallplanet a.constructionIcon.moon,
+#planetbarcomponent #rechts #myWorlds div.smallplanet a.constructionIcon.moon {
 	/*same positionning than Ogame vanilla */
 	top: 35px;
-	left: 20px;
+	left: 15px;
 }
-#rechts #myPlanets .planet_construction_moon {
-    left: 25px;
-    bottom: 35px;
+#rechts #myPlanets .planet_construction_moon,
+#rechts #myWorlds .planet_construction_moon {
+    left: 29px;
+    bottom: 10px;
 }
 #myPlanets .planet_construction,
-#myPlanets .planet_construction_moon {
+#myPlanets .planet_construction_moon,
+#myWorlds .planet_construction,
+#myWorlds .planet_construction_moon {
     font-size: 9px;
     line-height: 9px;
     color: #848484;
@@ -122,6 +134,11 @@ span.incomming_fleet {
 	top: 15px;
 	left: 128px;
 	opacity: 0.5;
+}
+
+figure.planetIcon.debrisField {
+	background: url("https://gf1.geo.gfsrv.net/cdnc5/fa3e396b8af2ae31e28ef3b44eca91.gif") no-repeat;
+	background-size: 16px;
 }
 
 

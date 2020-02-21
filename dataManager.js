@@ -38,10 +38,17 @@ class DataManager {
 
 	getCurrentPlanetId() {
 		if(!this.currentPlanetId) {
-			if (jQuery("#planetList .smallplanet").length === 1) {
+			if (jQuery("#planetList .smallplanet").length === 1
+			&& (!(jQuery("#planetList .smallplanet.hightlightPlanet").length === 1) ||
+				!(jQuery("#planetList .smallplanet.hightlightMoon").length === 1))) {
 				jQuery("#planetList .smallplanet").addClass("hightlightPlanet");
 			}
-			this.currentPlanetId = Xpath.getStringValue(document,'//div[contains(@id,"planetList")]/div[contains(@class,"hightlightPlanet")]/@id');
+			if (jQuery("#planetList .smallplanet.hightlightPlanet").length === 1) {
+				this.currentPlanetId = Xpath.getStringValue(document,'//div[contains(@id,"planetList")]/div[contains(@class,"hightlightPlanet")]/@id');
+			}
+			else {
+				this.currentPlanetId = Xpath.getStringValue(document,'//div[contains(@id,"planetList")]/div[contains(@class,"hightlightMoon")]/@id') + '-moon';
+			}
 		}
 		return this.currentPlanetId;
 	}

@@ -23,7 +23,7 @@ class FleetParser {
 			planetData.fleet[k] = 
 				Xpath.getNumberValue(document, '//div[contains(@id,"technologies")]/div/ul/li[contains(@class,"'+k+'")]/span/span[contains(@class,"amount")]/@data-value');
 			if (getFleetData) {
-				jQuery.get('https://s167-fr.ogame.gameforge.com/game/index.php?page=ajax&component=technologytree&ajax=1&technologyId='+constants[k]+'&tab=2', function(htmlStr) {
+				jQuery.get(urlUnivers + '/game/index.php?page=ajax&component=technologytree&ajax=1&technologyId='+constants[k]+'&tab=2', function(htmlStr) {
 					log("get response for " + k, LOG_LEVEL_TRACE);
 					var fleetData = dataManager.getFleetData();
 					if (!fleetData[k]) {

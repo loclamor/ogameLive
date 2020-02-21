@@ -27,6 +27,7 @@ class PlanetsProductionDisplay {
 		for (var i = 0; i < nbPlanets; i++) {
 			var planetId = myPlanetsRes.snapshotItem(i).textContent;
 			var planetdata = this.dataManager.getPlanetData(planetId);
+			var moondata = this.dataManager.getPlanetData(planetId + '-moon');
 			var warnM = '';
 			var warnC = '';
 			var warnD = '';
@@ -38,6 +39,7 @@ class PlanetsProductionDisplay {
 				prod: this.dataManager.getPlanetProd(planetId),
 				//build
 				currentBuild: false,
+				currentMoonBuild: false,
 				data: planetdata
 			};
 			
@@ -51,8 +53,17 @@ class PlanetsProductionDisplay {
 			if (currentBuildNodes.snapshotLength > 0) {
 				for(var cons= 0; cons < currentBuildNodes.snapshotLength; cons++) {
 					var currentBuildNode = currentBuildNodes.snapshotItem(cons);
-					if (currentBuildNode.classList.contains('moon')) {
+					if (currentBuildNode.classList.contains('moon') && moondata) {
 						// moon construction
+						planet.currentMoonBuild = moondata.currentBuild;
+						//get data from localstorage
+						if (moondata.currentBuild) {
+							currentBuildNode.title += '&nbsp;('+planet.currentMoonBuild.targetLevel+')';
+							jQuery('#'+planetId).append(
+								'<span class="planet_construction_moon">'+currentBuildNode.title+'<br/><span class="timer"></span></span>'
+							);
+							planet.$buildMoonTimer = jQuery('#'+planetId + ' .planet_construction_moon .timer');
+						}
 					}
 					else {
 						planet.currentBuild = planetdata.currentBuild;
@@ -70,7 +81,10 @@ class PlanetsProductionDisplay {
 			}
 			else {
 				planetdata.currentBuild = null;
-				this.dataManager.updatePlanetData(planetId, planetdata)
+				this.dataManager.updatePlanetData(planetId, planetdata);
+
+				moondata.currentBuild = null;
+				this.dataManager.updatePlanetData(planetId + '-moon', moondata);
 			}
 			
 			// energie
@@ -212,8 +226,12 @@ class PlanetsProductionDisplay {
 			var flight = flights[flightId];
 			if (flight.arrivalTime <= nowTime) {
 				toDeleteFlightIds.push(flightId);
-				if (flight.destination) {
-					var planetProd = this.dataManager.getPlanetProd(flight.destination);
+				if (flight.destination && flight.destinationType !== 'debrisField') {
+					var destPlanetId = flight.destination;
+					if (flight.destinationType === 'moon') {
+						destPlanetId += '-moon';
+					}
+					var planetProd = this.dataManager.getPlanetProd(destPlanetId);
 					planetProd.M.dispo += flight.resources.M;
 					if (planetProd.M.dispo >= planetProd.M.capa) {
 						planetProd.M.prod = 0;
@@ -254,6 +272,8 @@ class PlanetsProductionDisplay {
 			var planet = this.planetList[i];
 			planet.prod = this.dataManager.getPlanetProd(planet.id);
 			var planetdata = this.dataManager.getPlanetData(planet.id);
+			var moondata = this.dataManager.getPlanetData(planet.id + '-moon');
+			var moonProd = this.dataManager.getPlanetProd(planet.id + '-moon');
 			// currentBuild timer
 			if (planet.currentBuild) {
 				var remainingTime = planetdata.currentBuild.end - nowTime;
@@ -262,6 +282,15 @@ class PlanetsProductionDisplay {
 				}
 				else {
 					planet.$buildTimer.text('Terminé');
+				}
+			}
+			if (planet.currentMoonBuild) {
+				var remainingTime = moondata.currentBuild.end - nowTime;
+				if (remainingTime > 0) {
+					planet.$buildMoonTimer.text(formatTime(remainingTime));
+				}
+				else {
+					planet.$buildMoonTimer.text('Terminé');
 				}
 			}
 			// metal
@@ -339,7 +368,19 @@ class PlanetsProductionDisplay {
 				var incomming_rows = '';
 				for (var f = 0; f < flightsByPlanet[planet.id].length; f ++) {
 					var flight = flightsByPlanet[planet.id][f];
-					incomming_rows += '<tr><th colspan="2">Arrive dans '+formatTime(flight.arrivalTime-nowTime)+'</th></tr>'
+					var typeIco = '';
+					switch (flight.destinationType) {
+						case 'moon' :
+							typeIco = '<figure class="planetIcon moon"></figure>&nbsp;';
+							break;
+						case 'planet' :
+							typeIco = '<figure class="planetIcon planet"></figure>&nbsp;';
+							break;
+						case 'debrisField' :
+							typeIco = '<figure class="planetIcon debrisField"></figure>&nbsp;';
+							break;
+					}
+					incomming_rows += '<tr><th colspan="2">'+typeIco+'Arrive dans '+formatTime(flight.arrivalTime-nowTime)+'</th></tr>'
 					incomming_rows += '<tr><td>M</td><td class="value">'+formatInt(flight.resources.M)+'</td></tr>';
 					incomming_rows += '<tr><td>C</td><td class="value">'+formatInt(flight.resources.C)+'</td></tr>';
 					incomming_rows += '<tr><td>D</td><td class="value">'+formatInt(flight.resources.D)+'</td></tr>';
@@ -353,6 +394,12 @@ class PlanetsProductionDisplay {
 						+ '</table>'
 					+ '</div>'
 				);
+			}
+
+			if (moonProd) {
+				totalM += moonProd.M.dispo;
+				totalC += moonProd.C.dispo;
+				totalD += moonProd.D.dispo;
 			}
 
 		}
