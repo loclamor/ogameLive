@@ -63,18 +63,52 @@ jQuery("head").ready(function() {
 	document.head.appendChild(script);
 });
 jQuery("#resourcesbarcomponent, #planetList").ready(function() {
+
+	var hasOGLight = jQuery('.ogl-harvestOptions').length >= 1 ;
+
 	var planetsWidth = jQuery('#planetList').width() + 10;
 	var prodWidth = planetsWidth * 1.3;
 	// dynamics css
 	jQuery('head').append('<style>'
 		+ '#planetbarcomponent #rechts #planetList .smallplanet {min-width: '+(planetsWidth + prodWidth)+'px;}'
 		+ '.smallplanet>.prod {width: '+(prodWidth)+'px; display: none;}'
+		+ '.smallplanet>.prod>.planet_prod, .smallplanet>.prod>.moon_prod {width: '+(prodWidth)+'px;}'
+		+ '.smallplanet>.prod>.moon_prod {left: '+(prodWidth)+'px;}'
+		+ '#planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.planet_prod {left: -'+(prodWidth)+'px;}'
+		+ '#countColonies .productionSwitcher {position: absolute; left: '+(planetsWidth)+'px; top: 0px; width:'+(prodWidth)+'px; height: 28px; overflow: hidden;}'
+		+ '#countColonies .productionSwitcher .planets_prod {position: absolute; left: 0px; top: 0px; width:'+(prodWidth)+'px;}'
+		+ '#countColonies .productionSwitcher .planets_prod .showMoons {float: right}'
+		+ '#countColonies .productionSwitcher .planets_prod:hover {left: -7px}'
+		+ '#countColonies .productionSwitcher .moons_prod {position: absolute; left: '+(prodWidth)+'px; top: 0px; width:'+(prodWidth)+'px; text-align: right;}'
+		+ '#countColonies .productionSwitcher .moons_prod .showPlanets {float: left}'
+		//+ '#countColonies .productionSwitcher .moons_prod:hover {left:'+(prodWidth-7)+'px}'
+		+ '#countColonies .productionSwitcher .planets_prod, #countColonies .productionSwitcher .moons_prod {transition: left 0.5s ease 0s; cursor: pointer;}'
+		+ '#countColonies .productionSwitcher.displayMoonProd .planets_prod {left: -'+(prodWidth)+'px;}'
+		+ '#countColonies .productionSwitcher.displayMoonProd .moons_prod {left: 0px;}'
+		//+ '#countColonies .productionSwitcher.displayMoonProd .planets_prod:hover {left: -'+(prodWidth+7)+'px;}'
+		+ '#countColonies .productionSwitcher.displayMoonProd .moons_prod:hover {left: +7px;}'
 		+ '#advicebarcomponent div#banner_skyscraper {left: '+(1005+prodWidth+5)+'px !important}'
 		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px; width: '+(prodWidth)+'px;}'
+		+ (hasOGLight ? '#planetbarcomponent #rechts #myPlanets .smallplanet a.moonlink {left: 116px !important}' : '')
 	+ '</style>');
+
+	$switcher = jQuery('<div class="productionSwitcher">'
+			+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
+			+ '<div class="moons_prod"><span class="showPlanets">◀ planets</span> Moons productions</div>'
+		+ '</div>');
+	jQuery('#countColonies').append($switcher);
+
+	$switcher.click(function() {
+		jQuery('#planetbarcomponent #rechts #planetList').toggleClass('displayMoonProd');
+		$switcher.toggleClass('displayMoonProd');
+	});
 
 	var ogameLive = new OgameLive();
 	ogameLive.start();
+
+	if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
+		$switcher.click();
+	}
 	
 });
 

@@ -35,16 +35,20 @@ class FlyingFleetObserver {
 							break;
 					}
 				}
-
-				flights[eventId] = {
-					arrivalTime: parseInt(event.dataset.arrivalTime)*1000,
-					destination: this.dataManager.getPlanetId(destCoords),
-					destinationType: typeDest,
-					resources: {
-						M: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
-						C: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
-						D: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
+				try {
+					flights[eventId] = {
+						arrivalTime: parseInt(event.dataset.arrivalTime)*1000,
+						destination: this.dataManager.getPlanetId(destCoords),
+						destinationType: typeDest,
+						resources: {
+							M: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
+							C: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
+							D: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
+						}
 					}
+				}
+				catch(e) {
+					console.error(e)
 				}
 			}
 			this.dataManager.setFlights(flights);

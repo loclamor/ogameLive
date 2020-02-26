@@ -13,10 +13,34 @@
 	font-size: 9px;
 	text-align: left;
 	margin-top: 0px;
+	overflow: hidden;
+	position: relative;
+	height: 55px;
 }
-.smallplanet>.prod>.capa {
+.smallplanet>.prod .capa {
 	font-size: 8px;
 }
+
+.smallplanet>.prod>.planet_prod,
+.smallplanet>.prod>.moon_prod {
+	display: inline-block;
+	position: absolute;
+	top: 0px;
+	transition: left 0.5s ease 0s;
+}
+
+.smallplanet>.prod>.planet_prod {
+	left: 0px;
+}
+
+.smallplanet>.prod>.moon_prod {
+
+}
+
+#planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.moon_prod {
+	left: 0px;
+}
+
 .smallplanet>a {
 	
 }
@@ -31,7 +55,7 @@
 	font-size: 11px;
 	text-align: left;
 	margin-top: 10px;
-	position: absolute;
+	/* position: absolute; */
 }
 #planetList .prod_per_hour,
 .needed_fleet {
