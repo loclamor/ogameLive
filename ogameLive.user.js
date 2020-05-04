@@ -70,7 +70,8 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 	var prodWidth = planetsWidth * 1.3;
 	// dynamics css
 	jQuery('head').append('<style>'
-		+ '#planetbarcomponent #rechts #planetList .smallplanet {min-width: '+(planetsWidth + prodWidth)+'px;}'
+		+ '#planetbarcomponent #rechts #myPlanets .smallplanet {min-height: 62px !important;}'
+		//+ '#planetbarcomponent #rechts #planetList .smallplanet {min-width: '+(planetsWidth + prodWidth)+'px;}'
 		+ '.smallplanet>.prod {width: '+(prodWidth)+'px; display: none;}'
 		+ '.smallplanet>.prod>.planet_prod, .smallplanet>.prod>.moon_prod {width: '+(prodWidth)+'px;}'
 		+ '.smallplanet>.prod>.moon_prod {left: '+(prodWidth)+'px;}'

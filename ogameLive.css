@@ -14,7 +14,8 @@
 	text-align: left;
 	margin-top: 0px;
 	overflow: hidden;
-	position: relative;
+	position: absolute;
+	left: 157px;
 	height: 55px;
 }
 .smallplanet>.prod .capa {
