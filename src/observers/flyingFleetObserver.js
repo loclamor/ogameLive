@@ -41,9 +41,10 @@ class FlyingFleetObserver {
 						destination: this.dataManager.getPlanetId(destCoords),
 						destinationType: typeDest,
 						resources: {
-							M: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
-							C: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
-							D: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
+							M: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 4).textContent.split('.').join('')),
+							C: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
+							D: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
+							F: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
 						}
 					}
 				}

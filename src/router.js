@@ -11,6 +11,7 @@ class Router {
 		this.regShipyard = new RegExp(/component=(shipyard)/);
 		this.regDefenses = new RegExp(/component=(defenses)/);
 		this.regFleet = new RegExp(/component=(fleetdispatch)/);
+		this.regLife = new RegExp(/component=(lfbuildings)/);
 	}
 
 	handlePage(url) {
@@ -24,6 +25,9 @@ class Router {
 			new TechDetailObserver(this.app.dataManager);
 		} else if (this.regInstallations.test(url)) {
 			new InstallationsParser(this.app.dataManager);
+			new TechDetailObserver(this.app.dataManager);
+		} else if (this.regLife.test(url)) {
+			new LifeParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
 		} else if (this.regShipyard.test(url) || this.regFleet.test(url)) {
 			new FleetParser(this.app.dataManager);

@@ -52,14 +52,14 @@ log("Universe language: " + langUnivers, LOG_LEVEL_TRACE);
 jQuery("head").ready(function() {
 	// push css
 	var link = document.createElement("link");
-	link.href = chrome.extension.getURL("ogameLive.css");
+	link.href = chrome.runtime.getURL("src/ogameLive.css");
 	link.type = "text/css";
 	link.rel = "stylesheet";
 	document.head.appendChild(link);
 	// push js
 	var script = document.createElement('script');
 	script.setAttribute('type', 'text/javascript');
-	script.setAttribute('src', chrome.extension.getURL("window.js"));
+	script.setAttribute('src', chrome.runtime.getURL("src/window.js"));
 	document.head.appendChild(script);
 });
 jQuery("#resourcesbarcomponent, #planetList").ready(function() {
@@ -88,7 +88,7 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 		+ '#countColonies .productionSwitcher.displayMoonProd .moons_prod {left: 0px;}'
 		//+ '#countColonies .productionSwitcher.displayMoonProd .planets_prod:hover {left: -'+(prodWidth+7)+'px;}'
 		+ '#countColonies .productionSwitcher.displayMoonProd .moons_prod:hover {left: +7px;}'
-		+ '#advicebarcomponent div#banner_skyscraper {left: '+(1005+prodWidth+5)+'px !important}'
+		+ 'div#banner_skyscraper {left: '+(1020+prodWidth)+'px !important}'
 		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px; width: '+(prodWidth)+'px;}'
 		+ (hasOGLight ? '#planetbarcomponent #rechts #myPlanets .smallplanet a.moonlink {left: 116px !important}' : '')
 	+ '</style>');

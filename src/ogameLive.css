@@ -1,4 +1,5 @@
-#planetbarcomponent #rechts #myPlanets .smallplanet {
+#planetbarcomponent #rechts #myPlanets .smallplanet,
+#planetbarcomponent #rechts #myWorlds .smallplanet {
 	min-height: 62px !important;
 }
 

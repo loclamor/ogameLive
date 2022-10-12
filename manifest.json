@@ -1,12 +1,15 @@
 {
-  "manifest_version": 2,
-  "version": "1.4.5",
+  "manifest_version": 3,
+  "version": "12345",
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
   "default_locale": "fr",
-  "content_security_policy": "script-src 'self'; object-src 'self'",
+  "content_security_policy": {
+    "script-src": "self",
+    "object-src": "self"
+  },
   "icons": {
-    "128": "ogameLive-128.png"
+    "128": "src/ogameLive-128.png"
   },
   "content_scripts": [
     {
@@ -15,41 +18,45 @@
       ],
       "js": [
         "contribs/jquery.min.js",
-		"constants.js",
-		"dataManager.js",
-		"utilities.js",
-		"router.js",
-		"ogameLive.js",
-		"observers/techDetailObserver.js",
-		"observers/flyingFleetObserver.js",
-		"displays/betterFleetDisplay.js",
-		"displays/planetsProductionDisplay.js",
-		"parsers/resourcesParser.js",
-		"parsers/researchParser.js",
-		"parsers/installationsParser.js",
-		"parsers/flyingFleetParser.js",
-		"parsers/fleetParser.js",
-		"parsers/resourceSettingsParser.js",
-		"parsers/planetProductionParser.js",
-        "ogameLive.user.js"
+		"src/constants.js",
+		"src/dataManager.js",
+		"src/utilities.js",
+		"src/router.js",
+		"src/ogameLive.js",
+		"src/observers/techDetailObserver.js",
+		"src/observers/flyingFleetObserver.js",
+		"src/displays/betterFleetDisplay.js",
+		"src/displays/planetsProductionDisplay.js",
+		"src/parsers/resourcesParser.js",
+		"src/parsers/researchParser.js",
+        "src/parsers/lifeParser.js",
+		"src/parsers/installationsParser.js",
+		"src/parsers/flyingFleetParser.js",
+		"src/parsers/fleetParser.js",
+		"src/parsers/resourceSettingsParser.js",
+		"src/parsers/planetProductionParser.js",
+        "src/ogameLive.user.js",
+        "src/worker.js"
       ],
       "run_at": "document_start"
     }
   ],
-  "web_accessible_resources": [
-	"ogameLive.css",
-	"window.js"
-  ],
+  "web_accessible_resources": [{
+    "resources": [
+      "src/ogameLive.css",
+      "src/window.js"
+    ],
+    "matches": ["<all_urls>"]
+  }],
   "background": {
-    "scripts": [
-      "contribs/jquery.min.js"
-    ]
+    "service_worker": "src/worker.js",
+    "type": "module"
   },
   "permissions": [],
   "short_name": "ogameLive",
-  "browser_action": {
+  "action": {
     "default_title": "ogameLive",
-    "default_icon": "ogameLive-128.png",
-    "default_popup": "ogameLive.html"
+    "default_icon": "src/ogameLive-128.png",
+    "default_popup": "src/ogameLive.html"
   }
 }

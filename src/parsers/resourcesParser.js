@@ -7,7 +7,7 @@ class ResourcesParser {
 		if (!planetData.resources) {
 			planetData.resources = {};
 		}
-		if (!planetData.installations) {
+		if (!planetData.currentBuild) {
 			planetData.currentBuild = {
 				building: '',
 				targetLevel: 0,

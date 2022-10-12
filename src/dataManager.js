@@ -95,6 +95,7 @@ class DataManager {
 				M: {dispo: 0, capa: 0, prod: 0, cache: 0},
 				C: {dispo: 0, capa: 0, prod: 0, cache: 0},
 				D: {dispo: 0, capa: 0, prod: 0, cache: 0},
+				F: {dispo: 0, capa: 0, prod: 0, conso: 0, durability: null, surprod: 0},
 				E: {dispo: 0, prod: 0},
 			});
 		}

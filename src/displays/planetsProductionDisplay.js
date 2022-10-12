@@ -229,12 +229,14 @@ class PlanetsProductionDisplay {
 			+ 'M:&nbsp;<span class="in_flight_metal"></span><br/>'
 			+ 'C:&nbsp;<span class="in_flight_cristal"></span><br/>'
 			+ 'D:&nbsp;<span class="in_flight_deut"></span><br/>'
+			+ 'F:&nbsp;<span class="in_flight_food"></span><br/>'
 			+ '&Sigma;:&nbsp;<span class="in_flight_total"></span><br/>'
 			+ '<br/>'
 			+ 'Totaux :<br/>'
 			+ 'M:&nbsp;<span class="total_prod_metal"></span><span class="prod_per_hour">+'+formatInt(m_total_prod)+'/h</span><br/>'
 			+ 'C:&nbsp;<span class="total_prod_cristal"></span><span class="prod_per_hour">+'+formatInt(c_total_prod)+'/h</span><br/>'
 			+ 'D:&nbsp;<span class="total_prod_deut"></span><span class="prod_per_hour">+'+formatInt(d_total_prod)+'/h</span><br/>'
+			+ 'F:&nbsp;<span class="total_prod_food"></span><span class="prod_per_hour">+'+formatInt(d_total_prod)+'/h</span><br/>'
 			+ '&Sigma;:&nbsp;<span class="total_prod_total"></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
 		+ '</div>');
 
@@ -262,6 +264,7 @@ class PlanetsProductionDisplay {
 		var totalM = 0;
 		var totalC = 0;
 		var totalD = 0;
+		var totalF = 0;
 
 		var totalPT = 0;
 		var totalGT = 0;
@@ -274,6 +277,7 @@ class PlanetsProductionDisplay {
 		var inFlight_M = 0;
 		var inFlight_C = 0;
 		var inFlight_D = 0;
+		var inFlight_F = 0;
 		// resolve terminated flights and sum flying resources
 		var flights = this.dataManager.getFlights();
 		var toDeleteFlightIds = [];
@@ -300,12 +304,15 @@ class PlanetsProductionDisplay {
 					if (planetProd.D.dispo >= planetProd.D.capa) {
 						planetProd.D.prod = 0;
 					}
+					planetProd.F.dispo += flight.resources.F;
+
 				}
 			}
 			else {
 				inFlight_M += flight.resources.M;
 				inFlight_C += flight.resources.C;
 				inFlight_D += flight.resources.D;
+				inFlight_F += flight.resources.F;
 				if (flight.destination) {
 					if (!flightsByPlanet[flight.destination]) {
 						flightsByPlanet[flight.destination] = [];
@@ -392,10 +399,15 @@ class PlanetsProductionDisplay {
 				}
 			}
 			planet.$d_dispo.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.prod.D.dispo) + '</span>');
+			// FOOD
+			// TODO : HOW to update this ?
+			var planetProdF = planet.prod.F ? planet.prod.F.dispo : 0
+			totalF += planetProdF;
+
 			// store new dispos
 			this.dataManager.updatePlanetProd(planet.id, planet.prod);
 			//sum
-			var sum_dispo = planet.prod.M.dispo + planet.prod.C.dispo + planet.prod.D.dispo;
+			var sum_dispo = planet.prod.M.dispo + planet.prod.C.dispo + planet.prod.D.dispo + planetProdF;
 			planet.$s_dispo.html('<span class="">&Sigma;:&nbsp;' + formatInt(sum_dispo) + '</span>');
 			// neededFleet
 			var neededPT = this.computeNeededPT(sum_dispo);
@@ -462,10 +474,13 @@ class PlanetsProductionDisplay {
 					}
 				}
 				planet.$d_dispo_moon.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.moonprod.D.dispo) + '</span>');
+				// FOOD
+				var monProdF = planet.moonprod.F ? planet.moonprod.F.dispo : 0;
+				totalF += monProdF;
 				// store new dispos
 				this.dataManager.updatePlanetProd(planet.id + '-moon', planet.moonprod);
 				//sum
-				var sum_dispo = planet.moonprod.M.dispo + planet.moonprod.C.dispo + planet.moonprod.D.dispo;
+				var sum_dispo = planet.moonprod.M.dispo + planet.moonprod.C.dispo + planet.moonprod.D.dispomonProdF;
 				planet.$s_dispo_moon.html('<span class="">&Sigma;:&nbsp;' + formatInt(sum_dispo) + '</span>');
 				// neededFleet
 				var neededPT = this.computeNeededPT(sum_dispo);
@@ -530,19 +545,22 @@ class PlanetsProductionDisplay {
 		jQuery('#planetList .total_prod .in_flight_metal').html(formatInt(inFlight_M));
 		jQuery('#planetList .total_prod .in_flight_cristal').html(formatInt(inFlight_C));
 		jQuery('#planetList .total_prod .in_flight_deut').html(formatInt(inFlight_D));
-		jQuery('#planetList .total_prod .in_flight_total').html(formatInt(inFlight_M + inFlight_C + inFlight_D));
+		jQuery('#planetList .total_prod .in_flight_food').html(formatInt(inFlight_F));
+		jQuery('#planetList .total_prod .in_flight_total').html(formatInt(inFlight_M + inFlight_C + inFlight_D + inFlight_F));
 		totalM += inFlight_M;
 		totalC += inFlight_C;
 		totalD += inFlight_D;
+		totalF += inFlight_F
 		
 		// total resources
 		jQuery('#planetList .total_prod .total_prod_metal').html(formatInt(totalM));
 		jQuery('#planetList .total_prod .total_prod_cristal').html(formatInt(totalC));
 		jQuery('#planetList .total_prod .total_prod_deut').html(formatInt(totalD));
-		jQuery('#planetList .total_prod .total_prod_total').html(formatInt(totalM + totalC + totalD));
+		jQuery('#planetList .total_prod .total_prod_food').html(formatInt(totalF));
+		jQuery('#planetList .total_prod .total_prod_total').html(formatInt(totalM + totalC + totalD + totalF));
 		// neededFleet
-		jQuery('#planetList .total_prod .needed_fleet .pt').text(formatInt(totalPT) + '/' + formatInt(this.computeNeededPT(totalM + totalC + totalD)));
-		jQuery('#planetList .total_prod .needed_fleet .gt').text(formatInt(totalGT) + '/' + formatInt(this.computeNeededGT(totalM + totalC + totalD)));
+		jQuery('#planetList .total_prod .needed_fleet .pt').text(formatInt(totalPT) + '/' + formatInt(this.computeNeededPT(totalM + totalC + totalD + totalF)));
+		jQuery('#planetList .total_prod .needed_fleet .gt').text(formatInt(totalGT) + '/' + formatInt(this.computeNeededGT(totalM + totalC + totalD + totalF)));
 		
 		var currentTechDetail = this.dataManager.getCurrentTechDetail();
 		if (currentTechDetail) {

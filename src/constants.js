@@ -4,6 +4,8 @@ var OgameConstants = {
 		crystal_box : 'C',
 		deuterium_box : 'D',
 		energy_box : 'E',
+		population_box : 'P',
+		food_box : 'F',
 		darkmatter_box : 'A'
 	},
 	resources: {
@@ -32,6 +34,20 @@ var OgameConstants = {
 		weapons: 109,
 		shielding: 110,
 		armor: 111
+	},
+	lifeform: {
+		lifeformTech11101: 11101, // secteur_residentiel
+		lifeformTech11102: 11102, // ferme_biospherique
+		lifeformTech11103: 11103, // centre_recherche
+		lifeformTech11104: 11104, // académie
+		lifeformTech11105: 11105, // neurocalibrage
+		lifeformTech11106: 11106, // fusion_he
+		lifeformTech11107: 11107, // reserve
+		lifeformTech11108: 11108, // extraction_fusion
+		lifeformTech11109: 11109, // tour_habitation
+		lifeformTech11110: 11110, // biotechnologie
+		lifeformTech11111: 11111, // metroplolis
+		lifeformTech11112: 11112, // bouclier_planetaire
 	},
 	buildings: {
 		resources: {
