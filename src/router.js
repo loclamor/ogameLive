@@ -5,7 +5,8 @@ class Router {
 		this.app = app;
 		this.regOverview = new RegExp(/component=(overview)/);
 		this.regResources = new RegExp(/component=(supplies)/);
-		this.regResourceSettings = new RegExp(/page=(resourceSettings)/);
+		this.regResourceSettingsPage = new RegExp(/page=(resourceSettings)/);
+		this.regResourceSettingsComponent = new RegExp(/component=(resourcesettings)/);
 		this.regInstallations = new RegExp(/component=(facilities)/);
 		this.regResearch = new RegExp(/component=(research)/);
 		this.regShipyard = new RegExp(/component=(shipyard)/);
@@ -15,7 +16,7 @@ class Router {
 	}
 
 	handlePage(url) {
-		if (this.regResourceSettings.test(url)) {
+		if (this.regResourceSettingsPage.test(url) || this.regResourceSettingsComponent.test(url)) {
 			new ResourceSettingsParser(this.app.dataManager);
 		} else if (this.regResearch.test(url)) {
 			new ResearchParser(this.app.dataManager);

@@ -23,6 +23,7 @@ class PlanetsProductionDisplay {
 		var m_total_prod = 0;
 		var c_total_prod = 0;
 		var d_total_prod = 0;
+		var f_total_prod = 0;
 
 		for (var i = 0; i < nbPlanets; i++) {
 			var planetId = myPlanetsRes.snapshotItem(i).textContent;
@@ -49,6 +50,7 @@ class PlanetsProductionDisplay {
 			m_total_prod += planet.prod.M.prod;
 			c_total_prod += planet.prod.C.prod;
 			d_total_prod += planet.prod.D.prod;
+			f_total_prod += planet.prod.F.surprod;
 
 			// current build
 			var currentBuildNodes = Xpath.getOrderedSnapshotNodes(document,'//div[contains(@id,"planetList")]/div[contains(@id,"'+planetId+'")]/a[contains(@class,"constructionIcon")]');
@@ -149,6 +151,22 @@ class PlanetsProductionDisplay {
 				d_prod_class = 'overmark';
 			}
 
+			if (!planet.prod.F) {
+				planet.prod.F = {dispo: 0, capa: 0, surprod: 0, conso: 0, durability: null}
+			}
+			var f_prod_class = '';
+			if (planetdata.prodPercents && planetdata.prodPercents.food) {
+				if (planetdata.prodPercents.food < 70) {
+					f_prod_class = 'middlemark';
+				}
+				if (planetdata.prodPercents.deut < 40) {
+					f_prod_class = 'overmark';
+				}
+			}
+			if (planet.prod.F.surprod == 0)	{
+				f_prod_class = 'overmark';
+			}
+
 			// production moon
 			var m_prod_class_moon = '';
 			if (moondata.prodPercents && moondata.prodPercents.metal) {
@@ -186,6 +204,22 @@ class PlanetsProductionDisplay {
 			if (planet.moonprod.D.prod == 0)	{
 				d_prod_class_moon = 'overmark';
 			}
+
+			if (!planet.moonprod.F) {
+				planet.moonprod.F = {dispo: 0, capa: 0, surprod: 0, conso: 0, durability: null}
+			}
+			var f_prod_class_moon = '';
+			if (moondata.prodPercents && moondata.prodPercents.food) {
+				if (moondata.prodPercents.food < 70) {
+					f_prod_class_moon = 'middlemark';
+				}
+				if (moondata.prodPercents.deut < 40) {
+					f_prod_class_moon = 'overmark';
+				}
+			}
+			if (planet.moonprod.F.surprod == 0)	{
+				f_prod_class_moon = 'overmark';
+			}
 			
 			// mount base html
 			jQuery('#'+planetId).prepend(
@@ -193,6 +227,7 @@ class PlanetsProductionDisplay {
 					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.M.capa)+'</span><span class="prod_per_hour '+m_prod_class+'">+'+formatInt(planet.prod.M.prod)+'/h</span>'
 					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.C.capa)+'</span><span class="prod_per_hour '+c_prod_class+'">+'+formatInt(planet.prod.C.prod)+'/h</span>'
 					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.D.capa)+'</span><span class="prod_per_hour '+d_prod_class+'">+'+formatInt(planet.prod.D.prod)+'/h</span>'
+					+ '<br/><span id="f_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.F.capa)+'</span><span class="prod_per_hour '+f_prod_class+'">+'+formatInt(planet.prod.F.surprod * 60*60)+'/h</span>'
 					+ '<br/><span id="s_dispo"></span></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
 					+ '<br/><span id="e_dispo"><span class="'+warnE+'">E:&nbsp;' + formatInt(planet.prod.E.dispo)+'</span></span>'
 						+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.E.prod)+'</span>'
@@ -201,6 +236,7 @@ class PlanetsProductionDisplay {
 					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.M.capa)+'</span><span class="prod_per_hour '+m_prod_class_moon+'">+'+formatInt(planet.moonprod.M.prod)+'/h</span>'
 					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.C.capa)+'</span><span class="prod_per_hour '+c_prod_class_moon+'">+'+formatInt(planet.moonprod.C.prod)+'/h</span>'
 					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.D.capa)+'</span><span class="prod_per_hour '+d_prod_class_moon+'">+'+formatInt(planet.moonprod.D.prod)+'/h</span>'
+					+ '<br/><span id="f_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.F.capa)+'</span><span class="prod_per_hour '+f_prod_class_moon+'">+'+formatInt(planet.moonprod.F.surprod * 60*60)+'/h</span>'
 					+ '<br/><span id="s_dispo"></span></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
 					+ '<br/><span id="e_dispo"><span class="'+'">E:&nbsp;' + formatInt(planet.moonprod.E.dispo)+'</span></span>'
 						+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.E.prod)+'</span>'
@@ -211,12 +247,14 @@ class PlanetsProductionDisplay {
 			planet.$m_dispo = jQuery('#'+planetId + ' .planet_prod #m_dispo');
 			planet.$c_dispo = jQuery('#'+planetId + ' .planet_prod #c_dispo');
 			planet.$d_dispo = jQuery('#'+planetId + ' .planet_prod #d_dispo');
+			planet.$f_dispo = jQuery('#'+planetId + ' .planet_prod #f_dispo');
 			planet.$s_dispo = jQuery('#'+planetId + ' .planet_prod #s_dispo');
 			planet.$needed_fleet = jQuery('#'+planetId + ' .planet_prod .needed_fleet');
 			// moon
 			planet.$m_dispo_moon = jQuery('#'+planetId + ' .moon_prod #m_dispo');
 			planet.$c_dispo_moon = jQuery('#'+planetId + ' .moon_prod #c_dispo');
 			planet.$d_dispo_moon = jQuery('#'+planetId + ' .moon_prod #d_dispo');
+			planet.$f_dispo_moon = jQuery('#'+planetId + ' .moon_prod #f_dispo');
 			planet.$s_dispo_moon = jQuery('#'+planetId + ' .moon_prod #s_dispo');
 			planet.$needed_fleet_moon = jQuery('#'+planetId + ' .moon_prod .needed_fleet');
 
@@ -236,7 +274,7 @@ class PlanetsProductionDisplay {
 			+ 'M:&nbsp;<span class="total_prod_metal"></span><span class="prod_per_hour">+'+formatInt(m_total_prod)+'/h</span><br/>'
 			+ 'C:&nbsp;<span class="total_prod_cristal"></span><span class="prod_per_hour">+'+formatInt(c_total_prod)+'/h</span><br/>'
 			+ 'D:&nbsp;<span class="total_prod_deut"></span><span class="prod_per_hour">+'+formatInt(d_total_prod)+'/h</span><br/>'
-			+ 'F:&nbsp;<span class="total_prod_food"></span><span class="prod_per_hour">+'+formatInt(d_total_prod)+'/h</span><br/>'
+			+ 'F:&nbsp;<span class="total_prod_food"></span><span class="prod_per_hour">+'+formatInt(f_total_prod * 60*60)+'/h</span><br/>'
 			+ '&Sigma;:&nbsp;<span class="total_prod_total"></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
 		+ '</div>');
 
@@ -305,7 +343,9 @@ class PlanetsProductionDisplay {
 						planetProd.D.prod = 0;
 					}
 					planetProd.F.dispo += flight.resources.F;
-
+					if (planetProd.F.dispo >= planetProd.F.capa) {
+						planetProd.F.surprod = 0;
+					}
 				}
 			}
 			else {
@@ -332,6 +372,7 @@ class PlanetsProductionDisplay {
 			var warnM = '';
 			var warnC = '';
 			var warnD = '';
+			var warnF = '';
 			var planet = this.planetList[i];
 			planet.prod = this.dataManager.getPlanetProd(planet.id);
 			var planetdata = this.dataManager.getPlanetData(planet.id);
@@ -400,14 +441,26 @@ class PlanetsProductionDisplay {
 			}
 			planet.$d_dispo.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.prod.D.dispo) + '</span>');
 			// FOOD
-			// TODO : HOW to update this ?
-			var planetProdF = planet.prod.F ? planet.prod.F.dispo : 0
-			totalF += planetProdF;
+			planet.prod.F.dispo += planet.prod.F.surprod * this.elapsedSeconds;
+			totalF += planet.prod.F.dispo;
+			if (planet.prod.F.dispo >= (planet.prod.F.capa - 10/100 * planet.prod.F.capa)) {
+				warnF = 'middlemark';
+			}
+			if (planet.prod.F.dispo >= planet.prod.F.capa) {
+				warnF = 'overmark';
+				if (planet.prod.F.surprod > 0) {
+					planet.prod.F.dispo = planet.prod.F.capa;
+					planet.prod.F.surprod = 0;
+				}
+			}
+			planet.$f_dispo.html('<span class="'+warnF+'">F:&nbsp;' + formatInt(planet.prod.F.dispo) + '</span>');
+
+
 
 			// store new dispos
 			this.dataManager.updatePlanetProd(planet.id, planet.prod);
 			//sum
-			var sum_dispo = planet.prod.M.dispo + planet.prod.C.dispo + planet.prod.D.dispo + planetProdF;
+			var sum_dispo = planet.prod.M.dispo + planet.prod.C.dispo + planet.prod.D.dispo + planet.prod.F.dispo;
 			planet.$s_dispo.html('<span class="">&Sigma;:&nbsp;' + formatInt(sum_dispo) + '</span>');
 			// neededFleet
 			var neededPT = this.computeNeededPT(sum_dispo);
@@ -432,6 +485,10 @@ class PlanetsProductionDisplay {
 
 			// moon production
 			if (planet.moonprod) {
+				warnM = '';
+				warnC = '';
+				warnD = '';
+				warnF = '';
 				// metal
 				planet.moonprod.M.dispo += planet.moonprod.M.prod/60/60 * this.elapsedSeconds;
 				totalM += planet.moonprod.M.dispo;
@@ -475,12 +532,24 @@ class PlanetsProductionDisplay {
 				}
 				planet.$d_dispo_moon.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.moonprod.D.dispo) + '</span>');
 				// FOOD
-				var monProdF = planet.moonprod.F ? planet.moonprod.F.dispo : 0;
-				totalF += monProdF;
+				planet.moonprod.F.dispo += planet.moonprod.F.surprod * this.elapsedSeconds;
+				totalF += planet.moonprod.F.dispo;
+				if (planet.moonprod.F.dispo >= (planet.moonprod.F.capa - 10/100 * planet.moonprod.F.capa)) {
+					warnF = 'middlemark';
+				}
+				if (planet.moonprod.F.dispo >= planet.moonprod.F.capa) {
+					warnF = 'overmark';
+					if (planet.moonprod.F.surprod > 0) {
+						planet.moonprod.F.dispo = planet.moonprod.F.capa;
+						planet.moonprod.F.surprod = 0;
+					}
+				}
+				planet.$f_dispo_moon.html('<span class="'+warnF+'">F:&nbsp;' + formatInt(planet.moonprod.F.dispo) + '</span>');
+
 				// store new dispos
 				this.dataManager.updatePlanetProd(planet.id + '-moon', planet.moonprod);
 				//sum
-				var sum_dispo = planet.moonprod.M.dispo + planet.moonprod.C.dispo + planet.moonprod.D.dispomonProdF;
+				var sum_dispo = planet.moonprod.M.dispo + planet.moonprod.C.dispo + planet.moonprod.D.dispo + planet.moonprod.F.dispo;
 				planet.$s_dispo_moon.html('<span class="">&Sigma;:&nbsp;' + formatInt(sum_dispo) + '</span>');
 				// neededFleet
 				var neededPT = this.computeNeededPT(sum_dispo);
@@ -527,6 +596,7 @@ class PlanetsProductionDisplay {
 					incomming_rows += '<tr><td>M</td><td class="value">'+formatInt(flight.resources.M)+'</td></tr>';
 					incomming_rows += '<tr><td>C</td><td class="value">'+formatInt(flight.resources.C)+'</td></tr>';
 					incomming_rows += '<tr><td>D</td><td class="value">'+formatInt(flight.resources.D)+'</td></tr>';
+					incomming_rows += '<tr><td>F</td><td class="value">'+formatInt(flight.resources.F)+'</td></tr>';
 				}
 				$elt.attr('title',
 					'<div class="htmlTooltip">'

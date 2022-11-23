@@ -103,6 +103,7 @@ class DataManager {
 	}
 
 	updatePlanetProd(planetId, prod) {
+		// chrome.runtime.sendMessage({type: 'update-prod', value: {planetId: planetId, prod: prod}});
 		this.planetsProduction[planetId] = prod;
 		this.setJsonValue('production.'+planetId, prod);
 	}

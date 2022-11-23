@@ -1,6 +1,22 @@
+#countColonies .productionSwitcher {position: absolute; right: 5px; top: 0px; height: 28px; overflow: hidden;}
+#countColonies .productionSwitcher .planets_prod {position: absolute; left: 0px; top: 0px;}
+#countColonies .productionSwitcher .planets_prod .showMoons {float: right}
+#countColonies .productionSwitcher .planets_prod:hover {left: -7px}
+#countColonies .productionSwitcher .moons_prod {position: absolute; top: 0px; text-align: right;}
+#countColonies .productionSwitcher .moons_prod .showPlanets {float: left}
+#countColonies .productionSwitcher .planets_prod, #countColonies .productionSwitcher .moons_prod {transition: left 0.5s ease 0s; cursor: pointer;}
+#countColonies .productionSwitcher.displayMoonProd .moons_prod {left: 0px;}
+#countColonies .productionSwitcher.displayMoonProd .moons_prod:hover {left: +7px;}
+
+
+#planetbarcomponent .textCenter {
+	position: absolute;
+	left: 5px;
+}
+
 #planetbarcomponent #rechts #myPlanets .smallplanet,
 #planetbarcomponent #rechts #myWorlds .smallplanet {
-	min-height: 62px !important;
+	min-height: 65px !important;
 }
 
 /** less than 5 planets **/
@@ -16,8 +32,8 @@
 	margin-top: 0px;
 	overflow: hidden;
 	position: absolute;
-	left: 157px;
-	height: 55px;
+	left: 180px;
+	height: 65px;
 }
 .smallplanet>.prod .capa {
 	font-size: 8px;

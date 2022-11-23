@@ -47,6 +47,11 @@ log("Universe url: " + urlUnivers, LOG_LEVEL_TRACE);
 log("Universe Number: " + numUnivers, LOG_LEVEL_TRACE);
 log("Universe language: " + langUnivers, LOG_LEVEL_TRACE);
 
+/*chrome.runtime.sendMessage({type: 'greetings', value: 'loclamor'}, (response) => {
+	// 3. Got an asynchronous response with the data from the service worker
+	console.log('received user data', response);
+});*/
+
 
 /******************************* Main ***********************************/
 jQuery("head").ready(function() {
@@ -70,24 +75,14 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 	var prodWidth = planetsWidth * 1.3;
 	// dynamics css
 	jQuery('head').append('<style>'
-		+ '#planetbarcomponent #rechts #myPlanets .smallplanet {min-height: 62px !important;}'
-		//+ '#planetbarcomponent #rechts #planetList .smallplanet {min-width: '+(planetsWidth + prodWidth)+'px;}'
-		+ '.smallplanet>.prod {width: '+(prodWidth)+'px; display: none;}'
+		+ '.smallplanet>.prod {width: '+(prodWidth)+'px; display: none;}' //  display none for better rendering while css file is loading
 		+ '.smallplanet>.prod>.planet_prod, .smallplanet>.prod>.moon_prod {width: '+(prodWidth)+'px;}'
 		+ '.smallplanet>.prod>.moon_prod {left: '+(prodWidth)+'px;}'
 		+ '#planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.planet_prod {left: -'+(prodWidth)+'px;}'
-		+ '#countColonies .productionSwitcher {position: absolute; left: '+(planetsWidth)+'px; top: 0px; width:'+(prodWidth)+'px; height: 28px; overflow: hidden;}'
-		+ '#countColonies .productionSwitcher .planets_prod {position: absolute; left: 0px; top: 0px; width:'+(prodWidth)+'px;}'
-		+ '#countColonies .productionSwitcher .planets_prod .showMoons {float: right}'
-		+ '#countColonies .productionSwitcher .planets_prod:hover {left: -7px}'
-		+ '#countColonies .productionSwitcher .moons_prod {position: absolute; left: '+(prodWidth)+'px; top: 0px; width:'+(prodWidth)+'px; text-align: right;}'
-		+ '#countColonies .productionSwitcher .moons_prod .showPlanets {float: left}'
-		//+ '#countColonies .productionSwitcher .moons_prod:hover {left:'+(prodWidth-7)+'px}'
-		+ '#countColonies .productionSwitcher .planets_prod, #countColonies .productionSwitcher .moons_prod {transition: left 0.5s ease 0s; cursor: pointer;}'
+		+ '#countColonies .productionSwitcher {width:'+(prodWidth)+'px;}'
+		+ '#countColonies .productionSwitcher .planets_prod {width:'+(prodWidth)+'px;}'
+		+ '#countColonies .productionSwitcher .moons_prod {left: '+(prodWidth)+'px; width:'+(prodWidth)+'px;}'
 		+ '#countColonies .productionSwitcher.displayMoonProd .planets_prod {left: -'+(prodWidth)+'px;}'
-		+ '#countColonies .productionSwitcher.displayMoonProd .moons_prod {left: 0px;}'
-		//+ '#countColonies .productionSwitcher.displayMoonProd .planets_prod:hover {left: -'+(prodWidth+7)+'px;}'
-		+ '#countColonies .productionSwitcher.displayMoonProd .moons_prod:hover {left: +7px;}'
 		+ 'div#banner_skyscraper {left: '+(1020+prodWidth)+'px !important}'
 		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px; width: '+(prodWidth)+'px;}'
 		+ (hasOGLight ? '#planetbarcomponent #rechts #myPlanets .smallplanet a.moonlink {left: 116px !important}' : '')
@@ -110,7 +105,18 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 	if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
 		$switcher.click();
 	}
-	
+
+	var icoUrl = chrome.runtime.getURL("src/ogameLive-128.png");
+	jQuery('#menuTable').append('<li id="ogamelive-menu-button">' +
+			'<span class="menu_icon">' +
+				'<a href="https://github.com/loclamor/ogameLive/issues" target="_blank">' +
+					'<img src="' + icoUrl + '" alt="OgameLive logo" width="24.3px" style="border-radius: 6px">' +
+				'</a>' +
+			'</span>' +
+			'<a class="menubutton" href="https://board.fr.ogame.gameforge.com/index.php?thread/726885-ogamelive/" target="_blank">' +
+				'<span class="textlabel">OgameLive</span>' +
+			'</a>' +
+		'</li>');
 });
 
 //exit !!

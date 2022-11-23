@@ -54,7 +54,7 @@ class PlanetProductionParser {
 				  planetProd[resType] = {
 						dispo: parseInt(prodRes.snapshotItem(0).textContent.split('.').join('')),
 						capa: parseInt(prodRes.snapshotItem(1).textContent.split('.').join('')),
-						surprod: parseInt(prodRes.snapshotItem(2).textContent.split('.').join('')),
+						surprod: parseFloat(prodRes.snapshotItem(2).textContent.split('.').join('').replace(',', '.')),
 						conso: parseInt(prodRes.snapshotItem(3).textContent.split('.').join('')),
 						durability: parseInt(prodRes.snapshotItem(4).textContent.split('.').join(''))
 					};

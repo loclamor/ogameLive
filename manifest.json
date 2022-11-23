@@ -44,13 +44,13 @@
   "web_accessible_resources": [{
     "resources": [
       "src/ogameLive.css",
-      "src/window.js"
+      "src/window.js",
+      "src/ogameLive-128.png"
     ],
     "matches": ["<all_urls>"]
   }],
   "background": {
-    "service_worker": "src/worker.js",
-    "type": "module"
+    "service_worker": "src/worker.js"
   },
   "permissions": [],
   "short_name": "ogameLive",
