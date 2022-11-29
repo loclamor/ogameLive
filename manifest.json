@@ -58,5 +58,10 @@
     "default_title": "ogameLive",
     "default_icon": "src/ogameLive-128.png",
     "default_popup": "src/ogameLive.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{b8942d3d-415b-4d28-b7ea-83e199c2895d}"
+    }
   }
 }
