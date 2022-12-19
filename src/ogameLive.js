@@ -2,22 +2,32 @@
 class OgameLive {
 
 	constructor() {
+		this.disabledTimer = false;
 		this.dataManager = new DataManager();
 		this.router = new Router(this);
 		this.url = location.href;
-		if ((new Date()).getTime() < 1577833200000) {
-			jQuery('#eventboxBlank').text('La WWW vous souhaite de bonnes Fêtes de fin d\'année !')
-		} else if ((new Date()).getTime() < 1578351600000) {
-			jQuery('#eventboxBlank').text('Bonne et heureuse année 2020 de la part de la WWW !')
+		if ((new Date()).getTime() < 1672527600000) {
+			jQuery('#eventboxBlank').text('Bonnes Fêtes de la team OGameLive !')
+		} else if ((new Date()).getTime() < 1673128800000) {
+			jQuery('#eventboxBlank').text('HAPPY NEW YEAR from OGameLive !')
 		}
 	}
 
 	start() {
+
+
 		new PlanetProductionParser(this.dataManager);
 		var productionDisplay = new PlanetsProductionDisplay(this.dataManager);
+		productionDisplay.initialize();
 		new FlyingFleetObserver(this.dataManager);
-		setInterval(function() {
-			productionDisplay.display();
+		var app = this;
+		var interval = setInterval(function() {
+			if (!app.disabledTimer) {
+				productionDisplay.display();
+			} else {
+				console.log('Main interval deactivated');
+				clearInterval(interval)
+			}
 		}, 1000);
 		
 		// next, parse page data

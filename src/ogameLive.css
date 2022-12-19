@@ -8,6 +8,9 @@
 #countColonies .productionSwitcher.displayMoonProd .moons_prod {left: 0px;}
 #countColonies .productionSwitcher.displayMoonProd .moons_prod:hover {left: +7px;}
 
+.prod_duration_switcher {
+	float: right;
+}
 
 #planetbarcomponent .textCenter {
 	position: absolute;
@@ -75,7 +78,7 @@
 	margin-top: 10px;
 	/* position: absolute; */
 }
-#planetList .prod_per_hour,
+#planetList .prod_per_hour, .prod_per_day,
 .needed_fleet {
 	font-size: 8px;
 	float: right;

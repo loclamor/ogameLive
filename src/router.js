@@ -13,6 +13,7 @@ class Router {
 		this.regDefenses = new RegExp(/component=(defenses)/);
 		this.regFleet = new RegExp(/component=(fleetdispatch)/);
 		this.regLife = new RegExp(/component=(lfbuildings)/);
+		this.regEmpire = new RegExp(/component=(empire)/);
 	}
 
 	handlePage(url) {
@@ -27,7 +28,7 @@ class Router {
 		} else if (this.regInstallations.test(url)) {
 			new InstallationsParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
-		} else if (this.regLife.test(url)) {
+		} else if (this.regLife.test(url) && PARAMS.lifeform) {
 			new LifeParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
 		} else if (this.regShipyard.test(url) || this.regFleet.test(url)) {
@@ -38,6 +39,9 @@ class Router {
 			else {
 				new TechDetailObserver(this.app.dataManager);
 			}
+		} else if (this.regEmpire.test(url)) {
+			new EmpireParser(this.app.dataManager);
+			this.app.disabledTimer = true;
 		}
 	}
 

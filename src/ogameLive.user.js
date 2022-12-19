@@ -34,6 +34,8 @@ if (isFirefox) {
     TYPE += 'OP';
 }
 
+var manifestData = chrome.runtime.getManifest();
+
 /*************************** Init ***************************************/
 // Variables globales données ogame
 
@@ -43,9 +45,30 @@ var urlUnivers = url.match(new RegExp('(.*)/game'))[1];
 var numUnivers = urlUnivers.match(new RegExp('\/s(.*)-[a-z]{2}.ogame'))[1];
 var langUnivers = urlUnivers.match(new RegExp('-(.*).ogame'))[1];
 var prefix_GMData = 'ogameLive.'+langUnivers + numUnivers + '.';
+var versionUnivers = null;
 log("Universe url: " + urlUnivers, LOG_LEVEL_TRACE);
 log("Universe Number: " + numUnivers, LOG_LEVEL_TRACE);
 log("Universe language: " + langUnivers, LOG_LEVEL_TRACE);
+
+var DEFAULT_PARAMS = {
+	lifeform: null,
+	lastServerData: null,
+	prod_display: 'hour',
+
+}
+
+var PARAMS = GM_getJsonValue('params', DEFAULT_PARAMS);
+var curTime = (new Date()).getTime();
+if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 *60 * 1000)) {
+	// get Universe params if not defined, or Once a day
+	jQuery.get(urlUnivers + "/api/serverData.xml", function (data) {
+		$data = jQuery(data);
+		versionUnivers = $data.find('version')[0].textContent;
+		PARAMS.lifeform = $data.find('lifeformSettings').length > 0;
+		PARAMS.lastServerData = (new Date()).getTime();
+		GM_setJsonValue('params', PARAMS);
+	});
+}
 
 /*chrome.runtime.sendMessage({type: 'greetings', value: 'loclamor'}, (response) => {
 	// 3. Got an asynchronous response with the data from the service worker
@@ -114,7 +137,7 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 				'</a>' +
 			'</span>' +
 			'<a class="menubutton" href="https://board.fr.ogame.gameforge.com/index.php?thread/726885-ogamelive/" target="_blank">' +
-				'<span class="textlabel">OgameLive</span>' +
+				'<span class="textlabel">OgameLive ' + manifestData.version + '</span>' +
 			'</a>' +
 		'</li>');
 });

@@ -23,11 +23,40 @@ function GM_getJsonValue(key, defaultVal) {
 }
 
 function GM_setValue(key, value) {
+	// storeValue(prefix_GMData + key, value);
 	localStorage.setItem(prefix_GMData + key, value);
 }
 
 function GM_setJsonValue(key, value) {
 	GM_setValue(key, JSON.stringify(value));
+}
+
+/**
+ * Stocke de la data sous la forme clé/valeur dans IndexedDB via le worker
+ * @param key
+ * @param value as object
+ * @param force
+ * @param timestamp en cas de force = true
+ */
+function storeValue(key, value, force, timestamp) {
+	timestamp = timestamp || (new Date()).getTime();
+	force = force || false;
+	chrome.runtime.sendMessage({type: 'setvalue', value: {key: prefix_GMData + key, value: value, timestamp: timestamp, force: force}});
+}
+
+function retrieveValue(key, defaultValue) {
+	const realKey = prefix_GMData + key;
+	return new Promise((resolve, reject) => {
+		chrome.runtime.sendMessage({type: 'readvalue', key: realKey}, (response) => {
+			// 3. Got an asynchronous response with the data from the service worker
+			console.log('received worker data for key ' + realKey, response);
+			if (response && response.value) {
+				resolve(response.value);
+			} else {
+				resolve(defaultValue);
+			}
+		});
+	});
 }
 
 function GM_deleteValue(key) {

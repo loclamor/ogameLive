@@ -9,6 +9,7 @@ class FlyingFleetObserver {
 				var event = eventNodes.snapshotItem(i);
 				var eventId = parseInt(event.id.split('-')[1]);
 				console.log(event.id, eventId, event.dataset)
+				var missionType = parseInt(event.dataset.missionType);
 				var destCoords = Xpath.getStringValue(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId)+'")]/td[contains(@class,"destCoords")]/a', $html[0]);
 				var destCoordsTypeNode = Xpath.getSingleNode(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId)+'")]/td[contains(@class,"destFleet")]/figure', $html[0]);
 				if (destCoordsTypeNode === null) {
@@ -29,7 +30,8 @@ class FlyingFleetObserver {
 				var $tooltipHtml = jQuery(tooltipSpanNode.title);
 				var tooltipContentNodes = Xpath.getOrderedSnapshotNodes(document,'//table[contains(@class,"fleetinfo")]/tbody/tr/td[contains(@class,"value")]', $tooltipHtml[0]);
 				var nbTooltipContentNodes = tooltipContentNodes.snapshotLength;
-				
+
+
 				var typeDest = 'debrisField';
 				if (destCoordsTypeNode != null) {
 					switch (true) {
@@ -46,12 +48,25 @@ class FlyingFleetObserver {
 						arrivalTime: parseInt(event.dataset.arrivalTime)*1000,
 						destination: this.dataManager.getPlanetId(destCoords),
 						destinationType: typeDest,
-						resources: {
-							M: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 4).textContent.split('.').join('')),
-							C: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
-							D: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
-							F: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
+						resources: {}
+					}
+					if (PARAMS.lifeform) {
+						if (missionType === OgameConstants.missionType.lifeformExpedition) {
+							flights[eventId].resources = {M: 0, C: 0, D: 0, F: 0};
+						} else {
+							flights[eventId].resources = {
+								M: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 4).textContent.split('.').join('')),
+								C: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
+								D: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
+								F: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
+							};
 						}
+					} else {
+						flights[eventId].resources = {
+							M: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
+							C: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
+							D: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
+						};
 					}
 				}
 				catch(e) {

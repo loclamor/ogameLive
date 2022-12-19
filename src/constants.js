@@ -94,6 +94,19 @@ var OgameConstants = {
 		espionageProbe: 210,
 		solarSatellite: 212,
 		resbuggy: 217
+	},
+	missionType: {
+			attack : 1,
+			groupedAttack : 2,
+			transport : 3,
+			statio : 4,
+			groupedDefense : 5,
+			spy : 6,
+			colonization : 7,
+			debrisField : 8,
+			moonDestroy : 9,
+			expedition : 15,
+			lifeformExpedition : 18
 	}
 	
 }

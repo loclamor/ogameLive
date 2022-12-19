@@ -1,6 +1,7 @@
 class DataManager {
 
 	constructor() {
+		this.loadedTimestamp = (new Date()).getTime();
 		this.planetsIdToCoords = false;
 		this.planetsCoordsToId = false;
 		this.currentPlanetId = false;
@@ -57,15 +58,24 @@ class DataManager {
 		return this.getPlanetData(this.getCurrentPlanetId());
 	}
 
+	loadCurrentPlanetData() {
+		return this.loadPlanetData(this.getCurrentPlanetId());
+	}
+
 	getPlanetData(planetId) {
 		if (!this.planets[planetId]) {
 			this.planets[planetId] = this.getJsonValue('data.'+planetId, {});
 		}
 		return this.planets[planetId];
 	}
+
+	loadPlanetData(planetId) {
+		return retrieveValue('data.'+planetId, {});
+	}
 	
 	updatePlanetData(planetId, planet) {
 		this.planets[planetId] = planet;
+		storeValue('data.'+planetId, planet);
 		this.setJsonValue('data.'+planetId, planet);
 	}
 
@@ -102,9 +112,22 @@ class DataManager {
 		return this.planetsProduction[planetId];
 	}
 
-	updatePlanetProd(planetId, prod) {
-		// chrome.runtime.sendMessage({type: 'update-prod', value: {planetId: planetId, prod: prod}});
+	loadCurrentPlanetProd() {
+		return this.loadPlanetProd(this.getCurrentPlanetId());
+	}
+	loadPlanetProd(planetId) {
+		return retrieveValue('production.' + planetId, {
+			M: {dispo: 0, capa: 0, prod: 0, cache: 0},
+			C: {dispo: 0, capa: 0, prod: 0, cache: 0},
+			D: {dispo: 0, capa: 0, prod: 0, cache: 0},
+			F: {dispo: 0, capa: 0, prod: 0, conso: 0, durability: null, surprod: 0},
+			E: {dispo: 0, prod: 0},
+		})
+	}
+
+	updatePlanetProd(planetId, prod, force, timestamp) {
 		this.planetsProduction[planetId] = prod;
+		storeValue('production.'+planetId, prod, force, timestamp);
 		this.setJsonValue('production.'+planetId, prod);
 	}
 
@@ -115,8 +138,13 @@ class DataManager {
 		return this.researchData;
 	}
 
+	loadResearchData() {
+		return retrieveValue('data.research', {});
+	}
+
 	updateResearchData(researchData) {
 		this.researchData = researchData;
+		storeValue('data.research', researchData);
 		this.setJsonValue('data.research', researchData);
 	}
 
@@ -146,6 +174,19 @@ class DataManager {
 
 	setFlights(flights) {
 		this.flights = flights;
+	}
+
+	getParams() {
+		if (!this.params) {
+			this.params = this.getJsonValue('params', DEFAULT_PARAMS)
+		}
+		return this.params;
+	}
+
+	updateParams(params) {
+		this.params = params;
+		storeValue('params');
+		this.setJsonValue('params', params);
 	}
 
 

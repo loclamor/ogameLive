@@ -7,7 +7,7 @@ class PlanetProductionParser {
 		// get current planet production
 		var myResourcesRes = Xpath.getOrderedSnapshotNodes(document,'//div[contains(@id,"resources")]/div[contains(@class,"resource_tile")]/div');
 		var resourceTypes = OgameConstants.resourceTypes;
-		var planetProd = this.dataManager.getPlanetProd(currentPlanetId);
+		var planetProd = {}; //this.dataManager.getPlanetProd(currentPlanetId);
 		for (var i = 0; i < myResourcesRes.snapshotLength; i++) {
 			var resType = resourceTypes[myResourcesRes.snapshotItem(i).id];
 			var htmlStr = myResourcesRes.snapshotItem(i).title.split('|')[1];
@@ -69,6 +69,6 @@ class PlanetProductionParser {
 					// nop
 			}
 		}
-		this.dataManager.updatePlanetProd(currentPlanetId, planetProd);
+		this.dataManager.updatePlanetProd(currentPlanetId, planetProd, true, dataManager.loadedTimestamp);
 	}
 }

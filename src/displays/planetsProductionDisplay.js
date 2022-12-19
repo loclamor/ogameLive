@@ -5,16 +5,13 @@ class PlanetsProductionDisplay {
 	constructor(dataManager) {
 		this.dataManager = dataManager;
 		this.planetList = [];
-		this.elapsedSeconds = 1;
 		this.lastTime = 0;
 		this.fleetData = {};
 		this.fleetData = this.dataManager.getFleetData();
-		// compute elapsed time after last call (normally 1s, but in case of browser tab not visible setInterval call seems to be paused)
-		var nowTime = (new Date()).getTime();
-		this.lastTime = this.dataManager.getLastRenderTime();
-		if (this.lastTime > 0) {
-			this.elapsedSeconds = (nowTime - this.lastTime)/1000;
-		}
+
+	}
+
+	async initialize() {
 		//create planetList form Xpath and localStorage
 		// get planet list
 		var myPlanetsRes = Xpath.getUnorderedSnapshotNodes(document,'//div[contains(@id,"planetList")]/div/@id');
@@ -25,10 +22,17 @@ class PlanetsProductionDisplay {
 		var d_total_prod = 0;
 		var f_total_prod = 0;
 
+		var params = this.dataManager.getParams();
+		var prod_mod = params.prod_display;
+
 		for (var i = 0; i < nbPlanets; i++) {
 			var planetId = myPlanetsRes.snapshotItem(i).textContent;
-			var planetdata = this.dataManager.getPlanetData(planetId);
-			var moondata = this.dataManager.getPlanetData(planetId + '-moon');
+			const [planetdata, moondata, planetProd, moonProd] = await Promise.all([
+				this.dataManager.loadPlanetData(planetId),
+				this.dataManager.loadPlanetData(planetId + '-moon'),
+				this.dataManager.loadPlanetProd(planetId),
+				this.dataManager.loadPlanetProd(planetId + '-moon')
+			]);
 			var warnM = '';
 			var warnC = '';
 			var warnD = '';
@@ -37,8 +41,8 @@ class PlanetsProductionDisplay {
 			var planet = {
 				id: planetId,
 				// metal
-				prod: this.dataManager.getPlanetProd(planetId),
-				moonprod: this.dataManager.getPlanetProd(planetId + '-moon'),
+				prod: planetProd,
+				moonprod: moonProd,
 				//build
 				currentBuild: false,
 				currentMoonBuild: false,
@@ -224,19 +228,37 @@ class PlanetsProductionDisplay {
 			// mount base html
 			jQuery('#'+planetId).prepend(
 				'<div class="prod"><div class="planet_prod">'
-					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.M.capa)+'</span><span class="prod_per_hour '+m_prod_class+'">+'+formatInt(planet.prod.M.prod)+'/h</span>'
-					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.C.capa)+'</span><span class="prod_per_hour '+c_prod_class+'">+'+formatInt(planet.prod.C.prod)+'/h</span>'
-					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.D.capa)+'</span><span class="prod_per_hour '+d_prod_class+'">+'+formatInt(planet.prod.D.prod)+'/h</span>'
-					+ '<br/><span id="f_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.F.capa)+'</span><span class="prod_per_hour '+f_prod_class+'">+'+formatInt(planet.prod.F.surprod * 60*60)+'/h</span>'
+					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.M.capa)+'</span>' +
+						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+m_prod_class+'">+'+formatInt(planet.prod.M.prod)+'/h</span>' +
+						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+m_prod_class+'">+'+formatInt(planet.prod.M.prod * 24)+'/d</span>'
+					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.C.capa)+'</span>' +
+						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+c_prod_class+'">+'+formatInt(planet.prod.C.prod)+'/h</span>' +
+						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+c_prod_class+'">+'+formatInt(planet.prod.C.prod * 24)+'/d</span>'
+					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.D.capa)+'</span>' +
+						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+d_prod_class+'">+'+formatInt(planet.prod.D.prod)+'/h</span>' +
+						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+d_prod_class+'">+'+formatInt(planet.prod.D.prod * 24)+'/d</span>'
+					+ (PARAMS.lifeform ? '<br/><span id="f_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.F.capa)+'</span>' +
+						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+f_prod_class+'">+'+formatInt(planet.prod.F.surprod * 60*60)+'/h</span>' +
+						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+f_prod_class+'">+'+formatInt(planet.prod.F.surprod * 60*60 * 24)+'/d</span>'
+					: '')
 					+ '<br/><span id="s_dispo"></span></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
 					+ '<br/><span id="e_dispo"><span class="'+warnE+'">E:&nbsp;' + formatInt(planet.prod.E.dispo)+'</span></span>'
 						+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.E.prod)+'</span>'
 						+ cefPercent
 				+ '</div><div class="moon_prod">'
-					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.M.capa)+'</span><span class="prod_per_hour '+m_prod_class_moon+'">+'+formatInt(planet.moonprod.M.prod)+'/h</span>'
-					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.C.capa)+'</span><span class="prod_per_hour '+c_prod_class_moon+'">+'+formatInt(planet.moonprod.C.prod)+'/h</span>'
-					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.D.capa)+'</span><span class="prod_per_hour '+d_prod_class_moon+'">+'+formatInt(planet.moonprod.D.prod)+'/h</span>'
-					+ '<br/><span id="f_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.F.capa)+'</span><span class="prod_per_hour '+f_prod_class_moon+'">+'+formatInt(planet.moonprod.F.surprod * 60*60)+'/h</span>'
+					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.M.capa)+'</span>' +
+						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+m_prod_class_moon+'">+'+formatInt(planet.moonprod.M.prod)+'/h</span>' +
+						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+m_prod_class_moon+'">+'+formatInt(planet.moonprod.M.prod * 24)+'/d</span>'
+					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.C.capa)+'</span>' +
+						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+c_prod_class_moon+'">+'+formatInt(planet.moonprod.C.prod)+'/h</span>' +
+						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+c_prod_class_moon+'">+'+formatInt(planet.moonprod.C.prod * 24)+'/d</span>'
+					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.D.capa)+'</span>' +
+						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+d_prod_class_moon+'">+'+formatInt(planet.moonprod.D.prod)+'/h</span>' +
+						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+d_prod_class_moon+'">+'+formatInt(planet.moonprod.D.prod * 24)+'/d</span>'
+					+ (PARAMS.lifeform ? '<br/><span id="f_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.F.capa)+'</span>' +
+						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+f_prod_class_moon+'">+'+formatInt(planet.moonprod.F.surprod * 60*60)+'/h</span>' +
+						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+f_prod_class_moon+'">+'+formatInt(planet.moonprod.F.surprod * 60*60 * 24)+'/d</span>'
+						: '')
 					+ '<br/><span id="s_dispo"></span></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
 					+ '<br/><span id="e_dispo"><span class="'+'">E:&nbsp;' + formatInt(planet.moonprod.E.dispo)+'</span></span>'
 						+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.E.prod)+'</span>'
@@ -247,14 +269,18 @@ class PlanetsProductionDisplay {
 			planet.$m_dispo = jQuery('#'+planetId + ' .planet_prod #m_dispo');
 			planet.$c_dispo = jQuery('#'+planetId + ' .planet_prod #c_dispo');
 			planet.$d_dispo = jQuery('#'+planetId + ' .planet_prod #d_dispo');
-			planet.$f_dispo = jQuery('#'+planetId + ' .planet_prod #f_dispo');
+			if (PARAMS.lifeform) {
+				planet.$f_dispo = jQuery('#' + planetId + ' .planet_prod #f_dispo');
+			}
 			planet.$s_dispo = jQuery('#'+planetId + ' .planet_prod #s_dispo');
 			planet.$needed_fleet = jQuery('#'+planetId + ' .planet_prod .needed_fleet');
 			// moon
 			planet.$m_dispo_moon = jQuery('#'+planetId + ' .moon_prod #m_dispo');
 			planet.$c_dispo_moon = jQuery('#'+planetId + ' .moon_prod #c_dispo');
 			planet.$d_dispo_moon = jQuery('#'+planetId + ' .moon_prod #d_dispo');
-			planet.$f_dispo_moon = jQuery('#'+planetId + ' .moon_prod #f_dispo');
+			if (PARAMS.lifeform) {
+				planet.$f_dispo_moon = jQuery('#' + planetId + ' .moon_prod #f_dispo');
+			}
 			planet.$s_dispo_moon = jQuery('#'+planetId + ' .moon_prod #s_dispo');
 			planet.$needed_fleet_moon = jQuery('#'+planetId + ' .moon_prod .needed_fleet');
 
@@ -267,17 +293,36 @@ class PlanetsProductionDisplay {
 			+ 'M:&nbsp;<span class="in_flight_metal"></span><br/>'
 			+ 'C:&nbsp;<span class="in_flight_cristal"></span><br/>'
 			+ 'D:&nbsp;<span class="in_flight_deut"></span><br/>'
-			+ 'F:&nbsp;<span class="in_flight_food"></span><br/>'
+			+ (PARAMS.lifeform ? 'F:&nbsp;<span class="in_flight_food"></span><br/>' : '')
 			+ '&Sigma;:&nbsp;<span class="in_flight_total"></span><br/>'
 			+ '<br/>'
 			+ 'Totaux :<br/>'
-			+ 'M:&nbsp;<span class="total_prod_metal"></span><span class="prod_per_hour">+'+formatInt(m_total_prod)+'/h</span><br/>'
-			+ 'C:&nbsp;<span class="total_prod_cristal"></span><span class="prod_per_hour">+'+formatInt(c_total_prod)+'/h</span><br/>'
-			+ 'D:&nbsp;<span class="total_prod_deut"></span><span class="prod_per_hour">+'+formatInt(d_total_prod)+'/h</span><br/>'
-			+ 'F:&nbsp;<span class="total_prod_food"></span><span class="prod_per_hour">+'+formatInt(f_total_prod * 60*60)+'/h</span><br/>'
+			+ 'M:&nbsp;<span class="total_prod_metal"></span>' +
+				'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + '">+'+formatInt(m_total_prod)+'/h</span>' +
+				'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + '">+'+formatInt(m_total_prod * 24)+'/d</span><br/>'
+			+ 'C:&nbsp;<span class="total_prod_cristal"></span>' +
+				'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + '">+'+formatInt(c_total_prod)+'/h</span>' +
+				'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + '">+'+formatInt(c_total_prod * 24)+'/d</span><br/>'
+			+ 'D:&nbsp;<span class="total_prod_deut"></span>' +
+				'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + '">+'+formatInt(d_total_prod)+'/h</span>' +
+				'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + '">+'+formatInt(d_total_prod * 24)+'/d</span><br/>'
+			+ (PARAMS.lifeform ? 'F:&nbsp;<span class="total_prod_food"></span>' +
+				'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + '">+'+formatInt(f_total_prod * 60*60)+'/h</span>' +
+				'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + '">+'+formatInt(f_total_prod * 60*60 * 24)+'/d</span><br/>'
+				: '')
 			+ '&Sigma;:&nbsp;<span class="total_prod_total"></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
+		    + '<br/>'
+			+ '<br/>'
+			+ '<span class="prod_duration_switcher">Production&nbsp;<select id="prod_duration_select" >' +
+					'<option value="hour" ' + (prod_mod === 'hour' ? 'selected' : '') + '>par heure</option>' +
+					'<option value="day" ' + (prod_mod === 'day' ? 'selected' : '') + '>par jour</option>' +
+				'</select></span>'
 		+ '</div>');
-
+		jQuery('#prod_duration_select').change(jQuery.proxy(function(e) {
+			params.prod_display = e.currentTarget.value;
+			this.dataManager.updateParams(params);
+			location.reload();
+		}, this));
 	}
 
 	computeNeededShip(amount, shipCapacity) {
@@ -298,7 +343,7 @@ class PlanetsProductionDisplay {
 		return 0;
 	}
 
-	display() {
+	async display() {
 		var totalM = 0;
 		var totalC = 0;
 		var totalD = 0;
@@ -308,9 +353,9 @@ class PlanetsProductionDisplay {
 		var totalGT = 0;
 		
 		var nowTime = (new Date()).getTime();
-		if (this.lastTime > 0) {
-			this.elapsedSeconds = (nowTime - this.lastTime)/1000;
-		}
+		// if (this.lastTime > 0) {
+		// 	this.elapsedSeconds = (nowTime - this.lastTime)/1000;
+		// }
 
 		var inFlight_M = 0;
 		var inFlight_C = 0;
@@ -320,7 +365,10 @@ class PlanetsProductionDisplay {
 		var flights = this.dataManager.getFlights();
 		var toDeleteFlightIds = [];
 		var flightsByPlanet = {};
-		Object.keys(flights).forEach(jQuery.proxy(function(flightId) {
+		/**
+		 * @TODO : move into worker
+		 */
+		Object.keys(flights).forEach(jQuery.proxy(async function(flightId) {
 			var flight = flights[flightId];
 			if (flight.arrivalTime <= nowTime) {
 				toDeleteFlightIds.push(flightId);
@@ -329,7 +377,7 @@ class PlanetsProductionDisplay {
 					if (flight.destinationType === 'moon') {
 						destPlanetId += '-moon';
 					}
-					var planetProd = this.dataManager.getPlanetProd(destPlanetId);
+					var planetProd = await this.dataManager.loadPlanetProd(destPlanetId);
 					planetProd.M.dispo += flight.resources.M;
 					if (planetProd.M.dispo >= planetProd.M.capa) {
 						planetProd.M.prod = 0;
@@ -342,9 +390,11 @@ class PlanetsProductionDisplay {
 					if (planetProd.D.dispo >= planetProd.D.capa) {
 						planetProd.D.prod = 0;
 					}
-					planetProd.F.dispo += flight.resources.F;
-					if (planetProd.F.dispo >= planetProd.F.capa) {
-						planetProd.F.surprod = 0;
+					if (PARAMS.lifeform) {
+						planetProd.F.dispo += flight.resources.F;
+						if (planetProd.F.dispo >= planetProd.F.capa) {
+							planetProd.F.surprod = 0;
+						}
 					}
 				}
 			}
@@ -352,7 +402,9 @@ class PlanetsProductionDisplay {
 				inFlight_M += flight.resources.M;
 				inFlight_C += flight.resources.C;
 				inFlight_D += flight.resources.D;
-				inFlight_F += flight.resources.F;
+				if (PARAMS.lifeform) {
+					inFlight_F += flight.resources.F;
+				}
 				if (flight.destination) {
 					if (!flightsByPlanet[flight.destination]) {
 						flightsByPlanet[flight.destination] = [];
@@ -374,10 +426,21 @@ class PlanetsProductionDisplay {
 			var warnD = '';
 			var warnF = '';
 			var planet = this.planetList[i];
-			planet.prod = this.dataManager.getPlanetProd(planet.id);
-			var planetdata = this.dataManager.getPlanetData(planet.id);
-			var moondata = this.dataManager.getPlanetData(planet.id + '-moon');
-			var moonProd = this.dataManager.getPlanetProd(planet.id + '-moon');
+			// planet.prod = this.dataManager.getPlanetProd(planet.id);
+			// var planetdata = this.dataManager.getPlanetData(planet.id);
+			// var moondata = this.dataManager.getPlanetData(planet.id + '-moon');
+			// var moonProd = this.dataManager.getPlanetProd(planet.id + '-moon');
+
+			const [planetdata, moondata, planetProd, moonProd] = await Promise.all([
+				this.dataManager.loadPlanetData(planet.id),
+				this.dataManager.loadPlanetData(planet.id + '-moon'),
+				this.dataManager.loadPlanetProd(planet.id),
+				this.dataManager.loadPlanetProd(planet.id + '-moon')
+			]);
+
+			planet.prod = planetProd;
+			planet.moonprod = moonProd;
+
 			// currentBuild timer
 			if (planet.currentBuild) {
 				var remainingTime = planetdata.currentBuild.end - nowTime;
@@ -399,68 +462,47 @@ class PlanetsProductionDisplay {
 			}
 			// planet production
 			// metal
-			planet.prod.M.dispo += planet.prod.M.prod/60/60 * this.elapsedSeconds;
 			totalM += planet.prod.M.dispo;
 			if (planet.prod.M.dispo >= (planet.prod.M.capa - 10/100 * planet.prod.M.capa)) {
 				warnM = 'middlemark';
 			}
 			if (planet.prod.M.dispo >= planet.prod.M.capa) {
 				warnM = 'overmark';
-				if (planet.prod.M.prod > 0) {
-					planet.prod.M.dispo = planet.prod.M.capa;
-					planet.prod.M.prod = 0;
-				}
 			}
 			planet.$m_dispo.html('<span class="'+warnM+'">M:&nbsp;' + formatInt(planet.prod.M.dispo) + '</span>');
 			// cristal
-			planet.prod.C.dispo += planet.prod.C.prod/60/60 * this.elapsedSeconds;
 			totalC += planet.prod.C.dispo;
 			if (planet.prod.C.dispo >= (planet.prod.C.capa - 10/100 * planet.prod.C.capa)) {
 				warnC = 'middlemark';
 			}
 			if (planet.prod.C.dispo >= planet.prod.C.capa) {
 				warnC = 'overmark';
-				if (planet.prod.C.prod > 0) {
-					planet.prod.C.dispo = planet.prod.C.capa;
-					planet.prod.C.prod = 0;
-				}
 			}
 			planet.$c_dispo.html('<span class="'+warnC+'">C:&nbsp;' + formatInt(planet.prod.C.dispo) + '</span>');
 			// deut
-			planet.prod.D.dispo += planet.prod.D.prod/60/60 * this.elapsedSeconds;
 			totalD += planet.prod.D.dispo;
 			if (planet.prod.D.dispo >= (planet.prod.D.capa - 10/100 * planet.prod.D.capa)) {
 				warnD = 'middlemark';
 			}
 			if (planet.prod.D.dispo >= planet.prod.D.capa) {
 				warnD = 'overmark';
-				if (planet.prod.D.prod > 0) {
-					planet.prod.D.dispo = planet.prod.D.capa;
-					planet.prod.D.prod = 0;
-				}
 			}
 			planet.$d_dispo.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.prod.D.dispo) + '</span>');
+
 			// FOOD
-			planet.prod.F.dispo += planet.prod.F.surprod * this.elapsedSeconds;
-			totalF += planet.prod.F.dispo;
-			if (planet.prod.F.dispo >= (planet.prod.F.capa - 10/100 * planet.prod.F.capa)) {
-				warnF = 'middlemark';
-			}
-			if (planet.prod.F.dispo >= planet.prod.F.capa) {
-				warnF = 'overmark';
-				if (planet.prod.F.surprod > 0) {
-					planet.prod.F.dispo = planet.prod.F.capa;
-					planet.prod.F.surprod = 0;
+			if (PARAMS.lifeform) {
+				totalF += planet.prod.F.dispo;
+				if (planet.prod.F.dispo >= (planet.prod.F.capa - 10 / 100 * planet.prod.F.capa)) {
+					warnF = 'middlemark';
 				}
+				if (planet.prod.F.dispo >= planet.prod.F.capa) {
+					warnF = 'overmark';
+				}
+				planet.$f_dispo.html('<span class="' + warnF + '">F:&nbsp;' + formatInt(planet.prod.F.dispo) + '</span>');
 			}
-			planet.$f_dispo.html('<span class="'+warnF+'">F:&nbsp;' + formatInt(planet.prod.F.dispo) + '</span>');
 
-
-
-			// store new dispos
-			this.dataManager.updatePlanetProd(planet.id, planet.prod);
 			//sum
-			var sum_dispo = planet.prod.M.dispo + planet.prod.C.dispo + planet.prod.D.dispo + planet.prod.F.dispo;
+			var sum_dispo = planet.prod.M.dispo + planet.prod.C.dispo + planet.prod.D.dispo + (PARAMS.lifeform ? planet.prod.F.dispo : 0);
 			planet.$s_dispo.html('<span class="">&Sigma;:&nbsp;' + formatInt(sum_dispo) + '</span>');
 			// neededFleet
 			var neededPT = this.computeNeededPT(sum_dispo);
@@ -490,66 +532,47 @@ class PlanetsProductionDisplay {
 				warnD = '';
 				warnF = '';
 				// metal
-				planet.moonprod.M.dispo += planet.moonprod.M.prod/60/60 * this.elapsedSeconds;
 				totalM += planet.moonprod.M.dispo;
 				if (planet.moonprod.M.dispo >= (planet.moonprod.M.capa - 10/100 * planet.moonprod.M.capa)) {
 					warnM = 'middlemark';
 				}
 				if (planet.moonprod.M.dispo >= planet.moonprod.M.capa) {
 					warnM = 'overmark';
-					if (planet.moonprod.M.prod > 0) {
-						planet.moonprod.M.dispo = planet.moonprod.M.capa;
-						planet.moonprod.M.prod = 0;
-					}
 				}
 				planet.$m_dispo_moon.html('<span class="'+warnM+'">M:&nbsp;' + formatInt(planet.moonprod.M.dispo) + '</span>');
 				// cristal
-				planet.moonprod.C.dispo += planet.moonprod.C.prod/60/60 * this.elapsedSeconds;
 				totalC += planet.moonprod.C.dispo;
 				if (planet.moonprod.C.dispo >= (planet.moonprod.C.capa - 10/100 * planet.moonprod.C.capa)) {
 					warnC = 'middlemark';
 				}
 				if (planet.moonprod.C.dispo >= planet.moonprod.C.capa) {
 					warnC = 'overmark';
-					if (planet.moonprod.C.prod > 0) {
-						planet.moonprod.C.dispo = planet.moonprod.C.capa;
-						planet.moonprod.C.prod = 0;
-					}
 				}
 				planet.$c_dispo_moon.html('<span class="'+warnC+'">C:&nbsp;' + formatInt(planet.moonprod.C.dispo) + '</span>');
 				// deut
-				planet.moonprod.D.dispo += planet.moonprod.D.prod/60/60 * this.elapsedSeconds;
 				totalD += planet.moonprod.D.dispo;
 				if (planet.moonprod.D.dispo >= (planet.moonprod.D.capa - 10/100 * planet.moonprod.D.capa)) {
 					warnD = 'middlemark';
 				}
 				if (planet.moonprod.D.dispo >= planet.moonprod.D.capa) {
 					warnD = 'overmark';
-					if (planet.moonprod.D.prod > 0) {
-						planet.moonprod.D.dispo = planet.moonprod.D.capa;
-						planet.moonprod.D.prod = 0;
-					}
 				}
 				planet.$d_dispo_moon.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.moonprod.D.dispo) + '</span>');
-				// FOOD
-				planet.moonprod.F.dispo += planet.moonprod.F.surprod * this.elapsedSeconds;
-				totalF += planet.moonprod.F.dispo;
-				if (planet.moonprod.F.dispo >= (planet.moonprod.F.capa - 10/100 * planet.moonprod.F.capa)) {
-					warnF = 'middlemark';
-				}
-				if (planet.moonprod.F.dispo >= planet.moonprod.F.capa) {
-					warnF = 'overmark';
-					if (planet.moonprod.F.surprod > 0) {
-						planet.moonprod.F.dispo = planet.moonprod.F.capa;
-						planet.moonprod.F.surprod = 0;
-					}
-				}
-				planet.$f_dispo_moon.html('<span class="'+warnF+'">F:&nbsp;' + formatInt(planet.moonprod.F.dispo) + '</span>');
 
-				// store new dispos
-				this.dataManager.updatePlanetProd(planet.id + '-moon', planet.moonprod);
+				// FOOD
+				if (PARAMS.lifeform) {
+					totalF += planet.moonprod.F.dispo;
+					if (planet.moonprod.F.dispo >= (planet.moonprod.F.capa - 10 / 100 * planet.moonprod.F.capa)) {
+						warnF = 'middlemark';
+					}
+					if (planet.moonprod.F.dispo >= planet.moonprod.F.capa) {
+						warnF = 'overmark';
+					}
+					planet.$f_dispo_moon.html('<span class="' + warnF + '">F:&nbsp;' + formatInt(planet.moonprod.F.dispo) + '</span>');
+				}
+
 				//sum
-				var sum_dispo = planet.moonprod.M.dispo + planet.moonprod.C.dispo + planet.moonprod.D.dispo + planet.moonprod.F.dispo;
+				var sum_dispo = planet.moonprod.M.dispo + planet.moonprod.C.dispo + planet.moonprod.D.dispo + (PARAMS.lifeform ? planet.moonprod.F.dispo : 0);
 				planet.$s_dispo_moon.html('<span class="">&Sigma;:&nbsp;' + formatInt(sum_dispo) + '</span>');
 				// neededFleet
 				var neededPT = this.computeNeededPT(sum_dispo);
@@ -596,7 +619,9 @@ class PlanetsProductionDisplay {
 					incomming_rows += '<tr><td>M</td><td class="value">'+formatInt(flight.resources.M)+'</td></tr>';
 					incomming_rows += '<tr><td>C</td><td class="value">'+formatInt(flight.resources.C)+'</td></tr>';
 					incomming_rows += '<tr><td>D</td><td class="value">'+formatInt(flight.resources.D)+'</td></tr>';
-					incomming_rows += '<tr><td>F</td><td class="value">'+formatInt(flight.resources.F)+'</td></tr>';
+					if (PARAMS.lifeform) {
+						incomming_rows += '<tr><td>F</td><td class="value">' + formatInt(flight.resources.F) + '</td></tr>';
+					}
 				}
 				$elt.attr('title',
 					'<div class="htmlTooltip">'
@@ -615,26 +640,32 @@ class PlanetsProductionDisplay {
 		jQuery('#planetList .total_prod .in_flight_metal').html(formatInt(inFlight_M));
 		jQuery('#planetList .total_prod .in_flight_cristal').html(formatInt(inFlight_C));
 		jQuery('#planetList .total_prod .in_flight_deut').html(formatInt(inFlight_D));
-		jQuery('#planetList .total_prod .in_flight_food').html(formatInt(inFlight_F));
+		if (PARAMS.lifeform) {
+			jQuery('#planetList .total_prod .in_flight_food').html(formatInt(inFlight_F));
+		}
 		jQuery('#planetList .total_prod .in_flight_total').html(formatInt(inFlight_M + inFlight_C + inFlight_D + inFlight_F));
 		totalM += inFlight_M;
 		totalC += inFlight_C;
 		totalD += inFlight_D;
-		totalF += inFlight_F
-		
+		if (PARAMS.lifeform) {
+			totalF += inFlight_F
+		}
+
 		// total resources
 		jQuery('#planetList .total_prod .total_prod_metal').html(formatInt(totalM));
 		jQuery('#planetList .total_prod .total_prod_cristal').html(formatInt(totalC));
 		jQuery('#planetList .total_prod .total_prod_deut').html(formatInt(totalD));
-		jQuery('#planetList .total_prod .total_prod_food').html(formatInt(totalF));
-		jQuery('#planetList .total_prod .total_prod_total').html(formatInt(totalM + totalC + totalD + totalF));
+		if (PARAMS.lifeform) {
+			jQuery('#planetList .total_prod .total_prod_food').html(formatInt(totalF));
+		}
+		jQuery('#planetList .total_prod .total_prod_total').html(formatInt(totalM + totalC + totalD + (PARAMS.lifeform ? totalF : 0)));
 		// neededFleet
-		jQuery('#planetList .total_prod .needed_fleet .pt').text(formatInt(totalPT) + '/' + formatInt(this.computeNeededPT(totalM + totalC + totalD + totalF)));
-		jQuery('#planetList .total_prod .needed_fleet .gt').text(formatInt(totalGT) + '/' + formatInt(this.computeNeededGT(totalM + totalC + totalD + totalF)));
+		jQuery('#planetList .total_prod .needed_fleet .pt').text(formatInt(totalPT) + '/' + formatInt(this.computeNeededPT(totalM + totalC + totalD + (PARAMS.lifeform ? totalF : 0))));
+		jQuery('#planetList .total_prod .needed_fleet .gt').text(formatInt(totalGT) + '/' + formatInt(this.computeNeededGT(totalM + totalC + totalD + (PARAMS.lifeform ? totalF : 0))));
 		
 		var currentTechDetail = this.dataManager.getCurrentTechDetail();
 		if (currentTechDetail) {
-			var currentPlanetProd = this.dataManager.getCurrentPlanetProd();
+			var currentPlanetProd = await this.dataManager.loadCurrentPlanetProd();
 			var totalMissing = 0;
 			Object.keys(currentTechDetail.neededResources).forEach(jQuery.proxy(function(k) {
 				var $elt = null;

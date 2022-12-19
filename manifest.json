@@ -27,7 +27,8 @@
 		"src/observers/flyingFleetObserver.js",
 		"src/displays/betterFleetDisplay.js",
 		"src/displays/planetsProductionDisplay.js",
-		"src/parsers/resourcesParser.js",
+		"src/parsers/empireParser.js",
+        "src/parsers/resourcesParser.js",
 		"src/parsers/researchParser.js",
         "src/parsers/lifeParser.js",
 		"src/parsers/installationsParser.js",
@@ -50,7 +51,8 @@
     "matches": ["<all_urls>"]
   }],
   "background": {
-    "service_worker": "src/worker.js"
+    "service_worker": "src/worker.js",
+    "scripts": ["src/worker.js"]
   },
   "permissions": [],
   "short_name": "ogameLive",
