@@ -22,17 +22,11 @@ class PlanetsProductionDisplay {
 		var d_total_prod = 0;
 		var f_total_prod = 0;
 
-		var params = this.dataManager.getParams();
-		var prod_mod = params.prod_display;
+		var prod_mod = PARAMS.prod_display;
 
 		for (var i = 0; i < nbPlanets; i++) {
 			var planetId = myPlanetsRes.snapshotItem(i).textContent;
-			const [planetdata, moondata, planetProd, moonProd] = await Promise.all([
-				this.dataManager.loadPlanetData(planetId),
-				this.dataManager.loadPlanetData(planetId + '-moon'),
-				this.dataManager.loadPlanetProd(planetId),
-				this.dataManager.loadPlanetProd(planetId + '-moon')
-			]);
+			const [planetdata, moondata, planetProd, moonProd] = await this.dataManager.loadFullPlanet(planetId);
 			var warnM = '';
 			var warnC = '';
 			var warnD = '';
@@ -319,8 +313,8 @@ class PlanetsProductionDisplay {
 				'</select></span>'
 		+ '</div>');
 		jQuery('#prod_duration_select').change(jQuery.proxy(function(e) {
-			params.prod_display = e.currentTarget.value;
-			this.dataManager.updateParams(params);
+			PARAMS.prod_display = e.currentTarget.value;
+			this.dataManager.updateParams(PARAMS);
 			location.reload();
 		}, this));
 	}
@@ -361,63 +355,26 @@ class PlanetsProductionDisplay {
 		var inFlight_C = 0;
 		var inFlight_D = 0;
 		var inFlight_F = 0;
-		// resolve terminated flights and sum flying resources
-		var flights = this.dataManager.getFlights();
-		var toDeleteFlightIds = [];
 		var flightsByPlanet = {};
 		/**
 		 * @TODO : move into worker
 		 */
-		Object.keys(flights).forEach(jQuery.proxy(async function(flightId) {
+		var flights = await this.dataManager.loadFlights();
+		Object.keys(flights).forEach(function(flightId) {
 			var flight = flights[flightId];
-			if (flight.arrivalTime <= nowTime) {
-				toDeleteFlightIds.push(flightId);
-				if (flight.destination && flight.destinationType !== 'debrisField') {
-					var destPlanetId = flight.destination;
-					if (flight.destinationType === 'moon') {
-						destPlanetId += '-moon';
-					}
-					var planetProd = await this.dataManager.loadPlanetProd(destPlanetId);
-					planetProd.M.dispo += flight.resources.M;
-					if (planetProd.M.dispo >= planetProd.M.capa) {
-						planetProd.M.prod = 0;
-					}
-					planetProd.C.dispo += flight.resources.C;
-					if (planetProd.C.dispo >= planetProd.C.capa) {
-						planetProd.C.prod = 0;
-					}
-					planetProd.D.dispo += flight.resources.D;
-					if (planetProd.D.dispo >= planetProd.D.capa) {
-						planetProd.D.prod = 0;
-					}
-					if (PARAMS.lifeform) {
-						planetProd.F.dispo += flight.resources.F;
-						if (planetProd.F.dispo >= planetProd.F.capa) {
-							planetProd.F.surprod = 0;
-						}
-					}
-				}
+			inFlight_M += flight.resources.M;
+			inFlight_C += flight.resources.C;
+			inFlight_D += flight.resources.D;
+			if (PARAMS.lifeform) {
+				inFlight_F += flight.resources.F;
 			}
-			else {
-				inFlight_M += flight.resources.M;
-				inFlight_C += flight.resources.C;
-				inFlight_D += flight.resources.D;
-				if (PARAMS.lifeform) {
-					inFlight_F += flight.resources.F;
+			if (flight.destination) {
+				if (!flightsByPlanet[flight.destination]) {
+					flightsByPlanet[flight.destination] = [];
 				}
-				if (flight.destination) {
-					if (!flightsByPlanet[flight.destination]) {
-						flightsByPlanet[flight.destination] = [];
-					}
-					flightsByPlanet[flight.destination].push(flight);
-				}
+				flightsByPlanet[flight.destination].push(flight);
 			}
-		}, this));
-		// delete terminated flights
-		for (var i = 0; i < toDeleteFlightIds.length; i++) {
-			delete flights[toDeleteFlightIds[i]];
-		}
-		this.dataManager.setFlights(flights);
+		});
 		
 		// display per planet
 		for (var i =0; i<this.planetList.length; i++) {
@@ -426,23 +383,21 @@ class PlanetsProductionDisplay {
 			var warnD = '';
 			var warnF = '';
 			var planet = this.planetList[i];
-			// planet.prod = this.dataManager.getPlanetProd(planet.id);
-			// var planetdata = this.dataManager.getPlanetData(planet.id);
-			// var moondata = this.dataManager.getPlanetData(planet.id + '-moon');
-			// var moonProd = this.dataManager.getPlanetProd(planet.id + '-moon');
 
-			const [planetdata, moondata, planetProd, moonProd] = await Promise.all([
-				this.dataManager.loadPlanetData(planet.id),
-				this.dataManager.loadPlanetData(planet.id + '-moon'),
-				this.dataManager.loadPlanetProd(planet.id),
-				this.dataManager.loadPlanetProd(planet.id + '-moon')
-			]);
+
+			const [planetdata, moondata, planetProd, moonProd] = await this.dataManager.loadFullPlanet(planet.id);
+			// 	await Promise.all([
+			// 	this.dataManager.loadPlanetData(planet.id),
+			// 	this.dataManager.loadPlanetData(planet.id + '-moon'),
+			// 	this.dataManager.loadPlanetProd(planet.id),
+			// 	this.dataManager.loadPlanetProd(planet.id + '-moon')
+			// ]);
 
 			planet.prod = planetProd;
 			planet.moonprod = moonProd;
 
 			// currentBuild timer
-			if (planet.currentBuild) {
+			if (planet.currentBuild && planetdata.currentBuild.end) {
 				var remainingTime = planetdata.currentBuild.end - nowTime;
 				if (remainingTime > 0) {
 					planet.$buildTimer.text(formatTime(remainingTime));
@@ -451,7 +406,7 @@ class PlanetsProductionDisplay {
 					planet.$buildTimer.text('Terminé');
 				}
 			}
-			if (planet.currentMoonBuild) {
+			if (planet.currentMoonBuild && moondata.currentBuild.end) {
 				var remainingTime = moondata.currentBuild.end - nowTime;
 				if (remainingTime > 0) {
 					planet.$buildMoonTimer.text(formatTime(remainingTime));
@@ -596,42 +551,54 @@ class PlanetsProductionDisplay {
 				}
 			}
 
-			planet.$incomming_fleet.html('');
+			// planet.$incomming_fleet.html('');
 			if (flightsByPlanet[planet.id]) {
-				planet.$incomming_fleet.html('<span class="icon_movement_reserve tooltip tooltipRight tooltipClose"></span>');
-				var $elt = planet.$incomming_fleet.find('.icon_movement_reserve');
-				var incomming_rows = '';
-				for (var f = 0; f < flightsByPlanet[planet.id].length; f ++) {
-					var flight = flightsByPlanet[planet.id][f];
-					var typeIco = '';
-					switch (flight.destinationType) {
-						case 'moon' :
-							typeIco = '<figure class="planetIcon moon"></figure>&nbsp;';
-							break;
-						case 'planet' :
-							typeIco = '<figure class="planetIcon planet"></figure>&nbsp;';
-							break;
-						case 'debrisField' :
-							typeIco = '<figure class="planetIcon debrisField"></figure>&nbsp;';
-							break;
-					}
-					incomming_rows += '<tr><th colspan="2">'+typeIco+'Arrive dans '+formatTime(flight.arrivalTime-nowTime)+'</th></tr>'
-					incomming_rows += '<tr><td>M</td><td class="value">'+formatInt(flight.resources.M)+'</td></tr>';
-					incomming_rows += '<tr><td>C</td><td class="value">'+formatInt(flight.resources.C)+'</td></tr>';
-					incomming_rows += '<tr><td>D</td><td class="value">'+formatInt(flight.resources.D)+'</td></tr>';
-					if (PARAMS.lifeform) {
-						incomming_rows += '<tr><td>F</td><td class="value">' + formatInt(flight.resources.F) + '</td></tr>';
-					}
+				if (planet.$incomming_fleet.find('.icon_movement_reserve').length > 0) {
+					jQuery('.htmlTooltip .countdown').each(function(idx, elt) {
+						$elt = jQuery(elt);
+						const countend = $elt.data('countend');
+						$elt.html(formatTime(countend - nowTime));
+					});
 				}
-				$elt.attr('title',
-					'<div class="htmlTooltip">'
+				else {
+					planet.$incomming_fleet.html('<span class="icon_movement_reserve tooltip tooltipRight tooltipClose"></span>');
+					var $elt = planet.$incomming_fleet.find('.icon_movement_reserve');
+					var incomming_rows = '';
+					for (var f = 0; f < flightsByPlanet[planet.id].length; f++) {
+						var flight = flightsByPlanet[planet.id][f];
+						var typeIco = '';
+						switch (flight.destinationType) {
+							case 'moon' :
+								typeIco = '<figure class="planetIcon moon"></figure>&nbsp;';
+								break;
+							case 'planet' :
+								typeIco = '<figure class="planetIcon planet"></figure>&nbsp;';
+								break;
+							case 'debrisField' :
+								typeIco = '<figure class="planetIcon debrisField"></figure>&nbsp;';
+								break;
+						}
+						incomming_rows += '<tr><th colspan="2">' + typeIco + 'Arrive dans <span class="countdown" data-countend="' + flight.arrivalTime + '">' + formatTime(flight.arrivalTime - nowTime) + '</span></th></tr>'
+						incomming_rows += '<tr><td>M</td><td class="value">' + formatInt(flight.resources.M) + '</td></tr>';
+						incomming_rows += '<tr><td>C</td><td class="value">' + formatInt(flight.resources.C) + '</td></tr>';
+						incomming_rows += '<tr><td>D</td><td class="value">' + formatInt(flight.resources.D) + '</td></tr>';
+						if (PARAMS.lifeform) {
+							incomming_rows += '<tr><td>F</td><td class="value">' + formatInt(flight.resources.F) + '</td></tr>';
+						}
+					}
+					$elt.attr('title',
+						'<div class="htmlTooltip">'
 						+ '<h1>Détails des flottes:</h1>'
 						+ '<div class="splitLine"></div>'
 						+ '<table cellpadding="0" cellspacing="0" class="fleetinfo">'
 						+ incomming_rows
 						+ '</table>'
-					+ '</div>'
-				);
+						+ '</div>'
+					);
+				}
+			}
+			else {
+				planet.$incomming_fleet.html('');
 			}
 
 		}

@@ -44,17 +44,43 @@ function storeValue(key, value, force, timestamp) {
 	chrome.runtime.sendMessage({type: 'setvalue', value: {key: prefix_GMData + key, value: value, timestamp: timestamp, force: force}});
 }
 
-function retrieveValue(key, defaultValue) {
+function retrieveValue(key, defaultValue, raw) {
 	const realKey = prefix_GMData + key;
 	return new Promise((resolve, reject) => {
 		chrome.runtime.sendMessage({type: 'readvalue', key: realKey}, (response) => {
 			// 3. Got an asynchronous response with the data from the service worker
-			console.log('received worker data for key ' + realKey, response);
-			if (response && response.value) {
+			// console.log('received worker data for key ' + realKey, response);
+			if (response && raw) {
+				resolve(response);
+			} else if (response && response.value) {
 				resolve(response.value);
 			} else {
 				resolve(defaultValue);
 			}
+		});
+	});
+}
+
+function retrieveMultipleValues(keys, defaultValues) {
+	const realKeys = keys.map( key => prefix_GMData + key);
+	return new Promise((resolve, reject) => {
+		chrome.runtime.sendMessage({type: 'readmultiplevalues', keys: realKeys}, (response) => {
+			let res = {};
+			keys.forEach( k => {
+				if (response[prefix_GMData + k]) {
+					if (response[prefix_GMData + k].value) {
+						res[k] = response[prefix_GMData + k].value;
+					} else {
+						res[k] = response[prefix_GMData + k];
+					}
+				} else if (defaultValues[k]) {
+					res[k] = defaultValues[k];
+				}
+				else {
+					res[k] = null;
+				}
+			});
+			resolve(res);
 		});
 	});
 }
@@ -140,5 +166,11 @@ function formatTime( time ) {
 	}
 	retStr += minutes+':'+seconds;
     return retStr;
+}
+
+function readablize(num) {
+	var s = ['', 'k', 'M', 'Md', 'T', 'P'];
+	var e = Math.floor(Math.log(num) / Math.log(1000));
+	return Math.round((num / Math.pow(1000, e)) * 100) / 100 + s[e];
 }
 

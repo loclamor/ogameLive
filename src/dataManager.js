@@ -23,18 +23,20 @@ class DataManager {
 				var planetNode = planetNodes.snapshotItem(i);
 				var planetId = planetNode.id;
 				var planetCoords = Xpath.getStringValue(document,'//div[contains(@id,"planetList")]/div[contains(@id,"'+planetId+'")]/a/span[contains(@class,"planet-koords")]');
-				this.planetsIdToCoords[planetId] = planetCoords.trim();
-				this.planetsCoordsToId[planetCoords.trim()] = planetId;
+				this.planetsIdToCoords[planetId] = planetCoords.trim().replace(/\[|\]/g, '');
+				this.planetsCoordsToId[planetCoords.trim().replace(/\[|\]/g, '')] = planetId;
 			}
 		}
 		return this.planetsIdToCoords[p_id];
 	}
 
 	getPlanetId(p_coords) {
+		// Clean coords if needed
+		p_coords = p_coords.trim().replace(/\[|\]/g, '');
 		if (!this.planetsCoordsToId) {
 			this.getPlanetCoords();
 		}
-		return this.planetsCoordsToId[p_coords.trim()];
+		return this.planetsCoordsToId[p_coords];
 	}
 
 	getCurrentPlanetId() {
@@ -168,12 +170,31 @@ class DataManager {
 		this.currentTechDetail = currentTechDetail;
 	}
 
+	getTechDetail(techid) {
+		var techDetail = this.getJsonValue('techdetail', {});
+		if (!techDetail[techid]) {
+			techDetail[techid] = {};
+		}
+		return techDetail[techid];
+	}
+
+	setTechDetail(techid, detail) {
+		var techDetail = this.getJsonValue('techdetail', {});
+		techDetail[techid] = detail;
+		this.setJsonValue('techdetail', techDetail);
+	}
+
 	getFlights() {
 		return this.flights;
 	}
 
+	loadFlights() {
+		return retrieveValue('flights', {}, true);
+	}
+
 	setFlights(flights) {
 		this.flights = flights;
+		storeValue('flights', flights);
 	}
 
 	getParams() {
@@ -185,8 +206,41 @@ class DataManager {
 
 	updateParams(params) {
 		this.params = params;
-		storeValue('params');
+		storeValue('params', params);
 		this.setJsonValue('params', params);
+	}
+
+	async loadFullPlanet(planetId) {
+		let defaults = {};
+		defaults['data.' + planetId] = {}
+		defaults['data.' + planetId + '-moon'] = {}
+		defaults['production.' + planetId] = {
+			M: {dispo: 0, capa: 0, prod: 0, cache: 0},
+			C: {dispo: 0, capa: 0, prod: 0, cache: 0},
+			D: {dispo: 0, capa: 0, prod: 0, cache: 0},
+			F: {dispo: 0, capa: 0, prod: 0, conso: 0, durability: null, surprod: 0},
+			E: {dispo: 0, prod: 0},
+		}
+		defaults['production.' + planetId + '-moon'] = {
+			M: {dispo: 0, capa: 0, prod: 0, cache: 0},
+			C: {dispo: 0, capa: 0, prod: 0, cache: 0},
+			D: {dispo: 0, capa: 0, prod: 0, cache: 0},
+			F: {dispo: 0, capa: 0, prod: 0, conso: 0, durability: null, surprod: 0},
+			E: {dispo: 0, prod: 0},
+		}
+		const res = await retrieveMultipleValues([
+				'data.' + planetId,
+				'data.' + planetId + '-moon',
+				'production.' + planetId,
+				'production.' + planetId + '-moon',
+			],
+			defaults);
+		return [
+			res['data.' + planetId],
+			res['data.' + planetId + '-moon'],
+			res['production.' + planetId],
+			res['production.' + planetId + '-moon'],
+		]
 	}
 
 

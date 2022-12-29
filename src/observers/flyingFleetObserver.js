@@ -15,6 +15,9 @@ class FlyingFleetObserver {
 				if (destCoordsTypeNode === null) {
 					destCoordsTypeNode = Xpath.getSingleNode(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId)+'")]/td[contains(@class,"destFleet")]/span/figure', $html[0]);
 				}
+				if (destCoordsTypeNode === null && event.dataset.returnFlight != true) {
+					// debugger;
+				}
 				if (event.dataset.returnFlight == "true") {
 					var prevFlight = Xpath.getOrderedSnapshotNodes(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId-1)+'")]', $html[0]);
 					if (prevFlight.snapshotLength > 0) {
@@ -43,6 +46,9 @@ class FlyingFleetObserver {
 							break;
 					}
 				}
+				else {
+					// debugger;
+				}
 				try {
 					flights[eventId] = {
 						arrivalTime: parseInt(event.dataset.arrivalTime)*1000,
@@ -67,6 +73,9 @@ class FlyingFleetObserver {
 							C: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
 							D: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
 						};
+					}
+					if (flights[eventId].destination == null && missionType !== OgameConstants.missionType.expedition) {
+						// debugger;
 					}
 				}
 				catch(e) {

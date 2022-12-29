@@ -27,8 +27,10 @@ let tempStore = {
     production: {},
     data: {},
     params: {},
+    flights: {},
     others: {}
 };
+let planetIdToStoreKey = {};
 let interval;
 let iterations = 0
 
@@ -56,6 +58,9 @@ DBOpenRequest.onsuccess = (event) => {
                     break;
                 case elt.key.includes('params') :
                     tempStore.params[elt.key] = elt;
+                    break;
+                case elt.key.includes('flights') :
+                    tempStore.flights = elt.value;
                     break;
                 default:
                     tempStore.others[elt.key] = elt;
@@ -91,6 +96,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             sendResponse(readValue(message.key));
             return true; // async response
             break;
+        case 'readmultiplevalues':
+            sendResponse(readMultipleValues(message.keys));
+            return true; // async response
+            break;
         case 'settest':
             myLocalVar = message.value;
             return false;
@@ -119,12 +128,18 @@ function setValue(elt) {
             break;
         case elt.key.includes('data') :
             tempStore.data[elt.key] = elt;
+            storeItem(elt);
             break;
         case elt.key.includes('params') :
             tempStore.params[elt.key] = elt;
+            storeItem(elt);
+            break;
+        case elt.key.includes('flights') :
+            updateFlights(elt.value);
             break;
         default:
             tempStore.others[elt.key] = elt;
+            storeItem(elt);
     }
 }
 
@@ -140,9 +155,18 @@ function readValue(key) {
         case key.includes('params') :
             res = tempStore.params[key];
             break;
+        case key.includes('flights') :
+            res = tempStore.flights;
+            break;
         default:
             res = tempStore.others[key];
     }
+    return res;
+}
+
+function readMultipleValues(keys) {
+    let res = {};
+    keys.forEach(k => res[k] = readValue(k));
     return res;
 }
 
@@ -194,6 +218,59 @@ function getIDBStorage(mode) {
 }
 
 function mainLoop() {
+
+    let toDeleteFlightIds = [];
+    // resolve flights
+    for (let flightId in tempStore.flights) {
+        let flight = tempStore.flights[flightId];
+        let nowTime = (new Date()).getTime();
+        if (flight.arrivalTime <= nowTime) {
+            toDeleteFlightIds.push(flightId);
+            if (flight.destination && flight.destinationType !== 'debrisField') {
+                var destPlanetId = flight.destination;
+                if (flight.destinationType === 'moon') {
+                    destPlanetId += '-moon';
+                }
+                let key = getKeyFromPlanetId(destPlanetId);
+                let planetProd = JSON.parse(JSON.stringify(tempStore.production[key].value));
+                if (Object.prototype.toString.call(planetProd) === "[object String]") {
+                    planetProd = JSON.parse(planetProd);
+                }
+                planetProd.M.dispo += flight.resources.M;
+                if (planetProd.M.dispo >= planetProd.M.capa) {
+                    planetProd.M.lastprod = planetProd.M.prod;
+                    planetProd.M.prod = 0;
+                }
+                planetProd.C.dispo += flight.resources.C;
+                if (planetProd.C.dispo >= planetProd.C.capa) {
+                    planetProd.C.lastprod = planetProd.C.prod;
+                    planetProd.C.prod = 0;
+                }
+                planetProd.D.dispo += flight.resources.D;
+                if (planetProd.D.dispo >= planetProd.D.capa) {
+                    planetProd.D.lastprod = planetProd.D.prod;
+                    planetProd.D.prod = 0;
+                }
+                if (tempStore.params.lifeform) {
+                    planetProd.F.dispo += flight.resources.F;
+                    if (planetProd.F.dispo >= planetProd.F.capa) {
+                        planetProd.F.lastprod = planetProd.F.surprod;
+                        planetProd.F.surprod = 0;
+                    }
+                }
+                planetProd.lastTime = nowTime;
+                tempStore.production[key].value = planetProd;
+            }
+        }
+    }
+    // delete terminated flights
+    for (let i = 0; i < toDeleteFlightIds.length; i++) {
+        delete tempStore.flights[toDeleteFlightIds[i]];
+    }
+    if (iterations % 10 === 0) {
+        storeItem({key: 'flights', value: tempStore.flights});
+    }
+
     iterations ++;
     // loop over productions
     for (let key in tempStore.production) {
@@ -204,32 +281,54 @@ function mainLoop() {
             production = JSON.parse(production);
         }
         console.log(key, production);
-        // update production
+
         let nowTime = (new Date()).getTime();
         let elapsedSeconds = 0;
         if ( latsUpdated > 0) {
             elapsedSeconds = (nowTime - latsUpdated)/1000;
         }
+
+        // update production
         if (production.M && production.C && production.D) {
+            // Metal
+            if (production.M.dispo < production.M.capa && production.M.prod == 0 && production.M.lastprod > 0) {
+                production.M.prod = production.M.lastprod;
+            }
             production.M.dispo += production.M.prod / 60 / 60 * elapsedSeconds;
             if (production.M.dispo >= production.M.capa && production.M.prod > 0) {
                 production.M.dispo = production.M.capa;
+                production.M.lastprod = production.M.prod;
                 production.M.prod = 0;
+            }
+            // Cristal
+            if (production.C.dispo < production.C.capa && production.C.prod == 0 && production.C.lastprod > 0) {
+                production.C.prod = production.C.lastprod;
             }
             production.C.dispo += production.C.prod / 60 / 60 * elapsedSeconds;
             if (production.C.dispo >= production.C.capa && production.C.prod > 0) {
                 production.C.dispo = production.C.capa;
+                production.C.lastprod = production.C.prod;
                 production.C.prod = 0;
+            }
+            // Deuterium
+            if (production.D.dispo < production.D.capa && production.D.prod == 0 && production.D.lastprod > 0) {
+                production.D.prod = production.D.lastprod;
             }
             production.D.dispo += production.D.prod / 60 / 60 * elapsedSeconds;
             if (production.D.dispo >= production.D.capa && production.D.prod > 0) {
                 production.D.dispo = production.D.capa;
+                production.D.lastprod = production.D.prod;
                 production.D.prod = 0;
             }
             if (tempStore.params.lifeform) {
+                // Food
+                if (production.F.dispo < production.F.capa && production.F.surprod == 0 && production.F.lastprod > 0) {
+                    production.F.surprod = production.F.lastprod;
+                }
                 production.F.dispo += production.F.surprod * elapsedSeconds;
                 if (production.F.dispo >= production.F.capa && production.F.surprod > 0) {
                     production.F.dispo = production.F.capa;
+                    production.F.lastprod = production.F.surprod;
                     production.F.surprod = 0;
                 }
             }
@@ -238,10 +337,31 @@ function mainLoop() {
             if (latsUpdated === tempStore.production[key].value.lastTime || !tempStore.production[key].value.lastTime) {
                 tempStore.production[key].value = production;
             }
-            // Save into ideb each 10 iterations (10s)
+            // Save into idb each 10 iterations (10s)
             if (iterations % 10 === 0) {
                 storeItem({key: key, value: tempStore.production[key].value});
             }
         }
     }
+}
+
+function updateFlights(flights) {
+    for (let key in flights) {
+        // todo : update existing flights ?
+        tempStore.flights[key] = flights[key];
+    }
+    storeItem({key: 'flights', value: tempStore.flights});
+}
+
+function getKeyFromPlanetId(planetId) {
+
+    if (!planetIdToStoreKey[planetId]) {
+        // extract planets Ids from storeKies
+        for (let key in tempStore.production) {
+            let parts = key.split('.');
+            let p_id = parts.pop();
+            planetIdToStoreKey[p_id] = key;
+        }
+    }
+    return planetIdToStoreKey[planetId];
 }

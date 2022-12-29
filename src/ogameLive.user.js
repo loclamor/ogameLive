@@ -10,10 +10,10 @@
 // @description Cette extension permet d'afficher les stocks de ressources en live
 // ==/UserScript==
 // Variables ogameLive
-var TYPE = 'GM-';
-var nomScript = 'ogameLive';
+let TYPE = 'GM-';
+const nomScript = 'ogameLive';
 
-var LOG_LEVEL_OFF = 10,
+const LOG_LEVEL_OFF = 10,
 	LOG_LEVEL_ALL = 1,
 	LOG_LEVEL_TRACE = 2,
 	LOG_LEVEL_DEBUG = 3,
@@ -23,9 +23,9 @@ var LOG_LEVEL_OFF = 10,
 	LOG_LEVEL_FATAL = 7;
 GM_setValue('debug.loglevel', GM_getIntValue('debug.loglevel', LOG_LEVEL_INFO));
 // Navigateurs
-var isFirefox = (window.navigator.userAgent.indexOf('Firefox') > -1);
-var isChrome = (window.navigator.userAgent.indexOf('Chrome') > -1);
-var isOpera = (window.navigator.userAgent.indexOf('Opera') > -1);
+const isFirefox = (window.navigator.userAgent.indexOf('Firefox') > -1);
+const isChrome = (window.navigator.userAgent.indexOf('Chrome') > -1);
+const isOpera = (window.navigator.userAgent.indexOf('Opera') > -1);
 if (isFirefox) {
     TYPE += 'FF';
 } else if (isChrome) {
@@ -34,41 +34,50 @@ if (isFirefox) {
     TYPE += 'OP';
 }
 
-var manifestData = chrome.runtime.getManifest();
+const manifestData = chrome.runtime.getManifest();
 
 /*************************** Init ***************************************/
-// Variables globales données ogame
-
-var url = location.href;
+const url = location.href;
 // Adresse en cours sur la barre d'outils
-var urlUnivers = url.match(new RegExp('(.*)/game'))[1];
-var numUnivers = urlUnivers.match(new RegExp('\/s(.*)-[a-z]{2}.ogame'))[1];
-var langUnivers = urlUnivers.match(new RegExp('-(.*).ogame'))[1];
-var prefix_GMData = 'ogameLive.'+langUnivers + numUnivers + '.';
-var versionUnivers = null;
+const urlUnivers = url.match(new RegExp('(.*)/game'))[1];
+const numUnivers = urlUnivers.match(new RegExp('\/s(.*)-[a-z]{2}.ogame'))[1];
+const langUnivers = urlUnivers.match(new RegExp('-(.*).ogame'))[1];
+var prefix_GMData = 'ogameLive.' + langUnivers + numUnivers + '.';
+let versionUnivers = null;
 log("Universe url: " + urlUnivers, LOG_LEVEL_TRACE);
 log("Universe Number: " + numUnivers, LOG_LEVEL_TRACE);
 log("Universe language: " + langUnivers, LOG_LEVEL_TRACE);
 
-var DEFAULT_PARAMS = {
+const DEFAULT_PARAMS = {
 	lifeform: null,
 	lastServerData: null,
 	prod_display: 'hour',
 
-}
+};
 
-var PARAMS = GM_getJsonValue('params', DEFAULT_PARAMS);
-var curTime = (new Date()).getTime();
-if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 *60 * 1000)) {
-	// get Universe params if not defined, or Once a day
-	jQuery.get(urlUnivers + "/api/serverData.xml", function (data) {
-		$data = jQuery(data);
-		versionUnivers = $data.find('version')[0].textContent;
-		PARAMS.lifeform = $data.find('lifeformSettings').length > 0;
-		PARAMS.lastServerData = (new Date()).getTime();
-		GM_setJsonValue('params', PARAMS);
-	});
-}
+// var PARAMS = GM_getJsonValue('params', DEFAULT_PARAMS);
+var PARAMS = DEFAULT_PARAMS;
+retrieveValue('params', DEFAULT_PARAMS).then( (res) => {
+	// ensure PARAMS is Object
+	if (Object.prototype.toString.call(res) === "[object String]") {
+		res = JSON.parse(res);
+	}
+	PARAMS = res;
+	const curTime = (new Date()).getTime();
+if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 * 60 * 1000))
+	{
+		// get Universe params if not defined, or Once a day
+		jQuery.get(urlUnivers + "/api/serverData.xml", function (data) {
+			let $data = jQuery(data);
+			versionUnivers = $data.find('version')[0].textContent;
+			PARAMS.lifeform = $data.find('lifeformSettings').length > 0;
+			PARAMS.lastServerData = (new Date()).getTime();
+			GM_setJsonValue('params', PARAMS);
+			storeValue('params', PARAMS);
+		});
+	}
+});
+
 
 /*chrome.runtime.sendMessage({type: 'greetings', value: 'loclamor'}, (response) => {
 	// 3. Got an asynchronous response with the data from the service worker
@@ -79,23 +88,23 @@ if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.
 /******************************* Main ***********************************/
 jQuery("head").ready(function() {
 	// push css
-	var link = document.createElement("link");
+	const link = document.createElement("link");
 	link.href = chrome.runtime.getURL("src/ogameLive.css");
 	link.type = "text/css";
 	link.rel = "stylesheet";
 	document.head.appendChild(link);
 	// push js
-	var script = document.createElement('script');
+	const script = document.createElement('script');
 	script.setAttribute('type', 'text/javascript');
 	script.setAttribute('src', chrome.runtime.getURL("src/window.js"));
 	document.head.appendChild(script);
 });
 jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 
-	var hasOGLight = jQuery('.ogl-harvestOptions').length >= 1 ;
+	const hasOGLight = jQuery('.ogl-harvestOptions').length >= 1;
 
-	var planetsWidth = jQuery('#planetList').width() + 10;
-	var prodWidth = planetsWidth * 1.3;
+	const planetsWidth = jQuery('#planetList').width() + 10;
+	const prodWidth = planetsWidth * 1.3;
 	// dynamics css
 	jQuery('head').append('<style>'
 		+ '.smallplanet>.prod {width: '+(prodWidth)+'px; display: none;}' //  display none for better rendering while css file is loading
@@ -111,9 +120,9 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 		+ (hasOGLight ? '#planetbarcomponent #rechts #myPlanets .smallplanet a.moonlink {left: 116px !important}' : '')
 	+ '</style>');
 
-	$switcher = jQuery('<div class="productionSwitcher">'
-			+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
-			+ '<div class="moons_prod"><span class="showPlanets">◀ planets</span> Moons productions</div>'
+	let $switcher = jQuery('<div class="productionSwitcher">'
+		+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
+		+ '<div class="moons_prod"><span class="showPlanets">◀ planets</span> Moons productions</div>'
 		+ '</div>');
 	jQuery('#countColonies').append($switcher);
 
@@ -122,14 +131,14 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 		$switcher.toggleClass('displayMoonProd');
 	});
 
-	var ogameLive = new OgameLive();
+	const ogameLive = new OgameLive();
 	ogameLive.start();
 
 	if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
 		$switcher.click();
 	}
 
-	var icoUrl = chrome.runtime.getURL("src/ogameLive-128.png");
+	const icoUrl = chrome.runtime.getURL("src/ogameLive-128.png");
 	jQuery('#menuTable').append('<li id="ogamelive-menu-button">' +
 			'<span class="menu_icon">' +
 				'<a href="https://github.com/loclamor/ogameLive/issues" target="_blank">' +

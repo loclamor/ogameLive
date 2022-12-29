@@ -59,7 +59,20 @@ class BetterFleetDisplay {
 			});
 		});
 
-		var $exploBtn = jQuery('<a class="explo" href="#" id="ebutton"><span class="textlabel">Exploration</span></a>');
+		var expeparams = window.localStorage.getItem('ogameLive.expeparams');
+		if (expeparams != null) {
+			expeparams = JSON.parse(expeparams);
+		} else {
+			expeparams = {expeditionTime: 1, speedPercent: "10"};
+		}
+
+		var $exploBtn = jQuery('<a class="explo" href="#" id="ebutton">' +
+				'<span class="textlabel">Exploration</span>' +
+				'<span class="expeparams">' +
+					expeparams.expeditionTime + "h<br/>" +
+					(parseInt(expeparams.speedPercent) * 10) + "%" +
+				'</span>' +
+			'</a>');
 		jQuery("#fleet2 #target .target .clearfloat").before($exploBtn);
 		$exploBtn.click(function(e){
 			// jQuery('#target .coords input[name="position"]').val(16);

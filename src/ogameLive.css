@@ -190,17 +190,40 @@ figure.planetIcon.debrisField {
 /**
   Fleet 2 improvments
 **/
-#fleet2 #target .target>a {
-	width: 42px;
-	margin-left: 0;
+#fleet2 #target {
+	width: 195px;
+}
+#fleet2 #target a.planet, #fleet2 #target a.planet_source, #fleet2 #target a.planet_selected, #fleet2 #target a.planet_source_selected {
+	margin-left: 0px;
+	padding: 0;
 }
 
 #fleet2 #target .target>a.explo {
 	background: url("https://gf2.geo.gfsrv.net/cdn14/f45a18b5e55d2d38e7bdc3151b1fee.jpg") no-repeat;
-    background-position: -3px -100px;
-    background-size: 515px;
+	background-position: -7px -102px;
+	width: 36px;
+	background-size: 515px;
+	border-radius: 5px;
+	font-size: 11px;
 }
 
 #fleet2 #target .target>a.explo:hover {
-	background-position: -3px -53px;
+	background-position: -7px -55px;
+	text-decoration: none !important;
+	font-weight: bold;
+}
+
+#fleet2 #target .target>a.explo .expeparams {
+	color: white;
+}
+
+span.oglive.nextlevelresources {
+	position: absolute;
+	left: 0px;
+	top: 20px;
+	font-size: 10px;
+	font-weight: bold;
+	right: 0px;
+	background-color: rgb(0 0 0 / 50%);
+	padding: 3px;
 }

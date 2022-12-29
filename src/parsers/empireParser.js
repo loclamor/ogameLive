@@ -49,12 +49,39 @@ class EmpireParser {
 
                         planetProd.M.dispo = metalQt;
                         planetProd.M.capa = metalStorage;
+                        if (metalQt >= metalStorage && planetProd.M.prod > 0) {
+                            planetProd.M.lastprod = planetProd.M.prod;
+                            planetProd.M.prod = 0;
+                        } else if (metalQt < metalStorage && planetProd.M.prod == 0 & planetProd.M.lastprod > 0) {
+                            planetProd.M.prod = planetProd.M.lastprod;
+                        }
+
                         planetProd.C.dispo = cristalQt;
                         planetProd.C.capa = crystalStorage;
+                        if (cristalQt >= crystalStorage && planetProd.C.prod > 0) {
+                            planetProd.C.lastprod = planetProd.C.prod;
+                            planetProd.C.prod = 0;
+                        } else if (cristalQt < crystalStorage && planetProd.C.prod == 0 & planetProd.C.lastprod > 0) {
+                            planetProd.C.prod = planetProd.C.lastprod;
+                        }
+
                         planetProd.D.dispo = deuteriumQt;
                         planetProd.D.capa = deuteriumStorage;
+                        if (deuteriumQt >= deuteriumStorage && planetProd.D.prod > 0) {
+                            planetProd.D.lastprod = planetProd.D.prod;
+                            planetProd.D.prod = 0;
+                        } else if (deuteriumQt < deuteriumStorage && planetProd.D.prod == 0 & planetProd.D.lastprod > 0) {
+                            planetProd.D.prod = planetProd.D.lastprod;
+                        }
+
                         planetProd.F.dispo = foodQt;
                         planetProd.F.capa = foodStorage;
+                        if (foodQt >= foodStorage && planetProd.F.surprod > 0) {
+                            planetProd.F.lastprod = planetProd.F.surprod;
+                            planetProd.F.surprod = 0;
+                        } else if (foodQt < foodStorage && planetProd.F.surprod == 0 & planetProd.F.lastprod > 0) {
+                            planetProd.F.surprod = planetProd.F.lastprod;
+                        }
 
                         this.dataManager.updatePlanetProd(internalId, planetProd, true, loadedTime);
                     }
