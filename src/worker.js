@@ -346,10 +346,11 @@ function mainLoop() {
 }
 
 function updateFlights(flights) {
-    for (let key in flights) {
+    tempStore.flights = flights;
+    /*for (let key in flights) {
         // todo : update existing flights ?
         tempStore.flights[key] = flights[key];
-    }
+    }*/
     storeItem({key: 'flights', value: tempStore.flights});
 }
 

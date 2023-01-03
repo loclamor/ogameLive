@@ -152,6 +152,9 @@ function formatInt( val ) {
 }
 
 function formatTime( time ) {
+	if (time <= 0) {
+		return 'Terminé';
+	}
 	var sec_num =  Math.floor(time/1000);
     var hours   = Math.floor(sec_num / 3600);
     var minutes = Math.floor((sec_num % 3600) / 60)

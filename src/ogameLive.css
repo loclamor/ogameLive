@@ -30,7 +30,7 @@
 .smallplanet>.prod {
 	display: block !important;
 	float: right;
-	font-size: 9px;
+	font-size: 9px !important;
 	text-align: left;
 	margin-top: 0px;
 	overflow: hidden;
@@ -39,7 +39,7 @@
 	height: 65px;
 }
 .smallplanet>.prod .capa {
-	font-size: 8px;
+	font-size: 8px !important;
 }
 
 .smallplanet>.prod>.planet_prod,

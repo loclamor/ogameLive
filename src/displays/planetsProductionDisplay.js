@@ -551,13 +551,15 @@ class PlanetsProductionDisplay {
 				}
 			}
 
-			// planet.$incomming_fleet.html('');
-			if (flightsByPlanet[planet.id]) {
+			if (flightsByPlanet[planet.id] && !hasOGLight) {
 				if (planet.$incomming_fleet.find('.icon_movement_reserve').length > 0) {
 					jQuery('.htmlTooltip .countdown').each(function(idx, elt) {
 						$elt = jQuery(elt);
 						const countend = $elt.data('countend');
 						$elt.html(formatTime(countend - nowTime));
+						if (countend - nowTime <= 0) {
+							// @TODO treat this case
+						}
 					});
 				}
 				else {

@@ -98,10 +98,25 @@ jQuery("head").ready(function() {
 	script.setAttribute('type', 'text/javascript');
 	script.setAttribute('src', chrome.runtime.getURL("src/window.js"));
 	document.head.appendChild(script);
+	console.info("OGameLive scripts included")
 });
+var hasOGInfinity = false;
+var hasOGLight = false;
+var hasUniverseView = false;
+var hasInfocompte = false;
 jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 
-	const hasOGLight = jQuery('.ogl-harvestOptions').length >= 1;
+	hasOGInfinity = jQuery('.ogl-harvestOptions').length >= 1;
+	hasOGLight = jQuery('#menuTable .ogl_leftMenuIcon').length >= 1;
+	hasUniverseView = jQuery('body.universeview').length >= 1;
+	hasInfocompte = jQuery('#ic-menu-button').length >= 1;
+
+	console.info("Activated plugins : " +
+		(hasOGInfinity ? "OGameInfinity, ": "") +
+		(hasOGLight ? "OGLight, ": "") +
+		(hasUniverseView ? "Universeview, ": "") +
+		(hasInfocompte ? "InfoCompte, ": "") +
+		"");
 
 	const planetsWidth = jQuery('#planetList').width() + 10;
 	const prodWidth = planetsWidth * 1.3;
@@ -112,13 +127,19 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 		+ '.smallplanet>.prod>.moon_prod {left: '+(prodWidth)+'px;}'
 		+ '#planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.planet_prod {left: -'+(prodWidth)+'px;}'
 		+ '#countColonies .productionSwitcher {width:'+(prodWidth)+'px;}'
+		+ (hasOGLight ?
+			'#countColonies .productionSwitcher {color: #6F9FC8; left: 100%; bottom: 0px; top: auto;}' +
+			'#moreInfoTable {display: none;}'
+			: '')
 		+ '#countColonies .productionSwitcher .planets_prod {width:'+(prodWidth)+'px;}'
 		+ '#countColonies .productionSwitcher .moons_prod {left: '+(prodWidth)+'px; width:'+(prodWidth)+'px;}'
 		+ '#countColonies .productionSwitcher.displayMoonProd .planets_prod {left: -'+(prodWidth)+'px;}'
 		+ 'div#banner_skyscraper {left: '+(1020+prodWidth)+'px !important}'
 		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px; width: '+(prodWidth)+'px;}'
-		+ (hasOGLight ? '#planetbarcomponent #rechts #myPlanets .smallplanet a.moonlink {left: 116px !important}' : '')
+		+ (hasOGInfinity ? '#planetbarcomponent #rechts #myPlanets .smallplanet a.moonlink {left: 116px !important}' : '')
 	+ '</style>');
+
+	console.info('OGameLive scc inserted')
 
 	let $switcher = jQuery('<div class="productionSwitcher">'
 		+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
@@ -133,6 +154,8 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 
 	const ogameLive = new OgameLive();
 	ogameLive.start();
+
+	console.info('OGameLive started')
 
 	if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
 		$switcher.click();
@@ -149,6 +172,8 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 				'<span class="textlabel">OgameLive ' + manifestData.version + '</span>' +
 			'</a>' +
 		'</li>');
+
+	console.info('OGameLive fully loaded')
 });
 
 //exit !!
