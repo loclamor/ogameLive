@@ -222,40 +222,42 @@ class PlanetsProductionDisplay {
 			// mount base html
 			jQuery('#'+planetId+'>.prod').html(
 				'<div class="planet_prod">'
-					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.M.capa)+'</span>' +
+					+ '<span id="m_dispo" class="dispo" title="Capacity : '+formatInt(planet.prod.M.capa)+'"></span>' +
 						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+m_prod_class+'">+'+formatInt(planet.prod.M.prod)+'/h</span>' +
 						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+m_prod_class+'">+'+formatInt(planet.prod.M.prod * 24)+'/d</span>'
-					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.C.capa)+'</span>' +
+					+ '<br/><span id="c_dispo" class="dispo" title="Capacity : '+formatInt(planet.prod.D.capa)+'"></span>' +
 						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+c_prod_class+'">+'+formatInt(planet.prod.C.prod)+'/h</span>' +
 						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+c_prod_class+'">+'+formatInt(planet.prod.C.prod * 24)+'/d</span>'
-					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.D.capa)+'</span>' +
+					+ '<br/><span id="d_dispo" class="dispo" title="Capacity : '+formatInt(planet.prod.D.capa)+'"></span>' +
 						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+d_prod_class+'">+'+formatInt(planet.prod.D.prod)+'/h</span>' +
 						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+d_prod_class+'">+'+formatInt(planet.prod.D.prod * 24)+'/d</span>'
-					+ (PARAMS.lifeform ? '<br/><span id="f_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.F.capa)+'</span>' +
+					/*+ (PARAMS.lifeform ? '<br/><span id="f_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.F.capa)+'</span>' +
 						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+f_prod_class+'">+'+formatInt(planet.prod.F.surprod * 60*60)+'/h</span>' +
 						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+f_prod_class+'">+'+formatInt(planet.prod.F.surprod * 60*60 * 24)+'/d</span>'
-					: '')
-					+ '<br/><span id="s_dispo"></span></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
-					+ '<br/><span id="e_dispo"><span class="'+warnE+'">E:&nbsp;' + formatInt(planet.prod.E.dispo)+'</span></span>'
-						+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.E.prod)+'</span>'
+					: '')*/
+					+ '<br/><span id="s_dispo"></span></span>'
+					+ (PARAMS.show_needed_transporters == 1 ? '<span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>' : '')
+					+ '<br/><span id="e_dispo" class="dispo" title="Production : '+planet.prod.E.prod+'"><span class="'+warnE+'" style="width:'+this.percent(planet.prod.E.prod - planet.prod.E.dispo, planet.prod.E.prod)+'%">E:&nbsp;' + formatInt(planet.prod.E.dispo)+'</span></span>'
+						//+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.E.prod)+'</span>'
 						+ cefPercent
 				+ '</div><div class="moon_prod">'
-					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.M.capa)+'</span>' +
+					+ '<span id="m_dispo" class="dispo" title="Capacity : '+formatInt(planet.moonprod.M.capa)+'"></span>' +
 						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+m_prod_class_moon+'">+'+formatInt(planet.moonprod.M.prod)+'/h</span>' +
 						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+m_prod_class_moon+'">+'+formatInt(planet.moonprod.M.prod * 24)+'/d</span>'
-					+ '<br/><span id="c_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.C.capa)+'</span>' +
+					+ '<br/><span id="c_dispo"  class="dispo" title="Capacity : '+formatInt(planet.moonprod.D.capa)+'"></span>' +
 						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+c_prod_class_moon+'">+'+formatInt(planet.moonprod.C.prod)+'/h</span>' +
 						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+c_prod_class_moon+'">+'+formatInt(planet.moonprod.C.prod * 24)+'/d</span>'
-					+ '<br/><span id="d_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.D.capa)+'</span>' +
+					+ '<br/><span id="d_dispo"  class="dispo" title="Capacity : '+formatInt(planet.moonprod.D.capa)+'"></span>' +
 						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+d_prod_class_moon+'">+'+formatInt(planet.moonprod.D.prod)+'/h</span>' +
 						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+d_prod_class_moon+'">+'+formatInt(planet.moonprod.D.prod * 24)+'/d</span>'
-					+ (PARAMS.lifeform ? '<br/><span id="f_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.F.capa)+'</span>' +
+					/*+ (PARAMS.lifeform ? '<br/><span id="f_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.F.capa)+'</span>' +
 						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+f_prod_class_moon+'">+'+formatInt(planet.moonprod.F.surprod * 60*60)+'/h</span>' +
 						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+f_prod_class_moon+'">+'+formatInt(planet.moonprod.F.surprod * 60*60 * 24)+'/d</span>'
-						: '')
-					+ '<br/><span id="s_dispo"></span></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
-					+ '<br/><span id="e_dispo"><span class="'+'">E:&nbsp;' + formatInt(planet.moonprod.E.dispo)+'</span></span>'
-						+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.E.prod)+'</span>'
+						: '')*/
+					+ '<br/><span id="s_dispo"></span></span>'
+					+ (PARAMS.show_needed_transporters == 1 ? '<span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>' : '')
+					+ '<br/><span id="e_dispo" class="dispo" title="Production : '+planet.moonprod.E.prod+'"><span class="'+'" style="width:'+this.percent(planet.moonprod.E.prod - planet.moonprod.E.dispo, planet.moonprod.E.prod)+'%">E:&nbsp;' + formatInt(planet.moonprod.E.dispo)+'</span></span>'
+						//+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.E.prod)+'</span>'
 				+ '</div>'
 			);
 			jQuery('#'+planetId).append('<span class="incomming_fleet"></span>');
@@ -324,6 +326,13 @@ class PlanetsProductionDisplay {
 			return this.computeNeededShip(amount, parseInt(this.fleetData.transporterSmall.capacity.value));
 		}
 		return 0;
+	}
+
+	percent(dispo, capa) {
+		let p =  dispo * 100 / capa;
+		p = (p < 100 ? p : 100);
+		return p;
+		// return p.toFixed(0);
 	}
 
 	async display() {
@@ -408,7 +417,8 @@ class PlanetsProductionDisplay {
 			if (planet.prod.M.dispo >= planet.prod.M.capa) {
 				warnM = 'overmark';
 			}
-			planet.$m_dispo.html('<span class="'+warnM+'">M:&nbsp;' + formatInt(planet.prod.M.dispo) + '</span>');
+			const m_p = this.percent(planet.prod.M.dispo, planet.prod.M.capa);
+			planet.$m_dispo.html('<span class="'+warnM+'" style="width:'+m_p+'%;">M:&nbsp;' + formatInt(planet.prod.M.dispo) + '</span>');
 			// cristal
 			totalC += planet.prod.C.dispo;
 			if (planet.prod.C.dispo >= (planet.prod.C.capa - 10/100 * planet.prod.C.capa)) {
@@ -417,7 +427,8 @@ class PlanetsProductionDisplay {
 			if (planet.prod.C.dispo >= planet.prod.C.capa) {
 				warnC = 'overmark';
 			}
-			planet.$c_dispo.html('<span class="'+warnC+'">C:&nbsp;' + formatInt(planet.prod.C.dispo) + '</span>');
+			const c_p = this.percent(planet.prod.C.dispo, planet.prod.C.capa);
+			planet.$c_dispo.html('<span class="'+warnC+'" style="width:'+c_p+'%;" >C:&nbsp;' + formatInt(planet.prod.C.dispo) + '</span>');
 			// deut
 			totalD += planet.prod.D.dispo;
 			if (planet.prod.D.dispo >= (planet.prod.D.capa - 10/100 * planet.prod.D.capa)) {
@@ -426,10 +437,10 @@ class PlanetsProductionDisplay {
 			if (planet.prod.D.dispo >= planet.prod.D.capa) {
 				warnD = 'overmark';
 			}
-			planet.$d_dispo.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.prod.D.dispo) + '</span>');
-
+			const d_p = this.percent(planet.prod.D.dispo, planet.prod.D.capa)
+			planet.$d_dispo.html('<span class="'+warnD+'" style="width:'+d_p+'%;">D:&nbsp;' + formatInt(planet.prod.D.dispo) + '</span>');
 			// FOOD
-			if (PARAMS.lifeform) {
+			/*if (PARAMS.lifeform) {
 				totalF += planet.prod.F.dispo;
 				if (planet.prod.F.dispo >= (planet.prod.F.capa - 10 / 100 * planet.prod.F.capa)) {
 					warnF = 'middlemark';
@@ -438,7 +449,7 @@ class PlanetsProductionDisplay {
 					warnF = 'overmark';
 				}
 				planet.$f_dispo.html('<span class="' + warnF + '">F:&nbsp;' + formatInt(planet.prod.F.dispo) + '</span>');
-			}
+			}*/
 
 			//sum
 			var sum_dispo = planet.prod.M.dispo + planet.prod.C.dispo + planet.prod.D.dispo + (PARAMS.lifeform ? planet.prod.F.dispo : 0);
@@ -478,7 +489,8 @@ class PlanetsProductionDisplay {
 				if (planet.moonprod.M.dispo >= planet.moonprod.M.capa) {
 					warnM = 'overmark';
 				}
-				planet.$m_dispo_moon.html('<span class="'+warnM+'">M:&nbsp;' + formatInt(planet.moonprod.M.dispo) + '</span>');
+				const m_p = this.percent(planet.moonprod.M.dispo, planet.moonprod.M.capa);
+				planet.$m_dispo_moon.html('<span class="'+warnM+'" style="width:'+m_p+'%;">M:&nbsp;' + formatInt(planet.moonprod.M.dispo) + '</span>');
 				// cristal
 				totalC += planet.moonprod.C.dispo;
 				if (planet.moonprod.C.dispo >= (planet.moonprod.C.capa - 10/100 * planet.moonprod.C.capa)) {
@@ -487,7 +499,8 @@ class PlanetsProductionDisplay {
 				if (planet.moonprod.C.dispo >= planet.moonprod.C.capa) {
 					warnC = 'overmark';
 				}
-				planet.$c_dispo_moon.html('<span class="'+warnC+'">C:&nbsp;' + formatInt(planet.moonprod.C.dispo) + '</span>');
+				const c_p = this.percent(planet.moonprod.C.dispo, planet.moonprod.C.capa);
+				planet.$c_dispo_moon.html('<span class="'+warnC+'" style="width:'+c_p+'%;">C:&nbsp;' + formatInt(planet.moonprod.C.dispo) + '</span>');
 				// deut
 				totalD += planet.moonprod.D.dispo;
 				if (planet.moonprod.D.dispo >= (planet.moonprod.D.capa - 10/100 * planet.moonprod.D.capa)) {
@@ -496,19 +509,20 @@ class PlanetsProductionDisplay {
 				if (planet.moonprod.D.dispo >= planet.moonprod.D.capa) {
 					warnD = 'overmark';
 				}
-				planet.$d_dispo_moon.html('<span class="'+warnD+'">D:&nbsp;' + formatInt(planet.moonprod.D.dispo) + '</span>');
+				const d_p = this.percent(planet.moonprod.D.dispo, planet.moonprod.D.capa);
+				planet.$d_dispo_moon.html('<span class="'+warnD+'" style="width:'+d_p+'%;">D:&nbsp;' + formatInt(planet.moonprod.D.dispo) + '</span>');
 
 				// FOOD
-				if (PARAMS.lifeform) {
-					totalF += planet.moonprod.F.dispo;
-					if (planet.moonprod.F.dispo >= (planet.moonprod.F.capa - 10 / 100 * planet.moonprod.F.capa)) {
-						warnF = 'middlemark';
-					}
-					if (planet.moonprod.F.dispo >= planet.moonprod.F.capa) {
-						warnF = 'overmark';
-					}
-					planet.$f_dispo_moon.html('<span class="' + warnF + '">F:&nbsp;' + formatInt(planet.moonprod.F.dispo) + '</span>');
-				}
+				// if (PARAMS.lifeform) {
+				// 	totalF += planet.moonprod.F.dispo;
+				// 	if (planet.moonprod.F.dispo >= (planet.moonprod.F.capa - 10 / 100 * planet.moonprod.F.capa)) {
+				// 		warnF = 'middlemark';
+				// 	}
+				// 	if (planet.moonprod.F.dispo >= planet.moonprod.F.capa) {
+				// 		warnF = 'overmark';
+				// 	}
+				// 	planet.$f_dispo_moon.html('<span class="' + warnF + '">F:&nbsp;' + formatInt(planet.moonprod.F.dispo) + '</span>');
+				// }
 
 				//sum
 				var sum_dispo = planet.moonprod.M.dispo + planet.moonprod.C.dispo + planet.moonprod.D.dispo + (PARAMS.lifeform ? planet.moonprod.F.dispo : 0);

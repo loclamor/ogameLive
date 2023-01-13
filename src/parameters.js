@@ -11,6 +11,13 @@ class Parameters {
                     {value: 'miner', label: 'Miner'}
                 ],
             },
+            show_production: {
+                label: 'Activate OGameLive production display',
+                options: [
+                    {value: 1, label: 'Yes'},
+                    {value: 0, label: 'No'}
+                ],
+            },
             prod_display: {
                 label: 'Production display',
                 options: [
@@ -20,6 +27,13 @@ class Parameters {
             },
             prod_round: {
                 label: 'Production round',
+                options: [
+                    {value: 1, label: 'Yes'},
+                    {value: 0, label: 'No'}
+                ],
+            },
+            show_needed_transporters: {
+                label: 'Show needed transporters',
                 options: [
                     {value: 1, label: 'Yes'},
                     {value: 0, label: 'No'}
@@ -54,8 +68,10 @@ class Parameters {
                     '<h1>OGameLive Parameters</h1>' +
                     '<h2>General options</h2>' +
                     this._getParamSelect('game_style') +
+                    this._getParamSelect('show_production') +
                     this._getParamSelect('prod_display') +
                     this._getParamSelect('prod_round') +
+                    this._getParamSelect('show_needed_transporters') +
                     this._getParamInteger('main_refresh') +
                     '<h2>Fleet options</h2>' +
                     this._getParamSelect('show_fleet_speed') +

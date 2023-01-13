@@ -175,7 +175,7 @@ function formatTime( time ) {
 }
 
 function readablize(num) {
-	if (num === 0) {
+	if (num == 0) {
 		return 0;
 	}
 	var s = ['', 'k', 'M', 'Md', 'T', 'P'];

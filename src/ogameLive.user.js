@@ -59,6 +59,8 @@ const DEFAULT_PARAMS = {
 	show_fleet_speed: 1,
 	main_refresh: 1,
 	random_system: 1,
+	show_needed_transporters: 1,
+	show_production: 1,
 };
 
 // var PARAMS = GM_getJsonValue('params', DEFAULT_PARAMS);
@@ -122,7 +124,23 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 	console.info('OGameLive scc inserted')
 
-	jQuery(".smallplanet").append('<div class="prod"></div>');
+	if (PARAMS.show_production == 1) {
+		let $switcher = jQuery('<div class="productionSwitcher">'
+			+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
+			+ '<div class="moons_prod"><span class="showPlanets">◀ planets</span> Moons productions</div>'
+			+ '</div>');
+		jQuery('#countColonies').append($switcher);
+
+		$switcher.click(function() {
+			jQuery('#planetbarcomponent #rechts #planetList').toggleClass('displayMoonProd');
+			$switcher.toggleClass('displayMoonProd');
+		});
+
+		if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
+			$switcher.click();
+		}
+		jQuery(".smallplanet").append('<div class="prod"></div>');
+	}
 
 
 	// push css
@@ -144,20 +162,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 
 
-	let $switcher = jQuery('<div class="productionSwitcher">'
-		+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
-		+ '<div class="moons_prod"><span class="showPlanets">◀ planets</span> Moons productions</div>'
-		+ '</div>');
-	jQuery('#countColonies').append($switcher);
 
-	$switcher.click(function() {
-		jQuery('#planetbarcomponent #rechts #planetList').toggleClass('displayMoonProd');
-		$switcher.toggleClass('displayMoonProd');
-	});
-
-	if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
-		$switcher.click();
-	}
 
 	// OGameLive menu entry
 	const icoUrl = chrome.runtime.getURL("src/ogameLive-128.png");

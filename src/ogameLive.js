@@ -17,19 +17,26 @@ class OgameLive {
 
 
 		new PlanetProductionParser(this.dataManager);
-		var productionDisplay = new PlanetsProductionDisplay(this.dataManager);
-		productionDisplay.initialize();
+		var productionDisplay = false;
+		if (PARAMS.show_production == 1) {
+			productionDisplay = new PlanetsProductionDisplay(this.dataManager);
+			productionDisplay.initialize();
+		}
 		new FlyingFleetObserver(this.dataManager);
 		var app = this;
 		setTimeout(() => {
 			if (!app.disabledTimer) {
-				productionDisplay.display();
+				if (false !== productionDisplay) {
+					productionDisplay.display();
+				}
 			}
 		}, 0);
 		if (PARAMS.main_refresh > 0) {
 			var interval = setInterval(function () {
 				if (!app.disabledTimer) {
-					productionDisplay.display();
+					if (false !== productionDisplay) {
+						productionDisplay.display();
+					}
 				} else {
 					console.log('Main interval deactivated');
 					clearInterval(interval)

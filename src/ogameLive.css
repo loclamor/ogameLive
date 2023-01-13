@@ -1,4 +1,7 @@
 /** NOUVELLE CSS PLANETES **/
+:root {
+	--percent: 0;
+}
 
 #planetbarcomponent #myPlanets {
 	width: 210px !important;
@@ -188,7 +191,7 @@
 .smallplanet>.prod {
 	display: block !important;
 	float: right;
-	font-size: 9px !important;
+	font-size: 9.5px !important; /** define all font size of prod display */
 	text-align: left;
 	margin-top: 0px;
 	overflow: hidden;
@@ -206,8 +209,35 @@
 	left: 250px;
 }
 
-.smallplanet>.prod .capa {
-	font-size: 8px !important;
+.planet_prod>.dispo,
+.moon_prod>.dispo{
+	width: 100px;
+	display: inline-block;
+	border-bottom: 1px solid #555555;
+	position: relative;
+	height: 12px;
+	line-height: 12px;
+	vertical-align: top;
+}
+
+.planet_prod>.dispo>span,
+.moon_prod>.dispo>span{
+	display: inline-block;
+	border-bottom: 1px solid white;
+	overflow: visible;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	height: 12px;
+}
+
+.planet_prod>.dispo>span.middlemark,
+.moon_prod>.dispo>span.middlemark {
+	border-color: #D29D00;
+}
+.planet_prod>.dispo>span.overmark,
+.moon_prod>.dispo>span.overmark{
+	border-color: #D43635;
 }
 
 .smallplanet>.prod>.planet_prod,
