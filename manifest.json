@@ -23,6 +23,7 @@
 		"src/utilities.js",
 		"src/router.js",
 		"src/ogameLive.js",
+        "src/parameters.js",
 		"src/observers/techDetailObserver.js",
 		"src/observers/flyingFleetObserver.js",
 		"src/displays/betterFleetDisplay.js",
@@ -41,6 +42,7 @@
         "src/ogameLive.user.js",
         "src/worker.js"
       ],
+      "css": ["src/ogameLive.css"],
       "run_at": "document_start"
     }
   ],
@@ -48,7 +50,8 @@
     "resources": [
       "src/ogameLive.css",
       "src/window.js",
-      "src/ogameLive-128.png"
+      "src/ogameLive-128.png",
+      "src/planet-targets.png"
     ],
     "matches": ["<all_urls>"]
   }],

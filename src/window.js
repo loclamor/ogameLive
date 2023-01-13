@@ -38,10 +38,16 @@ window.addEventListener('ogameLive.fleetDispatcher.selectExpedition', function (
 		var expeparams = window.localStorage.getItem('ogameLive.expeparams');
 		if (expeparams != null) {
 			expeparams = JSON.parse(expeparams);
+			expeparams.expeditionTime =  expeparams.expeditionTime < 1 ? 1 :  expeparams.expeditionTime;
 			window.fleetDispatcher.expeditionTime = expeparams.expeditionTime;
 			window.fleetDispatcher.speedPercent = expeparams.speedPercent;
 			console.log("Expe params restored !");
 		}
+		const initialSystem = window.fleetDispatcher.targetPlanet.system;
+		const nbSys = parseInt(document.getElementById('random_system').value);
+		const random = Math.floor(Math.random() * (2 * nbSys + 1) - nbSys);
+		window.fleetDispatcher.targetPlanet.system += random;
+		console.log('Sending expedition ' + random + ' systems arround sys ' + initialSystem + ' at sys ' + window.fleetDispatcher.targetPlanet.system);
 		window.fleetDispatcher.trySubmitFleet2();
 	}, 1000)
  }, false);

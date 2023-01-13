@@ -1,30 +1,188 @@
-#countColonies .productionSwitcher {position: absolute; right: 5px; top: 0px; height: 28px; overflow: hidden;}
+/** NOUVELLE CSS PLANETES **/
+
+#planetbarcomponent #myPlanets {
+	width: 210px !important;
+}
+
+#planetList { /** from infinity **/
+	background: rgb(13, 16, 20);
+	border-width: 2px;
+	border-style: solid;
+	border-color: rgb(0, 0, 0);
+	border-image: initial;
+	padding: 5px;
+}
+
+#pageContent #right #planetList,
+#pageContent #mainContent #planetList{
+	display: flex;
+	flex-direction: column;
+	width: 450px !important;
+}
+
+#pageContent #right #planetbarcomponent #rechts .smallplanet,
+#pageContent #mainContent #planetbarcomponent #rechts .smallplanet{
+	display: flex;
+	flex-direction: row;
+	width: 455px !important;
+	height: 65px !important;
+	margin: 0 0 5px 0;
+}
+
+/* css commun */
+#pageContent #right #planetbarcomponent #rechts .smallplanet>a.planetlink,
+#pageContent #right #planetbarcomponent #rechts .smallplanet>a.moonlink,
+#pageContent #right #planetbarcomponent #rechts .smallplanet>.prod,
+#pageContent #mainContent #planetbarcomponent #rechts .smallplanet>a.planetlink,
+#pageContent #mainContent #planetbarcomponent #rechts .smallplanet>a.moonlink,
+#pageContent #mainContent #planetbarcomponent #rechts .smallplanet>.prod {
+
+	position: relative;
+	height: 65px !important;
+	/*border: 1px solid red;*/
+	top: 0px;
+	left: 0px;
+	padding: 0px;
+}
+
+/* css planete */
+#pageContent #right #planetbarcomponent #rechts .smallplanet>a.planetlink,
+#pageContent #mainContent #planetbarcomponent #rechts .smallplanet>a.planetlink {
+	width: 130px;
+}
+
+.moonlink.active,
+.planetlink.active { /** from infinty **/
+	background: linear-gradient(to right, rgb(136, 108, 26), rgb(9, 14, 19));
+}
+.moonlink:hover,
+.planetlink:hover { /** from infinty **/
+	background: linear-gradient(to right, rgb(99, 51, 17), rgb(9, 14, 19));
+}
+
+.smallplanet img { /** from infinty **/
+	display: block;
+	height: 25px;
+	width: 25px;
+	z-index: 2;
+	box-shadow: rgb(19, 24, 29) 0px 0px 0px 1px !important;
+	position: absolute !important;
+	left: 82px !important;
+	top: 22px !important;
+	transition: top 0.2s ease 0s;
+	border-radius: 50% !important;
+	margin: 0px !important;
+}
+.smallplanet .moonlink img {  /** from infinty **/
+	display: block;
+	left: 43px !important;
+}
+.planetlink .planet-name {  /** from infinty **/
+	position: absolute;
+	text-overflow: ellipsis;
+	width: 105px;
+	text-align: left;
+	color: rgb(255, 255, 255) !important;
+	font-size: 18px !important;
+	font-weight: 400 !important;
+	top: 3px !important;
+	overflow: hidden;
+}
+.planetlink .planet-koords,
+.planetlink .planet-name {  /** from infinty **/
+	font-size: 12px !important;
+	left: 5px !important;
+}
+#planetbarcomponent #rechts .planet-koords,
+#planetbarcomponent #rechts .planet-name {  /** from infinty **/
+	margin-top: 4px !important;
+}
+.planetlink.active .planet-koords,
+.planetlink:hover .planet-koords{  /** from infinty **/
+	color: rgb(255, 191, 201) !important;
+}
+
+.moonlink {  /** from infinty **/
+	width: 60px;
+	min-width: 60px;
+	left: 0px !important;
+	right: 0px !important;
+}
+.moonlink, .planetlink {  /** from infinty **/
+	box-shadow: rgba(255, 255, 255, 0.07) 0px 1px inset, rgba(255, 255, 255, 0.03) 0px 16px inset;
+	position: relative !important;
+	height: 100% !important;
+	top: 0px !important;
+	background: linear-gradient(to right, rgb(28, 43, 56) 45%, rgb(9, 14, 19));
+	overflow: hidden;
+	border-radius: 5px;
+	background-position: 0px center !important;
+	margin: 0px !important;
+	padding: 0px !important;
+}
+
+/* css lune */
+#pageContent #right #planetbarcomponent #rechts .smallplanet>a.moonlink,
+#pageContent #mainContent #planetbarcomponent #rechts .smallplanet>a.moonlink {
+	width: 70px;
+	margin-left: 5px !important;
+}
+/* css prod */
+#pageContent #right #planetbarcomponent #rechts .smallplanet>.prod,
+#pageContent #mainContent #planetbarcomponent #rechts .smallplanet>.prod {
+	width: 250px;
+	font-size: 8px;
+}
+
+#planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.planet_prod {
+	left: -250px;
+}
+
+#planetbarcomponent #countColonies {
+	color: #6F9FC8 !important;
+	width: 464px !important;
+	box-shadow: rgba(255, 255, 255, 0.07) 0px 1px inset, rgba(255, 255, 255, 0.03) 0px 11px inset;
+	font-size: 10px;
+	display: flex;
+	justify-content: space-evenly;
+	min-height: 22px !important;
+	line-height: 22px !important;
+	outline: rgb(0, 0, 0) solid 1px;
+	background: linear-gradient(to right, rgb(28, 43, 56) 45%, rgb(9, 14, 19)) !important;
+	margin: 0px !important;
+}
+
+#countColonies .productionSwitcher {width: 250px;}
+#countColonies .productionSwitcher .planets_prod {width:250px;}
+#countColonies .productionSwitcher .moons_prod {left: 250px; width:250px;}
+#countColonies .productionSwitcher.displayMoonProd .planets_prod {left: -250px;}
+
+#countColonies .productionSwitcher {position: absolute; left: 210px; top: 0px; height: 28px; overflow: hidden;}
 #countColonies .productionSwitcher .planets_prod {position: absolute; left: 0px; top: 0px;}
 #countColonies .productionSwitcher .planets_prod .showMoons {float: right}
 #countColonies .productionSwitcher .planets_prod:hover {left: -7px}
 #countColonies .productionSwitcher .moons_prod {position: absolute; top: 0px; text-align: right;}
 #countColonies .productionSwitcher .moons_prod .showPlanets {float: left}
-#countColonies .productionSwitcher .planets_prod, #countColonies .productionSwitcher .moons_prod {transition: left 0.5s ease 0s; cursor: pointer;}
+#countColonies .productionSwitcher .planets_prod,
+#countColonies .productionSwitcher .moons_prod {transition: left 0.5s ease 0s; cursor: pointer;}
 #countColonies .productionSwitcher.displayMoonProd .moons_prod {left: 0px;}
 #countColonies .productionSwitcher.displayMoonProd .moons_prod:hover {left: +7px;}
 
-.prod_duration_switcher {
-	float: right;
+#countColonies .ogl_menuOptions {
+	position: absolute;
+	left: 0;
+}
+
+.smallplanet .ogl_moonFleet {
+	right: 312px !important;
+}
+.smallplanet .ogl_planetFleet {
+	right: 337px !important;
 }
 
 #planetbarcomponent .textCenter {
 	position: absolute;
 	left: 5px;
-}
-
-#planetbarcomponent #rechts #myPlanets .smallplanet,
-#planetbarcomponent #rechts #myWorlds .smallplanet {
-	min-height: 65px !important;
-}
-
-/** less than 5 planets **/
-#planetbarcomponent #rechts #myWorlds .smallplanet a.planetlink img.planetPic{
-	float: left;
 }
 
 .smallplanet>.prod {
@@ -38,6 +196,16 @@
 	left: 180px;
 	height: 65px;
 }
+
+.smallplanet>.prod>.planet_prod,
+.smallplanet>.prod>.moon_prod {
+	width: 250px;
+}
+
+.smallplanet>.prod>.moon_prod {
+	left: 250px;
+}
+
 .smallplanet>.prod .capa {
 	font-size: 8px !important;
 }
@@ -54,25 +222,14 @@
 	left: 0px;
 }
 
-.smallplanet>.prod>.moon_prod {
-
-}
 
 #planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.moon_prod {
 	left: 0px;
 }
 
-.smallplanet>a {
-	
-}
-.smallplanet>span {
-	text-align: center;
-}
-#advicebarcomponent div#banner_skyscraper {
-	
-}
 #planetList .total_prod {
-	width: 150px;
+	width: 250px;
+	margin-left: 203px;
 	font-size: 11px;
 	text-align: left;
 	margin-top: 10px;
@@ -194,7 +351,7 @@ figure.planetIcon.debrisField {
 	width: 195px;
 }
 #fleet2 #target a.planet, #fleet2 #target a.planet_source, #fleet2 #target a.planet_selected, #fleet2 #target a.planet_source_selected {
-	margin-left: 0px;
+	margin-left: 0px !important;
 	padding: 0;
 }
 
@@ -216,6 +373,25 @@ figure.planetIcon.debrisField {
 #fleet2 #target .target>a.explo .expeparams {
 	color: white;
 }
+#fleet2 .coords {
+	height: 65px !important;
+}
+
+input[type="number"] {
+	color: rgb(187, 187, 187) !important;
+	box-shadow: none !important;
+	line-height: 23px !important;
+	border-width: 1px !important;
+	border-style: solid !important;
+	border-color: rgb(58, 72, 86) !important;
+	border-image: initial !important;
+	background: -webkit-linear-gradient(top, rgb(14, 17, 23) 0px, rgb(35, 43, 51) 100%) !important;
+	font-size: 12px;
+	height: 20px;
+	border-radius: 3px;
+	-webkit-appearance: textfield;
+	-webkit-box-sizing: content-box;
+}
 
 span.oglive.nextlevelresources {
 	position: absolute;
@@ -226,4 +402,122 @@ span.oglive.nextlevelresources {
 	right: 0px;
 	background-color: rgb(0 0 0 / 50%);
 	padding: 3px;
+}
+
+
+li>a.menubutton {
+	position: relative;
+}
+li>a.menubutton>span.empire_planet,
+li>a.menubutton>a.empire_moon {
+	position: absolute;
+	display: block;
+	width: 50%;
+	height: 100%;
+}
+li>a.menubutton>span.empire_planet:before,
+li>a.menubutton>a.empire_moon:before {
+	content: ' ';
+	height: 20px;
+	width: 20px;
+	display: inline-block;
+	background-size: 60px;
+	background-repeat: no-repeat;
+	background-position-y: 3px;
+	margin-top: 3px;
+	position: absolute;
+}
+
+li>a.menubutton>span.empire_planet:hover:before,
+li>a.menubutton>a.empire_moon:hover:before {
+	background-position-y: -14px;
+}
+
+li>a.menubutton>span.empire_planet {
+	top: 0px;
+	left: 0px;
+}
+li>a.menubutton>span.empire_planet:before {
+	background-position-x: 0px;
+	left: 10px;
+}
+
+li>a.menubutton>a.empire_moon {
+	top: 0px;
+	right: 0px;
+}
+li>a.menubutton>a.empire_moon:before {
+	background-position-x: -20px;
+	right: 10px;
+}
+
+#ogameliveparamsbutton {
+	float: right;
+	display: inline-block;
+	font-size: 17px !important;
+	margin-right: 8px;
+}
+
+#ogameliveparamsbutton:hover {
+	color: #e9a267;
+}
+
+
+#ogameliveparameters {
+	position: fixed;
+	z-index: 1;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0,0,0,0.4);
+}
+
+#ogameliveparameters .parameters-content {
+	width: 50%;
+	background-color: #171717;
+	margin: 15% auto;
+	padding: 20px;
+	border: 1px solid #888;
+	position: relative;
+	min-height: 150px;
+}
+
+#ogameliveparameters .parameters-content .close {
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+}
+
+#ogameliveparameters .parameters-content .close:hover,
+#ogameliveparameters .parameters-content .close:focus {
+	color: red;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+#ogameliveparameters .parameters-content h1,
+#ogameliveparameters .parameters-content h2 {
+	padding-top: 8px;
+	padding-bottom: 4px;
+}
+#ogameliveparameters .parameters-content h1 { font-size: 18px; color: rgb(255,255,255) }
+#ogameliveparameters .parameters-content h2 { font-size: 15px; color: #999999 }
+
+#ogameliveparameters .parameters-content .parameter {
+	padding: 3px 0;
+}
+
+#ogameliveparameters .parameters-content .parameter:hover {
+	background-color: #2d2d2d;
+}
+
+#ogameliveparameters .parameters-content .parameter label {
+	display: inline-block;
+	width: 200px;
+}
+#ogameliveparameters .parameters-content .parameter .parameter-value {
+	width: 100px;
 }

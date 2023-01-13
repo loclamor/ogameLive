@@ -220,8 +220,8 @@ class PlanetsProductionDisplay {
 			}
 			
 			// mount base html
-			jQuery('#'+planetId).prepend(
-				'<div class="prod"><div class="planet_prod">'
+			jQuery('#'+planetId+'>.prod').html(
+				'<div class="planet_prod">'
 					+ '<span id="m_dispo"></span><span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.M.capa)+'</span>' +
 						'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+m_prod_class+'">+'+formatInt(planet.prod.M.prod)+'/h</span>' +
 						'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+m_prod_class+'">+'+formatInt(planet.prod.M.prod * 24)+'/d</span>'
@@ -256,7 +256,7 @@ class PlanetsProductionDisplay {
 					+ '<br/><span id="s_dispo"></span></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
 					+ '<br/><span id="e_dispo"><span class="'+'">E:&nbsp;' + formatInt(planet.moonprod.E.dispo)+'</span></span>'
 						+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.E.prod)+'</span>'
-				+ '</div></div>'
+				+ '</div>'
 			);
 			jQuery('#'+planetId).append('<span class="incomming_fleet"></span>');
 			// planet
@@ -305,18 +305,7 @@ class PlanetsProductionDisplay {
 				'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + '">+'+formatInt(f_total_prod * 60*60 * 24)+'/d</span><br/>'
 				: '')
 			+ '&Sigma;:&nbsp;<span class="total_prod_total"></span><span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>'
-		    + '<br/>'
-			+ '<br/>'
-			+ '<span class="prod_duration_switcher">Production&nbsp;<select id="prod_duration_select" >' +
-					'<option value="hour" ' + (prod_mod === 'hour' ? 'selected' : '') + '>par heure</option>' +
-					'<option value="day" ' + (prod_mod === 'day' ? 'selected' : '') + '>par jour</option>' +
-				'</select></span>'
 		+ '</div>');
-		jQuery('#prod_duration_select').change(jQuery.proxy(function(e) {
-			PARAMS.prod_display = e.currentTarget.value;
-			this.dataManager.updateParams(PARAMS);
-			location.reload();
-		}, this));
 	}
 
 	computeNeededShip(amount, shipCapacity) {
@@ -347,18 +336,13 @@ class PlanetsProductionDisplay {
 		var totalGT = 0;
 		
 		var nowTime = (new Date()).getTime();
-		// if (this.lastTime > 0) {
-		// 	this.elapsedSeconds = (nowTime - this.lastTime)/1000;
-		// }
 
 		var inFlight_M = 0;
 		var inFlight_C = 0;
 		var inFlight_D = 0;
 		var inFlight_F = 0;
 		var flightsByPlanet = {};
-		/**
-		 * @TODO : move into worker
-		 */
+
 		var flights = await this.dataManager.loadFlights();
 		Object.keys(flights).forEach(function(flightId) {
 			var flight = flights[flightId];

@@ -6,7 +6,41 @@
         <link rel="stylesheet" media="all" type="text/css" href="style.css"/>
     </head>
     <body>
-        <h1>ogameLive</h1>
-        <p>ogameLive est u script développé par loclamor, et permet l'affichage en temps réél de la production de vos planètes.</p>
+        <h1>OGameLive Parameters</h1>
+
+        <h2>General options</h2>
+        <div class="parameter">
+            <label>Game style</label>
+            <select id="game-style">
+                <option value="raider">Raider</option>
+                <option value="miner">Miner</option>
+            </select>
+        </div>
+        <div class="parameter">
+            <label>Production display</label>
+            <select id="production-display">
+                <option value="hour">per hour</option>
+                <option value="day">per day</option>
+<!--                <option value="week">per week</option>-->
+            </select>
+        </div>
+        <div class="parameter">
+            <label>Production round</label>
+            <select id="production-round">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+        </div>
+
+        <h2>Fleet options</h2>
+        <div class="parameter">
+            <label>Show fleet speed</label>
+            <select id="fleet-speed">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+        </div>
+
+    <script type="application/javascript" src="parameters.js"></script>
     </body>
 </html>

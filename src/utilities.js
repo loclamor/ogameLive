@@ -148,6 +148,9 @@ Xpath = {
 };
 
 function formatInt( val ) {
+	if (PARAMS.prod_round == 1) {
+		return readablize(val);
+	}
 	return parseInt(val).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 }
 
@@ -172,6 +175,9 @@ function formatTime( time ) {
 }
 
 function readablize(num) {
+	if (num === 0) {
+		return 0;
+	}
 	var s = ['', 'k', 'M', 'Md', 'T', 'P'];
 	var e = Math.floor(Math.log(num) / Math.log(1000));
 	return Math.round((num / Math.pow(1000, e)) * 100) / 100 + s[e];

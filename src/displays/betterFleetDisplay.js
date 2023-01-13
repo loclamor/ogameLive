@@ -47,10 +47,12 @@ class BetterFleetDisplay {
 				+ '<br/>Attack : ' + formatInt(fleetData[k].attack.value)
 				+ '<br/>Shield : ' + formatInt(fleetData[k].shield.value)
 			);
-			
-			jQuery('#technologies li.'+k+' .icon').prepend(
-				'<span class="speed">'+formatInt(fleetData[k].speed.value)+'</span>'
-			);
+
+			if (PARAMS.show_fleet_speed == 1) {
+				jQuery('#technologies li.' + k + ' .icon').prepend(
+					'<span class="speed">' + formatInt(fleetData[k].speed.value) + '</span>'
+				);
+			}
 			
 			//attach event listeners on inputs
 			jQuery('#technologies li.'+k+' input').on('change keyup keydown', updateMoreInfoTable);
@@ -62,6 +64,7 @@ class BetterFleetDisplay {
 		var expeparams = window.localStorage.getItem('ogameLive.expeparams');
 		if (expeparams != null) {
 			expeparams = JSON.parse(expeparams);
+			expeparams.expeditionTime =  expeparams.expeditionTime < 1 ? 1 :  expeparams.expeditionTime;
 		} else {
 			expeparams = {expeditionTime: 1, speedPercent: "10"};
 		}
@@ -74,8 +77,16 @@ class BetterFleetDisplay {
 				'</span>' +
 			'</a>');
 		jQuery("#fleet2 #target .target .clearfloat").before($exploBtn);
+		const $randomSystem = jQuery('<div>+/- <input type="number" step="1" min="0" max="99" value="' +
+			PARAMS.random_system +
+			'" class="system hideNumberSpin" id="random_system"> systems</div>');
+		jQuery("#fleet2 #target .coords").append($randomSystem);
+		$randomSystem.find('input').on('change', e => {
+			PARAMS.random_system = parseInt(jQuery(e.target).val());
+			GM_setJsonValue('params', PARAMS);
+			storeValue('params', PARAMS);
+		});
 		$exploBtn.click(function(e){
-			// jQuery('#target .coords input[name="position"]').val(16);
 			window.dispatchEvent(new CustomEvent('ogameLive.fleetDispatcher.selectExpedition'));
 			e.preventDefault();
 			e.stopPropagation();

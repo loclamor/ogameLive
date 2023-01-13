@@ -40,13 +40,13 @@ const DB_STORE_NAME = 'ogameLiveStorage';
 const DBOpenRequest = idb.open('ogameLiveDB');
 DBOpenRequest.onerror = (event) => { console.error('error loading database') };
 DBOpenRequest.onsuccess = (event) => {
-    console.info('Connected to db')
+    // console.info('Connected to db')
     db = DBOpenRequest.result;
     const store = getIDBStorage('readonly');
     let req = store.getAll();
     req.onsuccess = (event) => {
         let result = event.target.result;
-        console.log('getAll success ', event, result);
+        // console.log('getAll success ', event, result);
         // initialise local tempStore
         result.forEach( elt => {
             switch (true) {
@@ -68,6 +68,7 @@ DBOpenRequest.onsuccess = (event) => {
 
         });
         // start main loop
+        setTimeout(mainLoop, 0);
         interval = setInterval(mainLoop, 1000);
     };
     req.onerror = function() {
@@ -82,11 +83,11 @@ DBOpenRequest.onupgradeneeded = (event) => {
     };
     // Create an objectStore for the database with the primary key
     const objectStore = db.createObjectStore(DB_STORE_NAME, { keyPath: "key" });
-    console.log('Object store created.');
+    // console.log('Object store created.');
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log('[WORKER] receive message :', message, sender);
+    // console.log('[WORKER] receive message :', message, sender);
     switch (message.type) {
         case 'setvalue':
             setValue(message.value);
@@ -171,13 +172,13 @@ function readMultipleValues(keys) {
 }
 
 function storeItem(item) {
-    console.log("storing", item);
+    // console.log("storing", item);
     const obj = {key: item.key, value: item.value}; // ensure that inserted item has key / value attributes only
 
     // const store = getIDBStorage('readwrite');
     const tx = db.transaction(DB_STORE_NAME, 'readwrite');
     tx.oncomplete = (event) => {
-        console.log("TRANSACTION COMPLETE");
+        // console.log("TRANSACTION COMPLETE");
     }
     const store = tx.objectStore(DB_STORE_NAME);
     let req;
@@ -187,7 +188,7 @@ function storeItem(item) {
        console.error('store.put error : ' + e.name, e);
     }
     req.onsuccess = function (evt) {
-        console.log("Insertion in DB successful", obj);
+        // console.log("Insertion in DB successful", obj);
         tx.commit();
     };
     req.onerror = function() {
@@ -200,7 +201,7 @@ function getItem(key, callback) {
     let req = store.get(key);
     req.onsuccess = (event) => {
         let result = event.target.result;
-        console.log('retrieved ', key, result);
+        // console.log('retrieved ', key, result);
         callback(result);
     };
     req.onerror = function() {
@@ -280,7 +281,7 @@ function mainLoop() {
         if (Object.prototype.toString.call(production) === "[object String]") {
             production = JSON.parse(production);
         }
-        console.log(key, production);
+        // console.log(key, production);
 
         let nowTime = (new Date()).getTime();
         let elapsedSeconds = 0;

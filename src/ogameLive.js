@@ -21,15 +21,21 @@ class OgameLive {
 		productionDisplay.initialize();
 		new FlyingFleetObserver(this.dataManager);
 		var app = this;
-		var interval = setInterval(function() {
+		setTimeout(() => {
 			if (!app.disabledTimer) {
 				productionDisplay.display();
-			} else {
-				console.log('Main interval deactivated');
-				clearInterval(interval)
 			}
-		}, 1000);
-		
+		}, 0);
+		if (PARAMS.main_refresh > 0) {
+			var interval = setInterval(function () {
+				if (!app.disabledTimer) {
+					productionDisplay.display();
+				} else {
+					console.log('Main interval deactivated');
+					clearInterval(interval)
+				}
+			}, parseInt(PARAMS.main_refresh ?? 1) * 1000);
+		}
 		// next, parse page data
 		this.router.handlePage(this.url);
 	}

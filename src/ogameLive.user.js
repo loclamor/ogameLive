@@ -10,6 +10,8 @@
 // @description Cette extension permet d'afficher les stocks de ressources en live
 // ==/UserScript==
 // Variables ogameLive
+// noinspection ES6ConvertVarToLetConst
+
 let TYPE = 'GM-';
 const nomScript = 'ogameLive';
 
@@ -52,7 +54,11 @@ const DEFAULT_PARAMS = {
 	lifeform: null,
 	lastServerData: null,
 	prod_display: 'hour',
-
+	game_style: 'miner',
+	prod_round: 0,
+	show_fleet_speed: 1,
+	main_refresh: 1,
+	random_system: 1,
 };
 
 // var PARAMS = GM_getJsonValue('params', DEFAULT_PARAMS);
@@ -62,9 +68,9 @@ retrieveValue('params', DEFAULT_PARAMS).then( (res) => {
 	if (Object.prototype.toString.call(res) === "[object String]") {
 		res = JSON.parse(res);
 	}
-	PARAMS = res;
+	PARAMS = { ...DEFAULT_PARAMS, ...res };
 	const curTime = (new Date()).getTime();
-if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 * 60 * 1000))
+	if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 * 60 * 1000))
 	{
 		// get Universe params if not defined, or Once a day
 		jQuery.get(urlUnivers + "/api/serverData.xml", function (data) {
@@ -86,25 +92,105 @@ if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.
 
 
 /******************************* Main ***********************************/
-jQuery("head").ready(function() {
+var hasOGInfinity = false;
+var hasOGLight = false;
+var hasUniverseView = false;
+var hasInfocompte = false;
+
+// jQuery("head").ready(function() {
+window.addEventListener('DOMContentLoaded', (event) => {
+
+	const ogameLive = new OgameLive();
+	ogameLive.start();
+
+	console.info('OGameLive started')
+
+	const planetsWidth = jQuery('#planetList').width() + 10;
+	const prodWidth = planetsWidth * 1.3;
+	const planetsIcoUrl = chrome.runtime.getURL("src/planet-targets.png");
+	// dynamics css
+	jQuery('head').append('<style>'
+		+ 'li>a.menubutton>span.empire_planet:before, li>a.menubutton>a.empire_moon:before {background-image: url(' + planetsIcoUrl + ');}'
+		+ '#planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.planet_prod {left: -'+(prodWidth)+'px;}'
+		// + '#countColonies .productionSwitcher {width:'+(prodWidth)+'px;}'
+		+ (hasOGLight ?
+			'#countColonies .productionSwitcher {color: #6F9FC8; left: 100%; bottom: 0px; top: auto;}' +
+			'#moreInfoTable {display: none;}'
+			: '')
+		+ 'div#banner_skyscraper {left: '+(1020+prodWidth)+'px !important}'
+		+ '</style>');
+
+	console.info('OGameLive scc inserted')
+
+	jQuery(".smallplanet").append('<div class="prod"></div>');
+
+
 	// push css
-	const link = document.createElement("link");
-	link.href = chrome.runtime.getURL("src/ogameLive.css");
-	link.type = "text/css";
-	link.rel = "stylesheet";
-	document.head.appendChild(link);
+	// const link = document.createElement("link");
+	// link.href = chrome.runtime.getURL("src/ogameLive.css");
+	// link.type = "text/css";
+	// link.rel = "stylesheet";
+	// document.head.appendChild(link);
 	// push js
 	const script = document.createElement('script');
 	script.setAttribute('type', 'text/javascript');
 	script.setAttribute('src', chrome.runtime.getURL("src/window.js"));
 	document.head.appendChild(script);
 	console.info("OGameLive scripts included")
-});
-var hasOGInfinity = false;
-var hasOGLight = false;
-var hasUniverseView = false;
-var hasInfocompte = false;
-jQuery("#resourcesbarcomponent, #planetList").ready(function() {
+// });
+
+// jQuery("#resourcesbarcomponent, #planetList").ready(function() {
+// jQuery("head").ready(function() {
+
+
+
+	let $switcher = jQuery('<div class="productionSwitcher">'
+		+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
+		+ '<div class="moons_prod"><span class="showPlanets">◀ planets</span> Moons productions</div>'
+		+ '</div>');
+	jQuery('#countColonies').append($switcher);
+
+	$switcher.click(function() {
+		jQuery('#planetbarcomponent #rechts #planetList').toggleClass('displayMoonProd');
+		$switcher.toggleClass('displayMoonProd');
+	});
+
+	if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
+		$switcher.click();
+	}
+
+	// OGameLive menu entry
+	const icoUrl = chrome.runtime.getURL("src/ogameLive-128.png");
+	jQuery('#menuTable').append('<li id="ogamelive-menu-button">' +
+			'<span class="menu_icon">' +
+				'<a href="https://github.com/loclamor/ogameLive/issues" target="_blank">' +
+					'<img src="' + icoUrl + '" alt="OgameLive logo" width="24.3px" style="border-radius: 6px">' +
+				'</a>' +
+			'</span>' +
+			'<a class="menubutton" href="https://board.fr.ogame.gameforge.com/index.php?thread/726885-ogamelive/" target="_blank">' +
+				'<span class="textlabel">' +
+					'OgameLive ' + manifestData.version +
+					'<span id="ogameliveparamsbutton">⚙</span>' +
+				'</span>' +
+			'</a>' +
+		'</li>');
+
+	// Better empire button
+	const $empireLink = jQuery('li>span.menu_icon>span.empire').parent().parent().find('a.menubutton');
+	$empireLink.append(
+		'<span class="empire_planet"></span>' +
+		'<a class="empire_moon" href="' + $empireLink.attr('href') + '&planetType=1" target="_blank"></a>'
+	)
+
+	jQuery('#ogameliveparamsbutton').click((e) => {
+		const p = new Parameters(ogameLive.dataManager);
+		p.displayModale();
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	});
+
+	jQuery('.smallplanet > a').toggleClass('tooltipRight tooltipLeft');
 
 	hasOGInfinity = jQuery('.ogl-harvestOptions').length >= 1;
 	hasOGLight = jQuery('#menuTable .ogl_leftMenuIcon').length >= 1;
@@ -118,60 +204,13 @@ jQuery("#resourcesbarcomponent, #planetList").ready(function() {
 		(hasInfocompte ? "InfoCompte, ": "") +
 		"");
 
-	const planetsWidth = jQuery('#planetList').width() + 10;
-	const prodWidth = planetsWidth * 1.3;
-	// dynamics css
-	jQuery('head').append('<style>'
-		+ '.smallplanet>.prod {width: '+(prodWidth)+'px; display: none;}' //  display none for better rendering while css file is loading
-		+ '.smallplanet>.prod>.planet_prod, .smallplanet>.prod>.moon_prod {width: '+(prodWidth)+'px;}'
-		+ '.smallplanet>.prod>.moon_prod {left: '+(prodWidth)+'px;}'
-		+ '#planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.planet_prod {left: -'+(prodWidth)+'px;}'
-		+ '#countColonies .productionSwitcher {width:'+(prodWidth)+'px;}'
-		+ (hasOGLight ?
-			'#countColonies .productionSwitcher {color: #6F9FC8; left: 100%; bottom: 0px; top: auto;}' +
-			'#moreInfoTable {display: none;}'
-			: '')
-		+ '#countColonies .productionSwitcher .planets_prod {width:'+(prodWidth)+'px;}'
-		+ '#countColonies .productionSwitcher .moons_prod {left: '+(prodWidth)+'px; width:'+(prodWidth)+'px;}'
-		+ '#countColonies .productionSwitcher.displayMoonProd .planets_prod {left: -'+(prodWidth)+'px;}'
-		+ 'div#banner_skyscraper {left: '+(1020+prodWidth)+'px !important}'
-		+ '#planetList .total_prod {margin-left: '+planetsWidth+'px; width: '+(prodWidth)+'px;}'
-		+ (hasOGInfinity ? '#planetbarcomponent #rechts #myPlanets .smallplanet a.moonlink {left: 116px !important}' : '')
-	+ '</style>');
-
-	console.info('OGameLive scc inserted')
-
-	let $switcher = jQuery('<div class="productionSwitcher">'
-		+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
-		+ '<div class="moons_prod"><span class="showPlanets">◀ planets</span> Moons productions</div>'
-		+ '</div>');
-	jQuery('#countColonies').append($switcher);
-
-	$switcher.click(function() {
-		jQuery('#planetbarcomponent #rechts #planetList').toggleClass('displayMoonProd');
-		$switcher.toggleClass('displayMoonProd');
-	});
-
-	const ogameLive = new OgameLive();
-	ogameLive.start();
-
-	console.info('OGameLive started')
-
-	if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
-		$switcher.click();
-	}
-
-	const icoUrl = chrome.runtime.getURL("src/ogameLive-128.png");
-	jQuery('#menuTable').append('<li id="ogamelive-menu-button">' +
-			'<span class="menu_icon">' +
-				'<a href="https://github.com/loclamor/ogameLive/issues" target="_blank">' +
-					'<img src="' + icoUrl + '" alt="OgameLive logo" width="24.3px" style="border-radius: 6px">' +
-				'</a>' +
-			'</span>' +
-			'<a class="menubutton" href="https://board.fr.ogame.gameforge.com/index.php?thread/726885-ogamelive/" target="_blank">' +
-				'<span class="textlabel">OgameLive ' + manifestData.version + '</span>' +
-			'</a>' +
-		'</li>');
+	jQuery('body').addClass(
+		(hasOGInfinity ? "ogameinfinity ": "") +
+		(hasOGLight ? "oglight ": "") +
+		(hasUniverseView ? "universeview ": "") +
+		(hasInfocompte ? "infocompte ": "") +
+		"ogamelive"
+	);
 
 	console.info('OGameLive fully loaded')
 });
