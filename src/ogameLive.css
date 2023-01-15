@@ -1,6 +1,12 @@
 /** NOUVELLE CSS PLANETES **/
 :root {
+	--basecolor: rgb(111, 159, 200);
 	--percent: 0;
+	--metal: rgba(255, 170, 204, 0.63);
+	--cristal : rgba(115, 229, 255, 0.78);
+	--deuterium: rgb(166, 224, 176);
+	--warning: #D29D00;
+	--danger: #D43635;
 }
 
 #planetbarcomponent #myPlanets {
@@ -171,6 +177,17 @@
 #countColonies .productionSwitcher.displayMoonProd .moons_prod {left: 0px;}
 #countColonies .productionSwitcher.displayMoonProd .moons_prod:hover {left: +7px;}
 
+#countColonies span.planets_label,
+#countColonies span.moons_label {
+	display: inline-block;
+	width: 100px;
+	text-align: center;
+}
+
+#countColonies span.moons_label {
+	margin-left: 50px;
+}
+
 #countColonies .ogl_menuOptions {
 	position: absolute;
 	left: 0;
@@ -205,8 +222,12 @@
 	width: 250px;
 }
 
-.smallplanet>.prod>.moon_prod {
+.smallplanet>.prod.miner>.moon_prod {
 	left: 250px;
+}
+
+.smallplanet>.prod.raider>.moon_prod {
+	left: 150px;
 }
 
 .planet_prod>.dispo,
@@ -230,14 +251,26 @@
 	top: 0px;
 	height: 12px;
 }
+.planet_prod>#m_dispo.dispo>span {
+	border-color: var(--metal);
+}
+.planet_prod>#c_dispo.dispo>span {
+	border-color: var(--cristal);
+}
+.planet_prod>#d_dispo.dispo>span {
+	border-color: var(--deuterium);
+}
+.planet_prod>#e_dispo.dispo>span {
+	border-color: var(--basecolor);
+}
 
 .planet_prod>.dispo>span.middlemark,
 .moon_prod>.dispo>span.middlemark {
-	border-color: #D29D00;
+	border-color: var(--warning) !important;
 }
 .planet_prod>.dispo>span.overmark,
 .moon_prod>.dispo>span.overmark{
-	border-color: #D43635;
+	border-color: var(--danger) !important;
 }
 
 .smallplanet>.prod>.planet_prod,
@@ -269,6 +302,19 @@
 .needed_fleet {
 	font-size: 8px;
 	float: right;
+}
+
+#m_dispo, .in_flight_metal, .total_prod_metal {
+	color: var(--metal) !important;
+}
+#c_dispo, .in_flight_cristal, .total_prod_cristal {
+	color: var(--cristal) !important;
+}
+#d_dispo, .in_flight_deut, .total_prod_deut {
+	color: var(--deuterium) !important;
+}
+#e_dispo {
+	color: var(--basecolor) !important;
 }
 
 #technologies li .icon .speed {

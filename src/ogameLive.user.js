@@ -125,21 +125,25 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	console.info('OGameLive scc inserted')
 
 	if (PARAMS.show_production == 1) {
-		let $switcher = jQuery('<div class="productionSwitcher">'
-			+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
-			+ '<div class="moons_prod"><span class="showPlanets">◀ planets</span> Moons productions</div>'
-			+ '</div>');
-		jQuery('#countColonies').append($switcher);
+		if (PARAMS.game_style === 'miner') {
+			let $switcher = jQuery('<div class="productionSwitcher">'
+				+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
+				+ '<div class="moons_prod"><span class="showPlanets">◀ planets</span> Moons productions</div>'
+				+ '</div>');
+			jQuery('#countColonies').append($switcher);
 
-		$switcher.click(function() {
-			jQuery('#planetbarcomponent #rechts #planetList').toggleClass('displayMoonProd');
-			$switcher.toggleClass('displayMoonProd');
-		});
+			$switcher.click(function () {
+				jQuery('#planetbarcomponent #rechts #planetList').toggleClass('displayMoonProd');
+				$switcher.toggleClass('displayMoonProd');
+			});
 
-		if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
-			$switcher.click();
+			if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
+				$switcher.click();
+			}
+		} else {
+			jQuery('#countColonies').append('<div class="productionSwitcher"><span class="planets_label">Planets</span><span class="moons_label">Moons</span></div>')
 		}
-		jQuery(".smallplanet").append('<div class="prod"></div>');
+		jQuery(".smallplanet").append('<div class="prod ' + PARAMS.game_style + '"></div>');
 	}
 
 
