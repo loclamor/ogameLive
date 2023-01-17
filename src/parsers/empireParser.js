@@ -2,17 +2,54 @@ class EmpireParser {
     constructor(dataManager) {
         this.dataManager = dataManager;
 
+        const moonRegex = new RegExp(/planetType=1/)
+        this.isOnMoon = moonRegex.test(location.href);
+
+        console.log("isOnMoon", this.isOnMoon);
+        if (this.isOnMoon) {
+            retrieveMultipleValues([
+                    'planetsIdToCoords',
+                    'planetsCoordsToId'
+                ]).then( (r) => {
+                this.planetsIdToCoords = r.planetsIdToCoords;
+                this.planetsCoordsToId = r.planetsCoordsToId;
+                console.log('planetsIdToCoords', this.planetsIdToCoords, 'planetsCoordsToId', this.planetsCoordsToId);
+            });
+        }
+
         let empireSelector = document.querySelector('#mainWrapper');
         if (empireSelector != null) {
             let empireObserver = new MutationObserver(jQuery.proxy(async function (mutations) {
+                if (this.isOnMoon) {
+                    const res = await retrieveMultipleValues([
+                        'planetsIdToCoords',
+                        'planetsCoordsToId'
+                    ])//.then( (r) => {
+                    //     this.planetsIdToCoords = r.planetsIdToCoords;
+                    //     this.planetsCoordsToId = r.planetsCoordsToId;
+                    //     console.log('planetsIdToCoords', this.planetsIdToCoords, 'planetsCoordsToId', this.planetsCoordsToId);
+                    // });
+                    this.planetsIdToCoords = res.planetsIdToCoords;
+                    this.planetsCoordsToId = res.planetsCoordsToId;
+                    console.log('planetsIdToCoords', this.planetsIdToCoords, 'planetsCoordsToId', this.planetsCoordsToId);
+                }
                 let loadedTime = (new Date()).getTime();
                 console.log("Inside empire Observer !");
                 empireObserver.disconnect();
                 let planetList = Xpath.getUnorderedSnapshotNodes(document,'//div[contains(@class,"planetWrapper")]/div/@id');
                 let nbPlanets = planetList.snapshotLength;
                 for (var i = 0; i < nbPlanets; i++) {
+                    let internalId;
                     let planetId = planetList.snapshotItem(i).textContent;
-                    let internalId = 'planet-' + planetId.split('planet')[1];
+                    if (this.isOnMoon) {
+                        let moonCoords = Xpath.getStringValue(document, '//div[contains(@id,"'+planetId+'")]/div[contains(@class,"planetHead")]/div[contains(@class,"planetData")]/div[contains(@class, "planetDataTop")]/ul/li[contains(@class, "coords")]/a');
+                        moonCoords = moonCoords.trim().replace(/\[|\]/g, '');
+                        console.log('moon coords', moonCoords);
+                        const p_id = this.planetsCoordsToId[moonCoords];
+                        internalId = p_id + '-moon';
+                    } else {
+                        internalId = 'planet-' + planetId.split('planet')[1];
+                    }
                     const [planetData, planetProd] = await Promise.all([
                         this.dataManager.loadPlanetData(internalId),
                         this.dataManager.loadPlanetProd(internalId)

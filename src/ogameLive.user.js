@@ -58,33 +58,36 @@ const DEFAULT_PARAMS = {
 	prod_round: 0,
 	show_fleet_speed: 1,
 	main_refresh: 1,
-	random_system: 1,
+	random_system: 0,
 	show_needed_transporters: 1,
 	show_production: 1,
+	energie_display: 1,
+	sum_display: 1,
 };
 
 // var PARAMS = GM_getJsonValue('params', DEFAULT_PARAMS);
 var PARAMS = DEFAULT_PARAMS;
-retrieveValue('params', DEFAULT_PARAMS).then( (res) => {
-	// ensure PARAMS is Object
-	if (Object.prototype.toString.call(res) === "[object String]") {
-		res = JSON.parse(res);
-	}
-	PARAMS = { ...DEFAULT_PARAMS, ...res };
-	const curTime = (new Date()).getTime();
-	if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 * 60 * 1000))
-	{
-		// get Universe params if not defined, or Once a day
-		jQuery.get(urlUnivers + "/api/serverData.xml", function (data) {
-			let $data = jQuery(data);
-			versionUnivers = $data.find('version')[0].textContent;
-			PARAMS.lifeform = $data.find('lifeformSettings').length > 0;
-			PARAMS.lastServerData = (new Date()).getTime();
-			GM_setJsonValue('params', PARAMS);
-			storeValue('params', PARAMS);
-		});
-	}
-});
+let res = GM_getJsonValue('params');
+// retrieveValue('params', DEFAULT_PARAMS).then( (res) => {
+// ensure PARAMS is Object
+if (Object.prototype.toString.call(res) === "[object String]") {
+	res = JSON.parse(res);
+}
+PARAMS = { ...DEFAULT_PARAMS, ...res };
+const curTime = (new Date()).getTime();
+if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 * 60 * 1000))
+{
+	// get Universe params if not defined, or Once a day
+	jQuery.get(urlUnivers + "/api/serverData.xml", function (data) {
+		let $data = jQuery(data);
+		versionUnivers = $data.find('version')[0].textContent;
+		PARAMS.lifeform = $data.find('lifeformSettings').length > 0;
+		PARAMS.lastServerData = (new Date()).getTime();
+		GM_setJsonValue('params', PARAMS);
+		storeValue('params', PARAMS);
+	});
+}
+// });
 
 
 /*chrome.runtime.sendMessage({type: 'greetings', value: 'loclamor'}, (response) => {
@@ -113,13 +116,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	// dynamics css
 	jQuery('head').append('<style>'
 		+ 'li>a.menubutton>span.empire_planet:before, li>a.menubutton>a.empire_moon:before {background-image: url(' + planetsIcoUrl + ');}'
-		+ '#planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.planet_prod {left: -'+(prodWidth)+'px;}'
+		// + '#planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.planet_prod {left: -'+(prodWidth)+'px;}'
 		// + '#countColonies .productionSwitcher {width:'+(prodWidth)+'px;}'
 		+ (hasOGLight ?
 			'#countColonies .productionSwitcher {color: #6F9FC8; left: 100%; bottom: 0px; top: auto;}' +
 			'#moreInfoTable {display: none;}'
 			: '')
-		+ 'div#banner_skyscraper {left: '+(1020+prodWidth)+'px !important}'
+		// + 'div#banner_skyscraper {left: '+(1020+prodWidth)+'px !important}'
 		+ '</style>');
 
 	console.info('OGameLive scc inserted')
@@ -144,6 +147,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
 			jQuery('#countColonies').append('<div class="productionSwitcher"><span class="planets_label">Planets</span><span class="moons_label">Moons</span></div>')
 		}
 		jQuery(".smallplanet").append('<div class="prod ' + PARAMS.game_style + '"></div>');
+		jQuery('#planetbarcomponent').addClass((PARAMS.energie_display == 1 ? ' energie' : ' noenergie') + (PARAMS.sum_display == 1 ? ' sum' : ' nosum'))
+	} else {
+		jQuery('#planetbarcomponent').addClass('noprod');
 	}
 
 

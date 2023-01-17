@@ -8,9 +8,19 @@
 	--warning: #D29D00;
 	--danger: #D43635;
 }
+div#banner_skyscraper {
+	position: absolute;
+	top: 7.5em !important;
+	left: auto !important;
+	right: -330px !important;
+}
+div#banner_skyscraper a.close_details {
+	right: -20px !important;
+}
+
 
 #planetbarcomponent #myPlanets {
-	width: 210px !important;
+	width: 216px !important;
 }
 
 #planetList { /** from infinity **/
@@ -22,11 +32,16 @@
 	padding: 5px;
 }
 
-#pageContent #right #planetList,
-#pageContent #mainContent #planetList{
+#pageContent #right #planetbarcomponent #planetList,
+#pageContent #mainContent #planetbarcomponent #planetList{
 	display: flex;
 	flex-direction: column;
 	width: 450px !important;
+}
+
+#pageContent #right #planetbarcomponent.noprod #planetList,
+#pageContent #mainContent #planetbarcomponent.noprod #planetList{
+	width: 204px !important;
 }
 
 #pageContent #right #planetbarcomponent #rechts .smallplanet,
@@ -52,6 +67,36 @@
 	top: 0px;
 	left: 0px;
 	padding: 0px;
+}
+
+#pageContent #right #planetbarcomponent.noprod #rechts .smallplanet,
+#pageContent #mainContent #planetbarcomponent.noprod #rechts .smallplanet,
+#pageContent #right #planetbarcomponent.noprod #rechts .smallplanet>a.planetlink,
+#pageContent #right #planetbarcomponent.noprod #rechts .smallplanet>a.moonlink,
+#pageContent #mainContent #planetbarcomponent.noprod #rechts .smallplanet>a.planetlink,
+#pageContent #mainContent #planetbarcomponent.noprod #rechts .smallplanet>a.moonlink,
+#pageContent #right #planetbarcomponent.noenergie.nosum #rechts .smallplanet,
+#pageContent #mainContent #planetbarcomponent.noenergie.nosum #rechts .smallplanet,
+#pageContent #right #planetbarcomponent.noenergie.nosum #rechts .smallplanet>a.planetlink,
+#pageContent #right #planetbarcomponent.noenergie.nosum #rechts .smallplanet>a.moonlink,
+#pageContent #mainContent #planetbarcomponent.noenergie.nosum #rechts .smallplanet>a.planetlink,
+#pageContent #mainContent #planetbarcomponent.noenergie.nosum #rechts .smallplanet>a.moonlink{
+	height: 41px !important;
+}
+
+#pageContent #right #planetbarcomponent.noenergie.sum #rechts .smallplanet,
+#pageContent #mainContent #planetbarcomponent.noenergie.sum #rechts .smallplanet,
+#pageContent #right #planetbarcomponent.noenergie.sum #rechts .smallplanet>a.planetlink,
+#pageContent #right #planetbarcomponent.noenergie.sum #rechts .smallplanet>a.moonlink,
+#pageContent #mainContent #planetbarcomponent.noenergie.sum #rechts .smallplanet>a.planetlink,
+#pageContent #mainContent #planetbarcomponent.noenergie.sum #rechts .smallplanet>a.moonlink,
+#pageContent #right #planetbarcomponent.energie.nosum #rechts .smallplanet,
+#pageContent #mainContent #planetbarcomponent.energie.nosum #rechts .smallplanet,
+#pageContent #right #planetbarcomponent.energie.nosum #rechts .smallplanet>a.planetlink,
+#pageContent #right #planetbarcomponent.energie.nosum #rechts .smallplanet>a.moonlink,
+#pageContent #mainContent #planetbarcomponent.energie.nosum #rechts .smallplanet>a.planetlink,
+#pageContent #mainContent #planetbarcomponent.energie.nosum #rechts .smallplanet>a.moonlink{
+	height: 53px !important;
 }
 
 /* css planete */
@@ -159,6 +204,10 @@
 	outline: rgb(0, 0, 0) solid 1px;
 	background: linear-gradient(to right, rgb(28, 43, 56) 45%, rgb(9, 14, 19)) !important;
 	margin: 0px !important;
+}
+
+#planetbarcomponent.noprod #countColonies {
+	width: 216px !important;
 }
 
 #countColonies .productionSwitcher {width: 250px;}

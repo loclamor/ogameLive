@@ -26,6 +26,8 @@ class DataManager {
 				this.planetsIdToCoords[planetId] = planetCoords.trim().replace(/\[|\]/g, '');
 				this.planetsCoordsToId[planetCoords.trim().replace(/\[|\]/g, '')] = planetId;
 			}
+			storeValue('planetsIdToCoords', this.planetsIdToCoords);
+			storeValue('planetsCoordsToId', this.planetsCoordsToId);
 		}
 		return this.planetsIdToCoords[p_id];
 	}

@@ -25,6 +25,20 @@ class Parameters {
                     {value: 'day', label: 'per day'}
                 ],
             },
+            energie_display: {
+                label: 'Display energie availables per planet',
+                options: [
+                    {value: 1, label: 'Yes'},
+                    {value: 0, label: 'No'}
+                ],
+            },
+            sum_display: {
+                label: 'Sum resources per planet',
+                options: [
+                    {value: 1, label: 'Yes'},
+                    {value: 0, label: 'No'}
+                ],
+            },
             prod_round: {
                 label: 'Production round',
                 options: [
@@ -68,11 +82,14 @@ class Parameters {
                     '<h1>OGameLive Parameters</h1>' +
                     '<h2>General options</h2>' +
                     this._getParamSelect('game_style') +
+                    this._getParamInteger('main_refresh') +
+                    '<h2>Live production</h2>' +
                     this._getParamSelect('show_production') +
                     this._getParamSelect('prod_display') +
+                    this._getParamSelect('energie_display') +
+                    this._getParamSelect('sum_display') +
                     this._getParamSelect('prod_round') +
                     this._getParamSelect('show_needed_transporters') +
-                    this._getParamInteger('main_refresh') +
                     '<h2>Fleet options</h2>' +
                     this._getParamSelect('show_fleet_speed') +
                     this._getParamInteger('random_system') +

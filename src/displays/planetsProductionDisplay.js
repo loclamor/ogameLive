@@ -241,9 +241,9 @@ class PlanetsProductionDisplay {
 					'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+f_prod_class+'">+'+formatInt(planet.prod.F.surprod * 60*60)+'/h</span>' +
 					'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+f_prod_class+'">+'+formatInt(planet.prod.F.surprod * 60*60 * 24)+'/d</span>'
 				: '')*/
-				+ '<br/><span id="s_dispo"></span></span>'
+				+ (PARAMS.sum_display == 1 ? '<br/><span id="s_dispo"></span>' : '')
 				+ (PARAMS.show_needed_transporters == 1 && PARAMS.game_style === 'miner' ? '<span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>' : '')
-				+ '<br/><span id="e_dispo" class="dispo" title="Production : ' + formatInt(planet.prod.E.prod) + '"><span class="' + warnE + '" style="width:' + this.percent(planet.prod.E.prod - planet.prod.E.dispo, planet.prod.E.prod) + '%">E:&nbsp;' + formatInt(planet.prod.E.dispo) + '</span></span>'
+				+ (PARAMS.energie_display == 1 ? '<br/><span id="e_dispo" class="dispo" title="Production : ' + formatInt(planet.prod.E.prod) + '"><span class="' + warnE + '" style="width:' + this.percent(planet.prod.E.prod - planet.prod.E.dispo, planet.prod.E.prod) + '%">E:&nbsp;' + formatInt(planet.prod.E.dispo) + '</span></span>' : '')
 				//+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.E.prod)+'</span>'
 				+ cefPercent
 				+ '</div><div class="moon_prod">'
@@ -264,9 +264,9 @@ class PlanetsProductionDisplay {
 					'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' '+f_prod_class_moon+'">+'+formatInt(planet.moonprod.F.surprod * 60*60)+'/h</span>' +
 					'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' '+f_prod_class_moon+'">+'+formatInt(planet.moonprod.F.surprod * 60*60 * 24)+'/d</span>'
 					: '')*/
-				+ '<br/><span id="s_dispo"></span></span>'
+				+ (PARAMS.sum_display == 1 ? '<br/><span id="s_dispo"></span>' : '')
 				+ (PARAMS.show_needed_transporters == 1 && PARAMS.game_style === 'miner' ? '<span class="needed_fleet"><span class="pt"></span>&nbsp;PT&nbsp;-&nbsp;<span class="gt"></span>&nbsp;GT</span>' : '')
-				+ '<br/><span id="e_dispo" class="dispo" title="Production : ' + formatInt(planet.moonprod.E.prod) + '"><span class="' + '" style="width:' + this.percent(planet.moonprod.E.prod - planet.moonprod.E.dispo, planet.moonprod.E.prod) + '%">E:&nbsp;' + formatInt(planet.moonprod.E.dispo) + '</span></span>'
+				+ (PARAMS.energie_display == 1 ? '<br/><span id="e_dispo" class="dispo" title="Production : ' + formatInt(planet.moonprod.E.prod) + '"><span class="' + '" style="width:' + this.percent(planet.moonprod.E.prod - planet.moonprod.E.dispo, planet.moonprod.E.prod) + '%">E:&nbsp;' + formatInt(planet.moonprod.E.dispo) + '</span></span>' : '')
 				//+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.E.prod)+'</span>'
 				+ '</div>'
 			);
