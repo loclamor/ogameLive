@@ -368,17 +368,20 @@ class PlanetsProductionDisplay {
 		var flights = await this.dataManager.loadFlights();
 		Object.keys(flights).forEach(function(flightId) {
 			var flight = flights[flightId];
-			inFlight_M += flight.resources.M;
-			inFlight_C += flight.resources.C;
-			inFlight_D += flight.resources.D;
-			if (PARAMS.lifeform) {
-				inFlight_F += flight.resources.F;
-			}
-			if (flight.destination) {
-				if (!flightsByPlanet[flight.destination]) {
-					flightsByPlanet[flight.destination] = [];
+			if (!flight.hasPrevious) { // do not count twice
+
+				inFlight_M += flight.resources.M;
+				inFlight_C += flight.resources.C;
+				inFlight_D += flight.resources.D;
+				if (PARAMS.lifeform) {
+					inFlight_F += flight.resources.F;
 				}
-				flightsByPlanet[flight.destination].push(flight);
+				if (flight.destination) {
+					if (!flightsByPlanet[flight.destination]) {
+						flightsByPlanet[flight.destination] = [];
+					}
+					flightsByPlanet[flight.destination].push(flight);
+				}
 			}
 		});
 		

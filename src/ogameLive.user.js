@@ -1,18 +1,3 @@
-// ==UserScript==
-// @name	    ogameLive
-// @version     1.0.0
-// @author      loclamor
-// @namespace	loclamor.info
-// @include     https://*.ogame.*/game/index.php*
-// @grant       GM_getValue
-// @grant       GM_setValue
-// @grant       GM_xmlhttpRequest
-// @description Cette extension permet d'afficher les stocks de ressources en live
-// ==/UserScript==
-// Variables ogameLive
-// noinspection ES6ConvertVarToLetConst
-
-let TYPE = 'GM-';
 const nomScript = 'ogameLive';
 
 const LOG_LEVEL_OFF = 10,
@@ -28,12 +13,14 @@ GM_setValue('debug.loglevel', GM_getIntValue('debug.loglevel', LOG_LEVEL_INFO));
 const isFirefox = (window.navigator.userAgent.indexOf('Firefox') > -1);
 const isChrome = (window.navigator.userAgent.indexOf('Chrome') > -1);
 const isOpera = (window.navigator.userAgent.indexOf('Opera') > -1);
+// noinspection ES6ConvertVarToLetConst
+var BROWSER;
 if (isFirefox) {
-    TYPE += 'FF';
+	BROWSER = 'FF';
 } else if (isChrome) {
-    TYPE += 'GC';
+	BROWSER = 'GC';
 } else if (isOpera) {
-    TYPE += 'OP';
+	BROWSER = 'OP';
 }
 
 const manifestData = chrome.runtime.getManifest();
@@ -44,6 +31,7 @@ const url = location.href;
 const urlUnivers = url.match(new RegExp('(.*)/game'))[1];
 const numUnivers = urlUnivers.match(new RegExp('\/s(.*)-[a-z]{2}.ogame'))[1];
 const langUnivers = urlUnivers.match(new RegExp('-(.*).ogame'))[1];
+// noinspection ES6ConvertVarToLetConst
 var prefix_GMData = 'ogameLive.' + langUnivers + numUnivers + '.';
 let versionUnivers = null;
 log("Universe url: " + urlUnivers, LOG_LEVEL_TRACE);
@@ -63,18 +51,20 @@ const DEFAULT_PARAMS = {
 	show_production: 1,
 	energie_display: 1,
 	sum_display: 1,
+	show_flights: 1,
 };
 
-// var PARAMS = GM_getJsonValue('params', DEFAULT_PARAMS);
+// noinspection ES6ConvertVarToLetConst
 var PARAMS = DEFAULT_PARAMS;
-let res = GM_getJsonValue('params');
-// retrieveValue('params', DEFAULT_PARAMS).then( (res) => {
+let res = GM_getJsonValue('params', DEFAULT_PARAMS);
 // ensure PARAMS is Object
 if (Object.prototype.toString.call(res) === "[object String]") {
 	res = JSON.parse(res);
 }
+// Apply loaded params on defaults ones to use default values on new params
 PARAMS = { ...DEFAULT_PARAMS, ...res };
 const curTime = (new Date()).getTime();
+// once a day, retrieve serverData
 if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 * 60 * 1000))
 {
 	// get Universe params if not defined, or Once a day
@@ -87,48 +77,37 @@ if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.
 		storeValue('params', PARAMS);
 	});
 }
-// });
 
 
-/*chrome.runtime.sendMessage({type: 'greetings', value: 'loclamor'}, (response) => {
-	// 3. Got an asynchronous response with the data from the service worker
-	console.log('received user data', response);
-});*/
-
-
+// noinspection ES6ConvertVarToLetConst
 /******************************* Main ***********************************/
 var hasOGInfinity = false;
+// noinspection ES6ConvertVarToLetConst
 var hasOGLight = false;
+// noinspection ES6ConvertVarToLetConst
 var hasUniverseView = false;
+// noinspection ES6ConvertVarToLetConst
 var hasInfocompte = false;
 
 // jQuery("head").ready(function() {
 window.addEventListener('DOMContentLoaded', (event) => {
 
+	// let the magic happen
 	const ogameLive = new OgameLive();
 	ogameLive.start();
+	console.info('OGameLive started');
 
-	console.info('OGameLive started')
-
-	const planetsWidth = jQuery('#planetList').width() + 10;
-	const prodWidth = planetsWidth * 1.3;
+	// dynamic css
 	const planetsIcoUrl = chrome.runtime.getURL("src/planet-targets.png");
-	// dynamics css
 	jQuery('head').append('<style>'
 		+ 'li>a.menubutton>span.empire_planet:before, li>a.menubutton>a.empire_moon:before {background-image: url(' + planetsIcoUrl + ');}'
-		// + '#planetbarcomponent #rechts .displayMoonProd .smallplanet>.prod>.planet_prod {left: -'+(prodWidth)+'px;}'
-		// + '#countColonies .productionSwitcher {width:'+(prodWidth)+'px;}'
-		+ (hasOGLight ?
-			'#countColonies .productionSwitcher {color: #6F9FC8; left: 100%; bottom: 0px; top: auto;}' +
-			'#moreInfoTable {display: none;}'
-			: '')
-		// + 'div#banner_skyscraper {left: '+(1020+prodWidth)+'px !important}'
-		+ '</style>');
+	+ '</style>');
+	console.info('OGameLive dynamic CSS inserted');
 
-	console.info('OGameLive scc inserted')
-
+	// Add base HTML
 	if (PARAMS.show_production == 1) {
 		if (PARAMS.game_style === 'miner') {
+			// On miner game-style add production switcher planets/moons
 			let $switcher = jQuery('<div class="productionSwitcher">'
 				+ '<div class="planets_prod">Planets productions <span class="showMoons">moons ▶</span></div>'
 				+ '<div class="moons_prod"><span class="showPlanets">◀ planets</span> Moons productions</div>'
@@ -140,41 +119,44 @@ window.addEventListener('DOMContentLoaded', (event) => {
 				$switcher.toggleClass('displayMoonProd');
 			});
 
+			// Set switcher to current planet type
 			if (ogameLive.dataManager.getCurrentPlanetId().endsWith('moon')) {
 				$switcher.click();
 			}
 		} else {
+			// For raiders, no switcher but just labels
 			jQuery('#countColonies').append('<div class="productionSwitcher"><span class="planets_label">Planets</span><span class="moons_label">Moons</span></div>')
 		}
+		// Add classes to let css know activated params
 		jQuery(".smallplanet").append('<div class="prod ' + PARAMS.game_style + '"></div>');
 		jQuery('#planetbarcomponent').addClass((PARAMS.energie_display == 1 ? ' energie' : ' noenergie') + (PARAMS.sum_display == 1 ? ' sum' : ' nosum'))
 	} else {
+		// Add class to let css know there is no prod to display
 		jQuery('#planetbarcomponent').addClass('noprod');
 	}
 
+	if (PARAMS.show_flights == 1) {
+		jQuery("#left, #leftMenu").append('<div id="flights" class="' + PARAMS.game_style + '"></div>');
+	}
 
-	// push css
-	// const link = document.createElement("link");
-	// link.href = chrome.runtime.getURL("src/ogameLive.css");
-	// link.type = "text/css";
-	// link.rel = "stylesheet";
-	// document.head.appendChild(link);
-	// push js
+
+	// push css (In production, insert CSS via manifest to have it loaded first)
+	/*
+	const link = document.createElement("link");
+	link.href = chrome.runtime.getURL("src/ogameLive.css");
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild(link);
+	*/
+
+	// Push JS wich will have OGame context
 	const script = document.createElement('script');
 	script.setAttribute('type', 'text/javascript');
 	script.setAttribute('src', chrome.runtime.getURL("src/window.js"));
 	document.head.appendChild(script);
-	console.info("OGameLive scripts included")
-// });
+	console.info("OGameLive scripts included");
 
-// jQuery("#resourcesbarcomponent, #planetList").ready(function() {
-// jQuery("head").ready(function() {
-
-
-
-
-
-	// OGameLive menu entry
+	// Add OGameLive menu entry
 	const icoUrl = chrome.runtime.getURL("src/ogameLive-128.png");
 	jQuery('#menuTable').append('<li id="ogamelive-menu-button">' +
 			'<span class="menu_icon">' +
@@ -190,13 +172,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
 			'</a>' +
 		'</li>');
 
-	// Better empire button
+	// Customize empire button with planet/moon icon-links
 	const $empireLink = jQuery('li>span.menu_icon>span.empire').parent().parent().find('a.menubutton');
 	$empireLink.append(
 		'<span class="empire_planet"></span>' +
 		'<a class="empire_moon" href="' + $empireLink.attr('href') + '&planetType=1" target="_blank"></a>'
 	)
 
+	// manage OGameLive parameters Modal
 	jQuery('#ogameliveparamsbutton').click((e) => {
 		const p = new Parameters(ogameLive.dataManager);
 		p.displayModale();
@@ -205,8 +188,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
 		return false;
 	});
 
+	// with OGameLive Infinity-based planets and moon display, change default tooltip side
 	jQuery('.smallplanet > a').toggleClass('tooltipRight tooltipLeft');
 
+	// Finaly detect other plugins and add them into body class (this is not really helpfully if that plugins load after OGameLive)
 	hasOGInfinity = jQuery('.ogl-harvestOptions').length >= 1;
 	hasOGLight = jQuery('#menuTable .ogl_leftMenuIcon').length >= 1;
 	hasUniverseView = jQuery('body.universeview').length >= 1;
@@ -218,7 +203,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
 		(hasUniverseView ? "Universeview, ": "") +
 		(hasInfocompte ? "InfoCompte, ": "") +
 		"");
-
 	jQuery('body').addClass(
 		(hasOGInfinity ? "ogameinfinity ": "") +
 		(hasOGLight ? "oglight ": "") +

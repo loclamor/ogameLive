@@ -69,6 +69,8 @@ class BetterFleetDisplay {
 			expeparams = {expeditionTime: 1, speedPercent: "10"};
 		}
 
+		var $customCoords = jQuery('<div class="custom-coords"></div>');
+
 		var $exploBtn = jQuery('<a class="explo" href="#" id="ebutton">' +
 				'<span class="textlabel">Exploration</span>' +
 				'<span class="expeparams">' +
@@ -76,11 +78,15 @@ class BetterFleetDisplay {
 					(parseInt(expeparams.speedPercent) * 10) + "%" +
 				'</span>' +
 			'</a>');
-		jQuery("#fleet2 #target .target .clearfloat").before($exploBtn);
-		const $randomSystem = jQuery('<div>+/- <input type="number" step="1" min="0" max="99" value="' +
+		//jQuery("#fleet2 #target .target .clearfloat").before($exploBtn);
+		// jQuery("#fleet2 #target .coords").append($exploBtn);
+		$customCoords.append($exploBtn);
+		const $randomSystem = jQuery('<div class="random-system">+/- <input type="number" step="1" min="0" max="99" value="' +
 			PARAMS.random_system +
 			'" class="system hideNumberSpin" id="random_system"> systems</div>');
-		jQuery("#fleet2 #target .coords").append($randomSystem);
+		$customCoords.append($randomSystem);
+		jQuery("#fleet2 #target .coords").append($customCoords);
+
 		$randomSystem.find('input').on('change', e => {
 			PARAMS.random_system = parseInt(jQuery(e.target).val());
 			GM_setJsonValue('params', PARAMS);

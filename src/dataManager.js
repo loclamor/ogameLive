@@ -23,8 +23,8 @@ class DataManager {
 				var planetNode = planetNodes.snapshotItem(i);
 				var planetId = planetNode.id;
 				var planetCoords = Xpath.getStringValue(document,'//div[contains(@id,"planetList")]/div[contains(@id,"'+planetId+'")]/a/span[contains(@class,"planet-koords")]');
-				this.planetsIdToCoords[planetId] = planetCoords.trim().replace(/\[|\]/g, '');
-				this.planetsCoordsToId[planetCoords.trim().replace(/\[|\]/g, '')] = planetId;
+				this.planetsIdToCoords[planetId] = cleanCoords(planetCoords);
+				this.planetsCoordsToId[cleanCoords(planetCoords)] = planetId;
 			}
 			storeValue('planetsIdToCoords', this.planetsIdToCoords);
 			storeValue('planetsCoordsToId', this.planetsCoordsToId);
@@ -34,7 +34,7 @@ class DataManager {
 
 	getPlanetId(p_coords) {
 		// Clean coords if needed
-		p_coords = p_coords.trim().replace(/\[|\]/g, '');
+		p_coords = cleanCoords(p_coords);
 		if (!this.planetsCoordsToId) {
 			this.getPlanetCoords();
 		}

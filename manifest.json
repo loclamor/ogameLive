@@ -26,6 +26,7 @@
         "src/parameters.js",
 		"src/observers/techDetailObserver.js",
 		"src/observers/flyingFleetObserver.js",
+        "src/displays/awesomeFlightsDisplay.js",
 		"src/displays/betterFleetDisplay.js",
         "src/displays/betterTechDisplay.js",
 		"src/displays/planetsProductionDisplay.js",

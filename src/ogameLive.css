@@ -12,7 +12,7 @@ div#banner_skyscraper {
 	position: absolute;
 	top: 7.5em !important;
 	left: auto !important;
-	right: -330px !important;
+	right: -300px !important;
 }
 div#banner_skyscraper a.close_details {
 	right: -20px !important;
@@ -20,7 +20,7 @@ div#banner_skyscraper a.close_details {
 
 
 #planetbarcomponent #myPlanets {
-	width: 216px !important;
+	width: 186px !important;
 }
 
 #planetList { /** from infinity **/
@@ -36,19 +36,19 @@ div#banner_skyscraper a.close_details {
 #pageContent #mainContent #planetbarcomponent #planetList{
 	display: flex;
 	flex-direction: column;
-	width: 450px !important;
+	width: 420px !important;
 }
 
 #pageContent #right #planetbarcomponent.noprod #planetList,
 #pageContent #mainContent #planetbarcomponent.noprod #planetList{
-	width: 204px !important;
+	width: 174px !important;
 }
 
 #pageContent #right #planetbarcomponent #rechts .smallplanet,
 #pageContent #mainContent #planetbarcomponent #rechts .smallplanet{
 	display: flex;
 	flex-direction: row;
-	width: 455px !important;
+	width: 425px !important;
 	height: 65px !important;
 	margin: 0 0 5px 0;
 }
@@ -102,7 +102,7 @@ div#banner_skyscraper a.close_details {
 /* css planete */
 #pageContent #right #planetbarcomponent #rechts .smallplanet>a.planetlink,
 #pageContent #mainContent #planetbarcomponent #rechts .smallplanet>a.planetlink {
-	width: 130px;
+	width: 105px;
 }
 
 .moonlink.active,
@@ -178,7 +178,7 @@ div#banner_skyscraper a.close_details {
 /* css lune */
 #pageContent #right #planetbarcomponent #rechts .smallplanet>a.moonlink,
 #pageContent #mainContent #planetbarcomponent #rechts .smallplanet>a.moonlink {
-	width: 70px;
+	width: 60px;
 	margin-left: 5px !important;
 }
 /* css prod */
@@ -194,7 +194,7 @@ div#banner_skyscraper a.close_details {
 
 #planetbarcomponent #countColonies {
 	color: #6F9FC8 !important;
-	width: 464px !important;
+	width: 434px !important;
 	box-shadow: rgba(255, 255, 255, 0.07) 0px 1px inset, rgba(255, 255, 255, 0.03) 0px 11px inset;
 	font-size: 10px;
 	display: flex;
@@ -207,7 +207,7 @@ div#banner_skyscraper a.close_details {
 }
 
 #planetbarcomponent.noprod #countColonies {
-	width: 216px !important;
+	width: 186px !important;
 }
 
 #countColonies .productionSwitcher {width: 250px;}
@@ -215,7 +215,7 @@ div#banner_skyscraper a.close_details {
 #countColonies .productionSwitcher .moons_prod {left: 250px; width:250px;}
 #countColonies .productionSwitcher.displayMoonProd .planets_prod {left: -250px;}
 
-#countColonies .productionSwitcher {position: absolute; left: 210px; top: 0px; height: 28px; overflow: hidden;}
+#countColonies .productionSwitcher {position: absolute; left: 180px; top: 0px; height: 28px; overflow: hidden;}
 #countColonies .productionSwitcher .planets_prod {position: absolute; left: 0px; top: 0px;}
 #countColonies .productionSwitcher .planets_prod .showMoons {float: right}
 #countColonies .productionSwitcher .planets_prod:hover {left: -7px}
@@ -279,6 +279,10 @@ div#banner_skyscraper a.close_details {
 	left: 150px;
 }
 
+.prod.raider .planet_prod {
+	margin-left: 5px;
+}
+
 .planet_prod>.dispo,
 .moon_prod>.dispo{
 	width: 100px;
@@ -300,16 +304,20 @@ div#banner_skyscraper a.close_details {
 	top: 0px;
 	height: 12px;
 }
-.planet_prod>#m_dispo.dispo>span {
+.planet_prod>#m_dispo.dispo>span,
+.moon_prod>#m_dispo.dispo>span {
 	border-color: var(--metal);
 }
-.planet_prod>#c_dispo.dispo>span {
+.planet_prod>#c_dispo.dispo>span,
+.moon_prod>#c_dispo.dispo>span {
 	border-color: var(--cristal);
 }
-.planet_prod>#d_dispo.dispo>span {
+.planet_prod>#d_dispo.dispo>span,
+.moon_prod>#d_dispo.dispo>span {
 	border-color: var(--deuterium);
 }
-.planet_prod>#e_dispo.dispo>span {
+.planet_prod>#e_dispo.dispo>span,
+.moon_prod>#e_dispo.dispo>span {
 	border-color: var(--basecolor);
 }
 
@@ -341,7 +349,7 @@ div#banner_skyscraper a.close_details {
 
 #planetList .total_prod {
 	width: 250px;
-	margin-left: 203px;
+	margin-left: 173px;
 	font-size: 11px;
 	text-align: left;
 	margin-top: 10px;
@@ -353,13 +361,13 @@ div#banner_skyscraper a.close_details {
 	float: right;
 }
 
-#m_dispo, .in_flight_metal, .total_prod_metal {
+#m_dispo, .in_flight_metal, .total_prod_metal, .moon_prod>#m_dispo>.middlemark, .moon_prod>#m_dispo>.overmark {
 	color: var(--metal) !important;
 }
-#c_dispo, .in_flight_cristal, .total_prod_cristal {
+#c_dispo, .in_flight_cristal, .total_prod_cristal, .moon_prod>#c_dispo>.middlemark, .moon_prod>#c_dispo>.overmark{
 	color: var(--cristal) !important;
 }
-#d_dispo, .in_flight_deut, .total_prod_deut {
+#d_dispo, .in_flight_deut, .total_prod_deut, .moon_prod>#d_dispo>.middlemark, .moon_prod>#d_dispo>.overmark {
 	color: var(--deuterium) !important;
 }
 #e_dispo {
@@ -459,7 +467,7 @@ div#banner_skyscraper a.close_details {
 span.incomming_fleet {
 	position: absolute;
 	top: 15px;
-	left: 128px;
+	left: 100px;
 	opacity: 0.5;
 }
 
@@ -475,12 +483,12 @@ figure.planetIcon.debrisField {
 #fleet2 #target {
 	width: 195px;
 }
-#fleet2 #target a.planet, #fleet2 #target a.planet_source, #fleet2 #target a.planet_selected, #fleet2 #target a.planet_source_selected {
-	margin-left: 0px !important;
-	padding: 0;
-}
+/*#fleet2 #target a.planet, #fleet2 #target a.planet_source, #fleet2 #target a.planet_selected, #fleet2 #target a.planet_source_selected {*/
+/*	margin-left: 0px !important;*/
+/*	padding: 0;*/
+/*}*/
 
-#fleet2 #target .target>a.explo {
+#fleet2 #target .coords a.explo {
 	background: url("https://gf2.geo.gfsrv.net/cdn14/f45a18b5e55d2d38e7bdc3151b1fee.jpg") no-repeat;
 	background-position: -7px -102px;
 	width: 36px;
@@ -489,17 +497,30 @@ figure.planetIcon.debrisField {
 	font-size: 11px;
 }
 
-#fleet2 #target .target>a.explo:hover {
+#fleet2 #target .coords a.explo:hover {
 	background-position: -7px -55px;
 	text-decoration: none !important;
 	font-weight: bold;
 }
 
-#fleet2 #target .target>a.explo .expeparams {
+#fleet2 #target .coords a.explo .expeparams {
 	color: white;
 }
 #fleet2 .coords {
 	height: 65px !important;
+}
+
+#fleet2 #target .coords .custom-coords {
+	height: 36px;
+}
+
+#fleet2 #target .coords .custom-coords .random-system {
+	padding-top: 6px;
+}
+
+#fleet2 #target .coords .custom-coords:hover {
+	color: white;
+	font-weight: bold;
 }
 
 input[type="number"] {
@@ -645,4 +666,49 @@ li>a.menubutton>a.empire_moon:before {
 }
 #ogameliveparameters .parameters-content .parameter .parameter-value {
 	width: 100px;
+}
+
+
+#left, #leftMenu {
+	position: relative;
+}
+
+#flights {
+	position: absolute;
+	right: 160px;
+	width: 300px;
+	/*height: 400px;*/
+	/*border: 1px solid red;*/
+}
+#leftMenu #flights {
+	right: 171px;
+}
+
+
+#OGameLiveEvents {
+	background: transparent url("//gf1.geo.gfsrv.net/cdn9e/4f73643e86a952be4aed7fdd61805a.gif") 5px 0px repeat-y;
+	width: 100%;
+	margin: 0;
+	padding: 5px 10px 0 10px;
+	text-align: center;
+	border-spacing: 0;
+	background-size: 700px !important;
+}
+
+#OGameLiveEvents tr {
+	box-shadow: rgb(13, 16, 20) 0px 0px 0px 0px;
+}
+
+#OGameLiveEvents .eventFleet > td:not([class*="icon_movement"]) {
+	padding: 2px;
+	border-top: 1px solid rgba(51, 51, 51, 0.5);
+}
+
+#OGameLiveEvents .eventFleet[data-mission-type="15"] {
+	display: table-row;
+	opacity: 0.7;
+}
+
+#OGameLiveEvents .eventFleet[data-mission-type="15"][data-return-flight="false"] {
+	display: none;
 }

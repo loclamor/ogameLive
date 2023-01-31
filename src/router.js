@@ -18,38 +18,54 @@ class Router {
 	}
 
 	handlePage(url) {
+		// Resources setting pages (2 differents url for the same page, thx GF)
 		if (this.regResourceSettingsPage.test(url) || this.regResourceSettingsComponent.test(url)) {
 			new ResourceSettingsParser(this.app.dataManager);
-		} else if (this.regResearch.test(url)) {
+		}
+		// Research page
+		else if (this.regResearch.test(url)) {
 			new ResearchParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
 			new BetterTechDisplay(this.app.dataManager);
-		} else if (this.regResources.test(url)) {
+		}
+		// Resources page
+		else if (this.regResources.test(url)) {
 			new ResourcesParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
 			new BetterTechDisplay(this.app.dataManager);
-		} else if (this.regInstallations.test(url)) {
+		}
+		// Instalations page
+		else if (this.regInstallations.test(url)) {
 			new InstallationsParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
 			new BetterTechDisplay(this.app.dataManager);
-		} else if (this.regLife.test(url) && PARAMS.lifeform) {
+		}
+		// Life-form buildings
+		else if (this.regLife.test(url) && PARAMS.lifeform) {
 			new LifeParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
 			new BetterTechDisplay(this.app.dataManager);
-		} else if (this.regLifeResearch.test(url) && PARAMS.lifeform) {
+		}
+		// Life-form research
+		else if (this.regLifeResearch.test(url) && PARAMS.lifeform) {
 			new TechDetailObserver(this.app.dataManager);
 			new BetterTechDisplay(this.app.dataManager);
-		} else if (this.regShipyard.test(url) || this.regFleet.test(url)) {
+		}
+		// Shipyard page
+		else if (this.regShipyard.test(url)) {
 			new FleetParser(this.app.dataManager);
-			if (this.regFleet.test(url)) {
-				new BetterFleetDisplay(this.app.dataManager);
-			}
-			else {
-				new TechDetailObserver(this.app.dataManager);
-				new BetterTechDisplay(this.app.dataManager);
-			}
-		} else if (this.regEmpire.test(url)) {
+			new TechDetailObserver(this.app.dataManager);
+			new BetterTechDisplay(this.app.dataManager);
+		}
+		// Fleet page
+		else if (this.regFleet.test(url)) {
+			new FleetParser(this.app.dataManager);
+			new BetterFleetDisplay(this.app.dataManager);
+		}
+		// Empire view
+		else if (this.regEmpire.test(url)) {
 			new EmpireParser(this.app.dataManager);
+			// disable inteval timer on empire view
 			this.app.disabledTimer = true;
 		}
 	}

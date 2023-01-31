@@ -183,3 +183,11 @@ function readablize(num) {
 	return Math.round((num / Math.pow(1000, e)) * 100) / 100 + s[e];
 }
 
+/**
+ * Get a dirty coord and clean it
+ * @param {string} coords brute like '  [G:SS:P]  '
+ * @returns {string} coords formating G:SS:P
+ */
+function cleanCoords(coords) {
+	return coords.trim().replace(/\[|\]/g, '');
+}
