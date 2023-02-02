@@ -45,10 +45,20 @@ class FlightsDisplay {
                 '   <span id="counter-ogameliveeventlist-' + f.eventId + '" class="' + f.missionClass + '">' + formatTime(f.arrivalTime - nowTime) + '</span>' +
                 '</td>' +
                 '<td class="missionFleet"><img src="' + f.missionTypeIco + '"/></td>' +
-                '<td class="coordsOrigin"><a href="' + f.coords.fromlink + '" target="_top">[' + f.coords.from + ']</a></td>' +
+                '<td class="coordsOrigin">' +
+                (f.returnFlight === 'true' ?
+                    '   <a href="' + f.coords.destlink + '" target="_top">[' + f.coords.dest + ']</a>' :
+                    '   <a href="' + f.coords.fromlink + '" target="_top">[' + f.coords.from + ']</a>'
+                ) +
+                '</td>' +
                 '<td class="detailsFleet"><span>' + f.detailsFleet + '</span></td>' +
-                '<td class="icon_movement"><span class="tooltip tooltipRight tooltipClose" title="' + f.tooltipContent.replaceAll('"', '&quot;') + '">&nbsp;</span></td>' +
-                '<td class="destCoords"><a href="' + f.coords.destlink + '" target="_top">[' + f.coords.dest + ']</a></td>' +
+                '<td class="icon_movement' + (f.returnFlight === 'true' ? '_reserve' : '') + '"><span class="tooltip tooltipRight tooltipClose" title="' + f.tooltipContent.replaceAll('"', '&quot;') + '">&nbsp;</span></td>' +
+                '<td class="destCoords">' +
+                (f.returnFlight === 'true' ?
+                    '   <a href="' + f.coords.fromlink + '" target="_top">[' + f.coords.from + ']</a>' :
+                    '   <a href="' + f.coords.destlink + '" target="_top">[' + f.coords.dest + ']</a>'
+                ) +
+                '</td>' +
             '</tr>')
         });
     }

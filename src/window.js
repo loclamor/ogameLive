@@ -30,6 +30,8 @@ if (sendButtonSelector != null) {
  * update ogame fleetDispatcher object and send the fleet with stored params (duration and speed)
  **/
 window.addEventListener('ogameLive.fleetDispatcher.selectExpedition', function (event) {
+	console.log(event);
+	var nb_systems = event.detail.nb_systems;
 	window.fleetDispatcher.targetPlanet.position = 16;
 	window.fleetDispatcher.selectMission(window.fleetDispatcher.fleetHelper.MISSION_EXPEDITION);
 	window.fleetDispatcher.refreshFleet2();
@@ -47,6 +49,12 @@ window.addEventListener('ogameLive.fleetDispatcher.selectExpedition', function (
 		const nbSys = parseInt(document.getElementById('random_system').value);
 		const random = Math.floor(Math.random() * (2 * nbSys + 1) - nbSys);
 		window.fleetDispatcher.targetPlanet.system += random;
+		if (nb_systems !== null) {
+			window.fleetDispatcher.targetPlanet.system = window.fleetDispatcher.targetPlanet.system % nb_systems
+			if (window.fleetDispatcher.targetPlanet.system < 0) {
+				window.fleetDispatcher.targetPlanet.system = nb_systems + window.fleetDispatcher.targetPlanet.system;
+			}
+		}
 		console.log('Sending expedition ' + random + ' systems arround sys ' + initialSystem + ' at sys ' + window.fleetDispatcher.targetPlanet.system);
 		window.fleetDispatcher.trySubmitFleet2();
 	}, 1000)

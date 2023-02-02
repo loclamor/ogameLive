@@ -40,6 +40,7 @@ log("Universe language: " + langUnivers, LOG_LEVEL_TRACE);
 
 const DEFAULT_PARAMS = {
 	lifeform: null,
+	nb_systems: null,
 	lastServerData: null,
 	prod_display: 'hour',
 	game_style: 'miner',
@@ -72,6 +73,7 @@ if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.
 		let $data = jQuery(data);
 		versionUnivers = $data.find('version')[0].textContent;
 		PARAMS.lifeform = $data.find('lifeformSettings').length > 0;
+		PARAMS.nb_systems = parseInt($data.find('systems').textContent);
 		PARAMS.lastServerData = (new Date()).getTime();
 		GM_setJsonValue('params', PARAMS);
 		storeValue('params', PARAMS);

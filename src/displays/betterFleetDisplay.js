@@ -93,7 +93,7 @@ class BetterFleetDisplay {
 			storeValue('params', PARAMS);
 		});
 		$exploBtn.click(function(e){
-			window.dispatchEvent(new CustomEvent('ogameLive.fleetDispatcher.selectExpedition'));
+			window.dispatchEvent(new CustomEvent('ogameLive.fleetDispatcher.selectExpedition', {'detail': {'nb_systems' : PARAMS.nb_systems}}));
 			e.preventDefault();
 			e.stopPropagation();
 		});
