@@ -26,36 +26,36 @@ class Router {
 		else if (this.regResearch.test(url)) {
 			new ResearchParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
-			new BetterTechDisplay(this.app.dataManager);
+			if (PARAMS.show_cost_overlay == 1) new BetterTechDisplay(this.app.dataManager);
 		}
 		// Resources page
 		else if (this.regResources.test(url)) {
 			new ResourcesParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
-			new BetterTechDisplay(this.app.dataManager);
+			if (PARAMS.show_cost_overlay == 1) new BetterTechDisplay(this.app.dataManager);
 		}
 		// Instalations page
 		else if (this.regInstallations.test(url)) {
 			new InstallationsParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
-			new BetterTechDisplay(this.app.dataManager);
+			if (PARAMS.show_cost_overlay == 1) new BetterTechDisplay(this.app.dataManager);
 		}
 		// Life-form buildings
 		else if (this.regLife.test(url) && PARAMS.lifeform) {
 			new LifeParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
-			new BetterTechDisplay(this.app.dataManager);
+			if (PARAMS.show_cost_overlay == 1) new BetterTechDisplay(this.app.dataManager);
 		}
 		// Life-form research
 		else if (this.regLifeResearch.test(url) && PARAMS.lifeform) {
 			new TechDetailObserver(this.app.dataManager);
-			new BetterTechDisplay(this.app.dataManager);
+			if (PARAMS.show_cost_overlay == 1) new BetterTechDisplay(this.app.dataManager);
 		}
 		// Shipyard page
 		else if (this.regShipyard.test(url)) {
 			new FleetParser(this.app.dataManager);
 			new TechDetailObserver(this.app.dataManager);
-			new BetterTechDisplay(this.app.dataManager);
+			if (PARAMS.show_cost_overlay == 1) new BetterTechDisplay(this.app.dataManager);
 		}
 		// Fleet page
 		else if (this.regFleet.test(url)) {

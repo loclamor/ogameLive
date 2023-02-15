@@ -30,7 +30,8 @@ let tempStore = {
     flights: {},
     others: {}
 };
-let planetIdToStoreKey = {};
+let planetProductionIdToStoreKey = {};
+let planetDataIdToStoreKey = {};
 let interval;
 let iterations = 0
 
@@ -49,6 +50,17 @@ DBOpenRequest.onsuccess = (event) => {
         // console.log('getAll success ', event, result);
         // initialise local tempStore
         result.forEach( elt => {
+            let parts = elt.key.split('.');
+            if (parts.length > 4) {
+                let univKey = parts[0] + '.' + parts[1];
+                // On migration from older version localStorage only some universe keys are doubled
+                elt.key = elt.key.replace(univKey + '.' + univKey, univKey);
+            }
+
+            // ensure that value is an valid json
+            if (Object.prototype.toString.call(elt.value) === "[object String]") {
+                elt.value = JSON.parse(elt.value);
+            }
             switch (true) {
                 case elt.key.includes('production') :
                     tempStore.production[elt.key] = elt;
@@ -232,8 +244,8 @@ function mainLoop() {
                 if (flight.destinationType === 'moon') {
                     destPlanetId += '-moon';
                 }
-                let key = getKeyFromPlanetId(destPlanetId);
-                let planetProd = JSON.parse(JSON.stringify(tempStore.production[key].value));
+                let productionKey = getProductionKeyFromPlanetId(destPlanetId);
+                let planetProd = JSON.parse(JSON.stringify(tempStore.production[productionKey].value));
                 if (Object.prototype.toString.call(planetProd) === "[object String]") {
                     planetProd = JSON.parse(planetProd);
                 }
@@ -260,7 +272,22 @@ function mainLoop() {
                     }
                 }
                 planetProd.lastTime = nowTime;
-                tempStore.production[key].value = planetProd;
+                tempStore.production[productionKey].value = planetProd;
+
+                let dataKey = getDataKeyFromPlanetId(destPlanetId);
+                let planetData = JSON.parse(JSON.stringify(tempStore.data[dataKey].value));
+                if (Object.prototype.toString.call(planetData) === "[object String]") {
+                    planetData = JSON.parse(planetData);
+                }
+                if (!planetData.vaissels) {
+                    planetData.vaissels = 0;
+                }
+                if (flight.missionType !== 18) {
+                    planetData.vaissels += parseInt(flight.detailsFleet);
+                }
+                tempStore.data[dataKey].value = planetData;
+                storeItem({key: dataKey, value: tempStore.data[dataKey].value});
+
             }
         }
     }
@@ -355,15 +382,28 @@ function updateFlights(flights) {
     storeItem({key: 'flights', value: tempStore.flights});
 }
 
-function getKeyFromPlanetId(planetId) {
+function getProductionKeyFromPlanetId(planetId) {
 
-    if (!planetIdToStoreKey[planetId]) {
+    if (!planetProductionIdToStoreKey[planetId]) {
         // extract planets Ids from storeKies
         for (let key in tempStore.production) {
             let parts = key.split('.');
             let p_id = parts.pop();
-            planetIdToStoreKey[p_id] = key;
+            planetProductionIdToStoreKey[p_id] = key;
         }
     }
-    return planetIdToStoreKey[planetId];
+    return planetProductionIdToStoreKey[planetId];
+}
+
+function getDataKeyFromPlanetId(planetId) {
+
+    if (!planetDataIdToStoreKey[planetId]) {
+        // extract planets Ids from storeKies
+        for (let key in tempStore.data) {
+            let parts = key.split('.');
+            let p_id = parts.pop();
+            planetDataIdToStoreKey[p_id] = key;
+        }
+    }
+    return planetDataIdToStoreKey[planetId];
 }

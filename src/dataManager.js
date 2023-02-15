@@ -77,9 +77,9 @@ class DataManager {
 		return retrieveValue('data.'+planetId, {});
 	}
 	
-	updatePlanetData(planetId, planet) {
+	updatePlanetData(planetId, planet, force, timestamp) {
 		this.planets[planetId] = planet;
-		storeValue('data.'+planetId, planet);
+		storeValue('data.'+planetId, planet, force, timestamp);
 		this.setJsonValue('data.'+planetId, planet);
 	}
 

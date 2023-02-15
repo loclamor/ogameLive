@@ -70,6 +70,20 @@ class Parameters {
                 min: 0,
                 max: 99,
             },
+            show_cost_overlay: {
+                label: 'Show cost overlay',
+                options: [
+                    {value: 1, label: 'Yes'},
+                    {value: 0, label: 'No'}
+                ],
+            },
+            show_stationed_ships: {
+                label: 'Show stationed ships',
+                options: [
+                    {value: 1, label: 'Yes'},
+                    {value: 0, label: 'No'}
+                ],
+            },
         }
 
     }
@@ -83,6 +97,8 @@ class Parameters {
                     '<h2>General options</h2>' +
                     this._getParamSelect('game_style') +
                     this._getParamInteger('main_refresh') +
+                    '<h2>Technologies</h2>' +
+                    this._getParamSelect('show_cost_overlay') +
                     '<h2>Live production</h2>' +
                     this._getParamSelect('show_production') +
                     this._getParamSelect('prod_display') +
@@ -90,6 +106,7 @@ class Parameters {
                     this._getParamSelect('sum_display') +
                     this._getParamSelect('prod_round') +
                     this._getParamSelect('show_needed_transporters') +
+                    this._getParamSelect('show_stationed_ships') +
                     '<h2>Fleet options</h2>' +
                     this._getParamSelect('show_fleet_speed') +
                     this._getParamInteger('random_system') +

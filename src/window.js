@@ -1,3 +1,22 @@
+/***
+ *
+ * This file is inserted as a javascript script in ogame page head, so top level ogame varaibles and functions are accessibles
+ * like window, window.fleetDispatcher, and so on
+ *
+ * Warn : main OGameLive variables and functions are NOT in this scope.
+ *
+ * Communication between this file (ogame scope) and OGameLive can be done by CustomEvents
+ *
+ ***/
+
+let ping = window.performance.timing.domLoading - window.performance.timing.fetchStart;
+let colorClass = "friendly";
+if (ping > 400 && ping < 800)
+	colorClass = "neutral";
+if (ping > 800)
+	colorClass = "hostile";
+$(".ogk-ping").html(`<span class='${colorClass}'>${(ping / 1e3).toFixed(1)}s</span> ping`);
+
 /**
  * Mutation observer to add event listener only once on the send button in order to save expeditions params (duration & speed)
  */

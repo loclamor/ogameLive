@@ -38,6 +38,8 @@ class EmpireParser {
                 empireObserver.disconnect();
                 let planetList = Xpath.getUnorderedSnapshotNodes(document,'//div[contains(@class,"planetWrapper")]/div/@id');
                 let nbPlanets = planetList.snapshotLength;
+                // reset max fleet in storage
+                // this.dataManager.setValue('data.maxships', 0);
                 for (var i = 0; i < nbPlanets; i++) {
                     let internalId;
                     let planetId = planetList.snapshotItem(i).textContent;
@@ -54,7 +56,7 @@ class EmpireParser {
                         this.dataManager.loadPlanetData(internalId),
                         this.dataManager.loadPlanetProd(internalId)
                     ]);
-                    console.log(planetId, planetData, planetProd);
+                    console.log(planetId, internalId, planetData, planetProd);
 
                     // Now we have our planet from dataManager, parse planet data from the empire view
                     if (!jQuery.isEmptyObject(planetData)) {
@@ -121,6 +123,26 @@ class EmpireParser {
                         }
 
                         this.dataManager.updatePlanetProd(internalId, planetProd, true, loadedTime);
+
+                        // Parse some other data
+
+                        // Fleet
+                        if (!planetData.fleet) {
+                            planetData.fleet = {};
+                        }
+                        planetData.vaissels = 0;
+                        Object.keys(OgameConstants.fleet).forEach(function(shipName) {
+                            const shipId = OgameConstants.fleet[shipName];
+                            let quantity = Xpath.getStringValue(document, '//div[contains(@id,"'+planetId+'")]/div[contains(@class,"ships")]/div[contains(@class,"' + shipId + '")]');
+                            quantity = parseInt(quantity.split('.').join(''));
+                            planetData.fleet[shipName] = quantity;
+                            console.log(internalId, shipName, planetData.fleet[shipName])
+                            if (shipName !== 'resbuggy' && shipName !== 'solarSatellite') {
+                                // Do not count resbuggy and solarSatellite
+                                planetData.vaissels += quantity;
+                            }
+                        });
+                        this.dataManager.updatePlanetData(internalId, planetData, true,loadedTime);
                     }
 
                 }

@@ -19,9 +19,18 @@ class FleetParser {
 		if (!planetData.fleet) {
 			planetData.fleet = {};
 		}
+		planetData.vaissels = 0;
 		Object.keys(constants).forEach(function(k) {
 			planetData.fleet[k] = 
 				Xpath.getNumberValue(document, '//div[contains(@id,"technologies")]/div/ul/li[contains(@class,"'+k+'")]/span/span[contains(@class,"amount")]/@data-value');
+			if (isNaN(planetData.fleet[k])) {
+				planetData.fleet[k] = 0;
+			}
+			console.log(k, planetData.fleet[k]);
+			if (k !== 'resbuggy' && k !== 'solarSatellite') {
+				// Do not count resbuggy and solarSatellite
+				planetData.vaissels += planetData.fleet[k];
+			}
 			if (getFleetData) {
 				jQuery.get(urlUnivers + '/game/index.php?page=ajax&component=technologytree&ajax=1&technologyId='+constants[k]+'&tab=2', function(htmlStr) {
 					log("get response for " + k, LOG_LEVEL_TRACE);

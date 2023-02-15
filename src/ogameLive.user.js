@@ -53,6 +53,8 @@ const DEFAULT_PARAMS = {
 	energie_display: 1,
 	sum_display: 1,
 	show_flights: 1,
+	show_cost_overlay: 1,
+	show_stationed_ships: 1,
 };
 
 // noinspection ES6ConvertVarToLetConst
@@ -71,9 +73,14 @@ if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.
 	// get Universe params if not defined, or Once a day
 	jQuery.get(urlUnivers + "/api/serverData.xml", function (data) {
 		let $data = jQuery(data);
+		console.log('versionUnivers', $data.find('version')[0].textContent )
 		versionUnivers = $data.find('version')[0].textContent;
+
+		console.log('lifeformSettings', $data.find('lifeformSettings').length )
 		PARAMS.lifeform = $data.find('lifeformSettings').length > 0;
-		PARAMS.nb_systems = parseInt($data.find('systems').textContent);
+
+		console.log('versionUnivers', $data.find('systems')[0].textContent )
+		PARAMS.nb_systems = parseInt($data.find('systems')[0].textContent);
 		PARAMS.lastServerData = (new Date()).getTime();
 		GM_setJsonValue('params', PARAMS);
 		storeValue('params', PARAMS);
@@ -192,6 +199,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 	// with OGameLive Infinity-based planets and moon display, change default tooltip side
 	jQuery('.smallplanet > a').toggleClass('tooltipRight tooltipLeft');
+
+	// Add timer at the bottom of the galaxy view
+	jQuery('.ctGalaxyFooter #colonized').after('<div style="flex: 1; display: flex"><span class="OGameClock"></span><span class="ogk-ping"></span></div>');
 
 	// Finaly detect other plugins and add them into body class (this is not really helpfully if that plugins load after OGameLive)
 	hasOGInfinity = jQuery('.ogl-harvestOptions').length >= 1;

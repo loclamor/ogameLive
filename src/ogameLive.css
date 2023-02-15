@@ -471,6 +471,31 @@ span.incomming_fleet {
 	opacity: 0.5;
 }
 
+span.aquai {
+	display: block;
+	background-color: rgb(85,85,85);
+	height: 2px;
+	position: absolute;
+	bottom: 0px;
+	cursor: help;
+}
+
+a.planetlink span.aquai {
+	width: 80px;
+}
+
+a.moonlink span.aquai {
+	width: 40px;
+}
+
+span.aquai .percent {
+	display: block;
+	height: 100%;
+	width: 0%;
+	background-color: green;
+}
+
+
 figure.planetIcon.debrisField {
 	background: url("https://gf1.geo.gfsrv.net/cdnc5/fa3e396b8af2ae31e28ef3b44eca91.gif") no-repeat;
 	background-size: 16px;
@@ -709,6 +734,17 @@ li>a.menubutton>a.empire_moon:before {
 	opacity: 0.7;
 }
 
-#OGameLiveEvents .eventFleet[data-mission-type="15"][data-return-flight="false"] {
+#OGameLiveEvents .eventFleet[data-mission-type="15"][data-return-flight="false"],
+#OGameLiveEvents .eventFleet[data-mission-type="18"][data-return-flight="false"] {
 	display: none;
+}
+
+#rechts .smallplanet a.alert {
+	right: auto !important;
+	left: 102px !important;
+	top: 5px !important;
+}
+
+.OGameClock>span {
+	color: red;
 }

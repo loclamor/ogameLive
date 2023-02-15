@@ -24,6 +24,8 @@ class PlanetsProductionDisplay {
 
 		var prod_mod = PARAMS.prod_display;
 
+		// let maxShips = this.dataManager.getIntValue('data.maxships', 0);
+
 		for (var i = 0; i < nbPlanets; i++) {
 			var planetId = myPlanetsRes.snapshotItem(i).textContent;
 			const [planetdata, moondata, planetProd, moonProd] = await this.dataManager.loadFullPlanet(planetId);
@@ -221,13 +223,14 @@ class PlanetsProductionDisplay {
 			
 			// mount base html
 			jQuery('#' + planetId + '>.prod').html(
+				// Planet production
 				'<div class="planet_prod">'
 				+ '<span id="m_dispo" class="dispo" title="Capacity : ' + formatInt(planet.prod.M.capa) + '"></span>' +
 				(PARAMS.game_style === 'miner' ?
 					'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' ' + m_prod_class + '">+' + formatInt(planet.prod.M.prod) + '/h</span>' +
 					'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' ' + m_prod_class + '">+' + formatInt(planet.prod.M.prod * 24) + '/d</span>'
 				: '')
-				+ '<br/><span id="c_dispo" class="dispo" title="Capacity : ' + formatInt(planet.prod.D.capa) + '"></span>' +
+				+ '<br/><span id="c_dispo" class="dispo" title="Capacity : ' + formatInt(planet.prod.C.capa) + '"></span>' +
 				(PARAMS.game_style === 'miner' ?
 					'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' ' + c_prod_class + '">+' + formatInt(planet.prod.C.prod) + '/h</span>' +
 					'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' ' + c_prod_class + '">+' + formatInt(planet.prod.C.prod * 24) + '/d</span>'
@@ -246,13 +249,14 @@ class PlanetsProductionDisplay {
 				+ (PARAMS.energie_display == 1 ? '<br/><span id="e_dispo" class="dispo" title="Production : ' + formatInt(planet.prod.E.prod) + '"><span class="' + warnE + '" style="width:' + this.percent(planet.prod.E.prod - planet.prod.E.dispo, planet.prod.E.prod) + '%">E:&nbsp;' + formatInt(planet.prod.E.dispo) + '</span></span>' : '')
 				//+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.prod.E.prod)+'</span>'
 				+ cefPercent
+				// Moon production
 				+ '</div><div class="moon_prod">'
 				+ '<span id="m_dispo" class="dispo" title="Capacity : ' + formatInt(planet.moonprod.M.capa) + '"></span>' +
 				(PARAMS.game_style === 'miner' ?
 					'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' ' + m_prod_class_moon + '">+' + formatInt(planet.moonprod.M.prod) + '/h</span>' +
 					'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' ' + m_prod_class_moon + '">+' + formatInt(planet.moonprod.M.prod * 24) + '/d</span>'
 				: '')
-				+ '<br/><span id="c_dispo"  class="dispo" title="Capacity : ' + formatInt(planet.moonprod.D.capa) + '"></span>' +
+				+ '<br/><span id="c_dispo"  class="dispo" title="Capacity : ' + formatInt(planet.moonprod.C.capa) + '"></span>' +
 				(PARAMS.game_style === 'miner' ?
 					'<span class="prod_per_hour ' + (prod_mod === 'hour' ? '' : 'hidden') + ' ' + c_prod_class_moon + '">+' + formatInt(planet.moonprod.C.prod) + '/h</span>' +
 					'<span class="prod_per_day ' + (prod_mod === 'day' ? '' : 'hidden') + ' ' + c_prod_class_moon + '">+' + formatInt(planet.moonprod.C.prod * 24) + '/d</span>'
@@ -270,7 +274,9 @@ class PlanetsProductionDisplay {
 				//+ '<span class="capa">&nbsp;/&nbsp;'+formatInt(planet.moonprod.E.prod)+'</span>'
 				+ '</div>'
 			);
+			// Incomming fleet base html
 			jQuery('#'+planetId).append('<span class="incomming_fleet"></span>');
+			// Store reference to jQuery base HTML elements
 			// planet
 			planet.$m_dispo = jQuery('#'+planetId + ' .planet_prod #m_dispo');
 			planet.$c_dispo = jQuery('#'+planetId + ' .planet_prod #c_dispo');
@@ -292,6 +298,18 @@ class PlanetsProductionDisplay {
 
 			planet.$incomming_fleet = jQuery('#'+planetId + ' .incomming_fleet');
 			this.planetList.push(planet);
+
+			if (PARAMS.show_stationed_ships == 1) {
+				// Indicateurs de présence de flotte
+				jQuery('#' + planetId + ' a.planetlink').append('<span class="aquai" title="' + formatInt(planetdata.vaissels) + ' ships"><span class="percent" style=""></span></span>');
+				planet.$fleetAquai = jQuery('#' + planetId + ' a.planetlink span.aquai');
+				planet.$fleetPercent = jQuery('#' + planetId + ' a.planetlink span.aquai span.percent');
+				planet.$fleetPercent.data('vaissels', planetdata.vaissels);
+				jQuery('#' + planetId + ' a.moonlink').append('<span class="aquai" title="' + formatInt(moondata.vaissels) + ' ships"><span class="percent" style=""></span></span>');
+				planet.$fleetAquai_moon = jQuery('#' + planetId + ' a.moonlink span.aquai');
+				planet.$fleetPercent_moon = jQuery('#' + planetId + ' a.moonlink span.aquai span.percent');
+				planet.$fleetPercent_moon.data('vaissels', moondata.vaissels);
+			}
 		}
 
 		jQuery('#planetList').append('<div class="total_prod">'
@@ -384,7 +402,9 @@ class PlanetsProductionDisplay {
 				}
 			}
 		});
-		
+
+		let maxShips = 0;
+
 		// display per planet
 		for (var i =0; i<this.planetList.length; i++) {
 			var warnM = '';
@@ -395,6 +415,13 @@ class PlanetsProductionDisplay {
 
 
 			const [planetdata, moondata, planetProd, moonProd] = await this.dataManager.loadFullPlanet(planet.id);
+
+
+			// compute maxShips
+			if (PARAMS.show_stationed_ships == 1 && planetdata.vaissels >= 0) {
+				maxShips = Math.max(maxShips, planetdata.vaissels);
+				planet.$fleetPercent.data('vaissels', planetdata.vaissels);
+			}
 
 			planet.prod = planetProd;
 			planet.moonprod = moonProd;
@@ -487,6 +514,11 @@ class PlanetsProductionDisplay {
 
 			// moon production
 			if (planet.moonprod) {
+				// compute maxShips
+				if (PARAMS.show_stationed_ships == 1 && moondata.vaissels >= 0) {
+					maxShips = Math.max(maxShips, moondata.vaissels);
+					planet.$fleetPercent_moon.data('vaissels', moondata.vaissels);
+				}
 				warnM = '';
 				warnC = '';
 				warnD = '';
@@ -612,7 +644,19 @@ class PlanetsProductionDisplay {
 			}
 
 		}
-		
+
+		if (PARAMS.show_stationed_ships == 1) {
+			jQuery('span.aquai span.percent').each(function (index, elt) {
+				$elt = jQuery(elt);
+				let vaissels = parseInt($elt.data('vaissels'));
+				let fleetPercent = vaissels * 100 / maxShips;
+				let fleetColor = fleetPercent > 75 ? 'red' : (fleetPercent > 50 ? 'orange' : 'green');
+				let minWidth = fleetPercent > 0 ? 8 : 0;
+				$elt.attr('style', 'width: ' + fleetPercent + '%; background-color: ' + fleetColor + '; min-width: ' + minWidth + 'px;');
+				$elt.parent().attr('title', formatInt(vaissels) + ' ships');
+			});
+		}
+
 		// in flight
 		jQuery('#planetList .total_prod .in_flight_metal').html(formatInt(inFlight_M));
 		jQuery('#planetList .total_prod .in_flight_cristal').html(formatInt(inFlight_C));
