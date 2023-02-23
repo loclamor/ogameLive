@@ -99,6 +99,24 @@ class DataManager {
 		this.setJsonValue('data.fleet', fleetData);
 	}
 
+	computeNeededGT(amount) {
+		if (this.getFleetData() && this.getFleetData().transporterLarge && this.getFleetData().transporterLarge.capacity) {
+			return this.computeNeededShip(amount, parseInt(this.getFleetData().transporterLarge.capacity.value));
+		}
+		return 0;
+	}
+
+	computeNeededPT(amount) {
+		if (this.getFleetData() && this.getFleetData().transporterSmall && this.getFleetData().transporterSmall.capacity) {
+			return this.computeNeededShip(amount, parseInt(this.getFleetData().transporterSmall.capacity.value));
+		}
+		return 0;
+	}
+
+	computeNeededShip(amount, shipCapacity) {
+		return Math.ceil(amount/shipCapacity);
+	}
+
 	getCurrentPlanetProd() {
 		return this.getPlanetProd(this.getCurrentPlanetId());
 	}
@@ -191,7 +209,7 @@ class DataManager {
 	}
 
 	loadFlights() {
-		return retrieveValue('flights', {}, true);
+		return retrieveValue('flights', {});
 	}
 
 	setFlights(flights) {

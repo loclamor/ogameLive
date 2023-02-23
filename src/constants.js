@@ -1,4 +1,9 @@
 var OgameConstants = {
+	class: {
+		explorer: 'explorer',
+		miner: 'miner',
+		warrior: 'warrior'
+	},
 	resourceTypes: {
 		metal_box : 'M',
 		crystal_box : 'C',

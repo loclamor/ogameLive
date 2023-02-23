@@ -191,3 +191,5 @@ function readablize(num) {
 function cleanCoords(coords) {
 	return coords.trim().replace(/\[|\]/g, '');
 }
+
+

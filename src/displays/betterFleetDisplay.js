@@ -98,4 +98,53 @@ class BetterFleetDisplay {
 			e.stopPropagation();
 		});
 	}
+
+	computeMaxExpeRessources() {
+		let topScore = PARAMS.top_score;
+		let maxTotal = 0;
+		let minPT,
+			minGT = 0;
+		if (topScore < 1e4) {
+			maxTotal = 4e4;
+			minPT = 273;
+			minGT = 91;
+		} else if (topScore < 1e5) {
+			maxTotal = 5e5;
+			minPT = 423;
+			minGT = 141;
+		} else if (topScore < 1e6) {
+			maxTotal = 12e5;
+			minPT = 423;
+			minGT = 191;
+		} else if (topScore < 5e6) {
+			maxTotal = 18e5;
+			minPT = 423;
+			minGT = 191;
+		} else if (topScore < 25e6) {
+			maxTotal = 24e5;
+			minPT = 573;
+			minGT = 191;
+		} else if (topScore < 5e7) {
+			maxTotal = 3e6;
+			minPT = 723;
+			minGT = 241;
+		} else if (topScore < 75e6) {
+			maxTotal = 36e5;
+			minPT = 873;
+			minGT = 291;
+		} else if (topScore < 1e8) {
+			maxTotal = 42e5;
+			minPT = 1023;
+			minGT = 341;
+		} else {
+			maxTotal = 5e6;
+			minPT = 1223;
+			minGT = 417;
+		}
+		maxTotal =
+			PARAMS.player_class == PLAYER_CLASS_EXPLORER
+				? maxTotal * 3 * PARAMS.speed
+				: maxTotal * 2;
+		return maxTotal;
+	}
 }

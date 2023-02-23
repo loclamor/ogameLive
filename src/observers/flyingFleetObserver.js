@@ -3,6 +3,11 @@ class FlyingFleetObserver {
 		this.dataManager = dataManager
 		jQuery.get(urlUnivers + '/game/index.php?page=componentOnly&component=eventList&ajax=1', jQuery.proxy(function(dataHtml){
 			var $html = jQuery(dataHtml);
+			const timeRegex = /var timeDelta = (?<timestamp>[0-9]{13}) - \(new Date\(\)\)\.getTime\(\);/m;
+			let timeRegexResult = dataHtml.match(timeRegex);
+			const timeStamp = parseInt(timeRegexResult.groups.timestamp);
+			const timeDelta = timeStamp - (new Date()).getTime();
+			console.log('flying timeDelta = ', timeDelta);
 			var flights = {};
 			var eventNodes = Xpath.getOrderedSnapshotNodes(document,'//table[contains(@id,"eventContent")]/tbody/tr', $html[0]);
 			for (var i = 0; i < eventNodes.snapshotLength; i++) {
@@ -82,7 +87,7 @@ class FlyingFleetObserver {
 
 					flights[eventId] = {
 						eventId: eventId,
-						arrivalTime: parseInt(event.dataset.arrivalTime)*1000,
+						arrivalTime: parseInt(event.dataset.arrivalTime)*1000 - timeDelta,
 						destination: this.dataManager.getPlanetId(destCoords),
 						destinationType: typeDest,
 						coords: {

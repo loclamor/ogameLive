@@ -38,10 +38,16 @@ log("Universe url: " + urlUnivers, LOG_LEVEL_TRACE);
 log("Universe Number: " + numUnivers, LOG_LEVEL_TRACE);
 log("Universe language: " + langUnivers, LOG_LEVEL_TRACE);
 
+// noinspection ES6ConvertVarToLetConst
+var PLUGINS = GM_getJsonValue('plugins', {});
+
 const DEFAULT_PARAMS = {
 	lifeform: null,
 	nb_systems: null,
+	speed: 1,
+	top_score: null,
 	lastServerData: null,
+	class: null,
 	prod_display: 'hour',
 	game_style: 'miner',
 	prod_round: 0,
@@ -68,19 +74,39 @@ if (Object.prototype.toString.call(res) === "[object String]") {
 PARAMS = { ...DEFAULT_PARAMS, ...res };
 const curTime = (new Date()).getTime();
 // once a day, retrieve serverData
-if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 * 60 * 1000))
+if (PARAMS.top_score == null || PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 * 60 * 1000))
 {
+	switch (true) {
+		case Xpath.getUnorderedSnapshotNodes(document, '//div[contains(@id,"characterclass")]/a/div[contains(@class,"' + OgameConstants.class.explorer + '")]').snapshotLength === 1:
+			PARAMS.class = OgameConstants.class.explorer;
+			break;
+		case Xpath.getUnorderedSnapshotNodes(document, '//div[contains(@id,"characterclass")]/a/div[contains(@class,"' + OgameConstants.class.warrior + '")]').snapshotLength === 1:
+			PARAMS.class = OgameConstants.class.warrior;
+			break;
+		case Xpath.getUnorderedSnapshotNodes(document, '//div[contains(@id,"characterclass")]/a/div[contains(@class,"' + OgameConstants.class.miner + '")]').snapshotLength === 1:
+			PARAMS.class = OgameConstants.class.miner;
+			break;
+		default:
+			PARAMS.class = null;
+	}
 	// get Universe params if not defined, or Once a day
 	jQuery.get(urlUnivers + "/api/serverData.xml", function (data) {
 		let $data = jQuery(data);
-		console.log('versionUnivers', $data.find('version')[0].textContent )
+		console.log('versionUnivers', $data.find('version')[0].textContent );
 		versionUnivers = $data.find('version')[0].textContent;
 
-		console.log('lifeformSettings', $data.find('lifeformSettings').length )
+		console.log('lifeformSettings', $data.find('lifeformSettings').length );
 		PARAMS.lifeform = $data.find('lifeformSettings').length > 0;
 
-		console.log('versionUnivers', $data.find('systems')[0].textContent )
+		console.log('nb systems', $data.find('systems')[0].textContent );
 		PARAMS.nb_systems = parseInt($data.find('systems')[0].textContent);
+
+		console.log('top score', $data.find('topScore')[0].textContent );
+		PARAMS.top_score = parseFloat($data.find('topScore')[0].textContent);
+
+		console.log('speed', $data.find('speed')[0].textContent );
+		PARAMS.speed = parseInt($data.find('speed')[0].textContent);
+
 		PARAMS.lastServerData = (new Date()).getTime();
 		GM_setJsonValue('params', PARAMS);
 		storeValue('params', PARAMS);
@@ -88,18 +114,21 @@ if (PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.
 }
 
 
-// noinspection ES6ConvertVarToLetConst
 /******************************* Main ***********************************/
-var hasOGInfinity = false;
-// noinspection ES6ConvertVarToLetConst
-var hasOGLight = false;
-// noinspection ES6ConvertVarToLetConst
-var hasUniverseView = false;
-// noinspection ES6ConvertVarToLetConst
-var hasInfocompte = false;
 
 // jQuery("head").ready(function() {
 window.addEventListener('DOMContentLoaded', (event) => {
+
+	jQuery('body').addClass(
+		(PLUGINS.hasOGInfinity ? "ogameinfinity ": "") +
+		(PLUGINS.hasOGLight ? "oglight ": "") +
+		(PLUGINS.hasUniverseView ? "universeview ": "") +
+		(PLUGINS.hasInfocompte ? "infocompte ": "") +
+		"ogamelive"
+	);
+	if (PLUGINS.hasOGInfinity) {
+		jQuery('#myPlanets').prepend('<div class="ogl-spacer" style="height: 30px;float: left;width: 1px;"></div>');
+	}
 
 	// let the magic happen
 	const ogameLive = new OgameLive();
@@ -201,27 +230,34 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	jQuery('.smallplanet > a').toggleClass('tooltipRight tooltipLeft');
 
 	// Add timer at the bottom of the galaxy view
-	jQuery('.ctGalaxyFooter #colonized').after('<div style="flex: 1; display: flex"><span class="OGameClock"></span><span class="ogk-ping"></span></div>');
+	jQuery('.ctGalaxyFooter #colonized').after('<div style="flex: 1; display: flex; align-items: center;"><span class="OGameClock"></span><span class="ogk-ping"></span></div>');
 
-	// Finaly detect other plugins and add them into body class (this is not really helpfully if that plugins load after OGameLive)
-	hasOGInfinity = jQuery('.ogl-harvestOptions').length >= 1;
-	hasOGLight = jQuery('#menuTable .ogl_leftMenuIcon').length >= 1;
-	hasUniverseView = jQuery('body.universeview').length >= 1;
-	hasInfocompte = jQuery('#ic-menu-button').length >= 1;
+	setTimeout(function() {
+		console.log('Checking loaded plugins...');
+		// Finaly detect other plugins
+		// they will be added into body class as soon of possible on next page load
+		PLUGINS.hasOGInfinity = jQuery('.ogl-harvestOptions').length >= 1;
+		PLUGINS.hasOGLight = jQuery('#menuTable .ogl_leftMenuIcon').length >= 1;
+		PLUGINS.hasUniverseView = jQuery('body.universeview').length >= 1;
+		PLUGINS.hasInfocompte = jQuery('#ic-menu-button').length >= 1;
 
-	console.info("Activated plugins : " +
-		(hasOGInfinity ? "OGameInfinity, ": "") +
-		(hasOGLight ? "OGLight, ": "") +
-		(hasUniverseView ? "Universeview, ": "") +
-		(hasInfocompte ? "InfoCompte, ": "") +
-		"");
-	jQuery('body').addClass(
-		(hasOGInfinity ? "ogameinfinity ": "") +
-		(hasOGLight ? "oglight ": "") +
-		(hasUniverseView ? "universeview ": "") +
-		(hasInfocompte ? "infocompte ": "") +
-		"ogamelive"
-	);
+		GM_setJsonValue('plugins', PLUGINS);
+
+		console.info("Activated plugins : " +
+			(PLUGINS.hasOGInfinity ? "OGameInfinity, ": "") +
+			(PLUGINS.hasOGLight ? "OGLight, ": "") +
+			(PLUGINS.hasUniverseView ? "Universeview, ": "") +
+			(PLUGINS.hasInfocompte ? "InfoCompte, ": "") +
+			"");
+
+		jQuery('body').removeClass("ogameinfinity oglight universeview infocompte")
+		jQuery('body').addClass(
+			(PLUGINS.hasOGInfinity ? "ogameinfinity ": "") +
+			(PLUGINS.hasOGLight ? "oglight ": "") +
+			(PLUGINS.hasUniverseView ? "universeview ": "") +
+			(PLUGINS.hasInfocompte ? "infocompte ": "")
+		);
+	}, 2000); // delay to let others plugins load
 
 	console.info('OGameLive fully loaded')
 });

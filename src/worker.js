@@ -72,7 +72,7 @@ DBOpenRequest.onsuccess = (event) => {
                     tempStore.params[elt.key] = elt;
                     break;
                 case elt.key.includes('flights') :
-                    tempStore.flights = elt.value;
+                    tempStore.flights[elt.key] = elt;
                     break;
                 default:
                     tempStore.others[elt.key] = elt;
@@ -148,7 +148,8 @@ function setValue(elt) {
             storeItem(elt);
             break;
         case elt.key.includes('flights') :
-            updateFlights(elt.value);
+            tempStore.flights[elt.key] = elt;
+            storeItem(elt);
             break;
         default:
             tempStore.others[elt.key] = elt;
@@ -169,7 +170,7 @@ function readValue(key) {
             res = tempStore.params[key];
             break;
         case key.includes('flights') :
-            res = tempStore.flights;
+            res = tempStore.flights[key];
             break;
         default:
             res = tempStore.others[key];
@@ -232,72 +233,76 @@ function getIDBStorage(mode) {
 
 function mainLoop() {
 
-    let toDeleteFlightIds = [];
-    // resolve flights
-    for (let flightId in tempStore.flights) {
-        let flight = tempStore.flights[flightId];
-        let nowTime = (new Date()).getTime();
-        if (flight.arrivalTime <= nowTime) {
-            toDeleteFlightIds.push(flightId);
-            if (flight.destination && flight.destinationType !== 'debrisField') {
-                var destPlanetId = flight.destination;
-                if (flight.destinationType === 'moon') {
-                    destPlanetId += '-moon';
-                }
-                let productionKey = getProductionKeyFromPlanetId(destPlanetId);
-                let planetProd = JSON.parse(JSON.stringify(tempStore.production[productionKey].value));
-                if (Object.prototype.toString.call(planetProd) === "[object String]") {
-                    planetProd = JSON.parse(planetProd);
-                }
-                planetProd.M.dispo += flight.resources.M;
-                if (planetProd.M.dispo >= planetProd.M.capa) {
-                    planetProd.M.lastprod = planetProd.M.prod;
-                    planetProd.M.prod = 0;
-                }
-                planetProd.C.dispo += flight.resources.C;
-                if (planetProd.C.dispo >= planetProd.C.capa) {
-                    planetProd.C.lastprod = planetProd.C.prod;
-                    planetProd.C.prod = 0;
-                }
-                planetProd.D.dispo += flight.resources.D;
-                if (planetProd.D.dispo >= planetProd.D.capa) {
-                    planetProd.D.lastprod = planetProd.D.prod;
-                    planetProd.D.prod = 0;
-                }
-                if (tempStore.params.lifeform) {
-                    planetProd.F.dispo += flight.resources.F;
-                    if (planetProd.F.dispo >= planetProd.F.capa) {
-                        planetProd.F.lastprod = planetProd.F.surprod;
-                        planetProd.F.surprod = 0;
+    for(let flightsKey in tempStore.flights) {
+        let toDeleteFlightIds = [];
+        let flights = tempStore.flights[flightsKey].value;
+        // resolve flights
+        for (let flightId in flights) {
+            let flight = flights[flightId];
+            let nowTime = (new Date()).getTime();
+            if (flight.arrivalTime <= nowTime) {
+                toDeleteFlightIds.push(flightId);
+                if (flight.destination && flight.destinationType !== 'debrisField') {
+                    var destPlanetId = flight.destination;
+                    if (flight.destinationType === 'moon') {
+                        destPlanetId += '-moon';
                     }
-                }
-                planetProd.lastTime = nowTime;
-                tempStore.production[productionKey].value = planetProd;
+                    let productionKey = getProductionKeyFromPlanetId(destPlanetId);
+                    let planetProd = JSON.parse(JSON.stringify(tempStore.production[productionKey].value));
+                    if (Object.prototype.toString.call(planetProd) === "[object String]") {
+                        planetProd = JSON.parse(planetProd);
+                    }
+                    planetProd.M.dispo += flight.resources.M;
+                    if (planetProd.M.dispo >= planetProd.M.capa) {
+                        planetProd.M.lastprod = planetProd.M.prod;
+                        planetProd.M.prod = 0;
+                    }
+                    planetProd.C.dispo += flight.resources.C;
+                    if (planetProd.C.dispo >= planetProd.C.capa) {
+                        planetProd.C.lastprod = planetProd.C.prod;
+                        planetProd.C.prod = 0;
+                    }
+                    planetProd.D.dispo += flight.resources.D;
+                    if (planetProd.D.dispo >= planetProd.D.capa) {
+                        planetProd.D.lastprod = planetProd.D.prod;
+                        planetProd.D.prod = 0;
+                    }
+                    if (tempStore.params.lifeform) {
+                        planetProd.F.dispo += flight.resources.F;
+                        if (planetProd.F.dispo >= planetProd.F.capa) {
+                            planetProd.F.lastprod = planetProd.F.surprod;
+                            planetProd.F.surprod = 0;
+                        }
+                    }
+                    planetProd.lastTime = nowTime;
+                    tempStore.production[productionKey].value = planetProd;
 
-                let dataKey = getDataKeyFromPlanetId(destPlanetId);
-                let planetData = JSON.parse(JSON.stringify(tempStore.data[dataKey].value));
-                if (Object.prototype.toString.call(planetData) === "[object String]") {
-                    planetData = JSON.parse(planetData);
-                }
-                if (!planetData.vaissels) {
-                    planetData.vaissels = 0;
-                }
-                if (flight.missionType !== 18) {
-                    planetData.vaissels += parseInt(flight.detailsFleet);
-                }
-                tempStore.data[dataKey].value = planetData;
-                storeItem({key: dataKey, value: tempStore.data[dataKey].value});
+                    let dataKey = getDataKeyFromPlanetId(destPlanetId);
+                    let planetData = JSON.parse(JSON.stringify(tempStore.data[dataKey].value));
+                    if (Object.prototype.toString.call(planetData) === "[object String]") {
+                        planetData = JSON.parse(planetData);
+                    }
+                    if (!planetData.vaissels) {
+                        planetData.vaissels = 0;
+                    }
+                    if (flight.missionType !== 18) {
+                        planetData.vaissels += parseInt(flight.detailsFleet);
+                    }
+                    tempStore.data[dataKey].value = planetData;
+                    storeItem({key: dataKey, value: tempStore.data[dataKey].value});
 
+                }
             }
         }
+        // delete terminated flights
+        for (let i = 0; i < toDeleteFlightIds.length; i++) {
+            delete tempStore.flights[flightsKey].value[toDeleteFlightIds[i]];
+        }
+        if (iterations % 10 === 0) {
+            storeItem({key: flightsKey, value: tempStore.flights[flightsKey].value});
+        }
     }
-    // delete terminated flights
-    for (let i = 0; i < toDeleteFlightIds.length; i++) {
-        delete tempStore.flights[toDeleteFlightIds[i]];
-    }
-    if (iterations % 10 === 0) {
-        storeItem({key: 'flights', value: tempStore.flights});
-    }
+
 
     iterations ++;
     // loop over productions
@@ -373,18 +378,14 @@ function mainLoop() {
     }
 }
 
-function updateFlights(flights) {
-    tempStore.flights = flights;
-    /*for (let key in flights) {
-        // todo : update existing flights ?
-        tempStore.flights[key] = flights[key];
-    }*/
+function updateFlights(flights_elt) {
+    tempStore.flights[flights_elt.key] = flights_elt.value;
     storeItem({key: 'flights', value: tempStore.flights});
 }
 
 function getProductionKeyFromPlanetId(planetId) {
 
-    if (!planetProductionIdToStoreKey[planetId]) {
+    if (!planetProductionIdToStoreKey[planetId]) { // Warn : could certainly be possible that same planet ID exists accros multiple universes
         // extract planets Ids from storeKies
         for (let key in tempStore.production) {
             let parts = key.split('.');
@@ -397,7 +398,7 @@ function getProductionKeyFromPlanetId(planetId) {
 
 function getDataKeyFromPlanetId(planetId) {
 
-    if (!planetDataIdToStoreKey[planetId]) {
+    if (!planetDataIdToStoreKey[planetId]) { // Warn : could certainly be possible that same planet ID exists accros multiple universes
         // extract planets Ids from storeKies
         for (let key in tempStore.data) {
             let parts = key.split('.');
