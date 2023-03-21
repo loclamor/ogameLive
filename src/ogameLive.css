@@ -719,6 +719,7 @@ li>a.menubutton>a.empire_moon:before {
 }
 #ogameliveparameters .parameters-content .parameter .parameter-value {
 	width: 100px;
+	visibility: visible;
 }
 
 
@@ -729,12 +730,40 @@ li>a.menubutton>a.empire_moon:before {
 #flights {
 	position: absolute;
 	right: 160px;
-	width: 300px;
-	/*height: 400px;*/
-	/*border: 1px solid red;*/
+	width: 360px;
+	top: -30px;
 }
 #leftMenu #flights {
-	right: 171px;
+	right: 170px;
+}
+
+body.ogameinfinity #flights {
+	right: 160px;
+}
+
+body.ogameinfinity #leftMenu #flights {
+	right: 224px;
+}
+
+#planetbarcomponent {
+	position: relative;
+}
+
+#planetbarcomponent #flights {
+	left: 435px;
+	top: -40px;
+}
+
+body.ogameinfinity #planetbarcomponent #flights {
+	top: -31px;
+}
+
+body.ogameinfinity #planetbarcomponent #flights.noprod {
+	left: 313px;
+}
+
+#planetbarcomponent #flights.noprod {
+	left: 189px;
 }
 
 
@@ -752,6 +781,14 @@ li>a.menubutton>a.empire_moon:before {
 	box-shadow: rgb(13, 16, 20) 0px 0px 0px 0px;
 }
 
+#OGameLiveEvents thead .fleft {
+	float: none;
+}
+
+#OGameLiveEvents td.countDown {
+	text-align: right;
+}
+
 #OGameLiveEvents .eventFleet > td:not([class*="icon_movement"]) {
 	padding: 2px;
 	border-top: 1px solid rgba(51, 51, 51, 0.5);
@@ -764,7 +801,15 @@ li>a.menubutton>a.empire_moon:before {
 
 #OGameLiveEvents .eventFleet[data-mission-type="15"][data-return-flight="false"],
 #OGameLiveEvents .eventFleet[data-mission-type="18"][data-return-flight="false"] {
-	display: none;
+	/*display: none;*/
+}
+
+#OGameLiveEvents .icon {
+	opacity: 0.5;
+}
+
+#OGameLiveEvents .icon:hover {
+	opacity: 1;
 }
 
 #rechts .smallplanet a.alert {

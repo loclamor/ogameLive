@@ -17,30 +17,24 @@ if (ping > 800)
 	colorClass = "hostile";
 $(".ogk-ping").html(`<span class='${colorClass}'>${(ping / 1e3).toFixed(1)}s</span> ping`);
 
-/**
- * Mutation observer to add event listener only once on the send button in order to save expeditions params (duration & speed)
- */
 var sendButtonSelector = document.querySelector('#sendFleet');
 if (sendButtonSelector != null) {
-	var sendButtonObserver = new MutationObserver(function (mutations) {
-		console.log("Inside sndButton Observer !");
-		var sendBtn = document.getElementById('sendFleet');
-		if (sendBtn != null && window.fleetDispatcher && window.fleetDispatcher.targetPlanet.position == 16 && !sendBtn.classList.contains('clickEventAdded')) {
-			sendButtonObserver.disconnect();
-			sendBtn.addEventListener('click', function () {
-				// store actual expedition duration and speed
-				window.localStorage.setItem('ogameLive.expeparams', JSON.stringify({
-					expeditionTime: window.fleetDispatcher.expeditionTime,
-					speedPercent: window.fleetDispatcher.speedPercent
-				}));
-				console.log("Expe params saved !");
-			});
-			sendBtn.classList.add('clickEventAdded');
-			console.log("Event listener added !");
+	sendButtonSelector.addEventListener('click', function () {
+		if (window.fleetDispatcher && window.fleetDispatcher.targetPlanet.position == 16 ) {
+			// store actual expedition duration and speed
+			window.localStorage.setItem('ogameLive.expeparams', JSON.stringify({
+				expeditionTime: window.fleetDispatcher.expeditionTime,
+				speedPercent: window.fleetDispatcher.speedPercent
+			}));
+			console.log("Expe params saved !");
+		} else {
+			console.log('targetPlanet.position is not 16')
 		}
 	});
-	var config = {attributes: true, childList: false, characterData: false};
-	sendButtonObserver.observe(sendButtonSelector, config);
+	sendButtonSelector.classList.add('clickEventAdded');
+	console.log("Event listener added !");
+} else {
+	console.log('sendButtonSelector IS null !');
 }
 
 
@@ -49,7 +43,7 @@ if (sendButtonSelector != null) {
  * update ogame fleetDispatcher object and send the fleet with stored params (duration and speed)
  **/
 window.addEventListener('ogameLive.fleetDispatcher.selectExpedition', function (event) {
-	console.log(event);
+	console.log('ogameLive.fleetDispatcher.selectExpedition', event);
 	var nb_systems = event.detail.nb_systems;
 	window.fleetDispatcher.targetPlanet.position = 16;
 	window.fleetDispatcher.selectMission(window.fleetDispatcher.fleetHelper.MISSION_EXPEDITION);

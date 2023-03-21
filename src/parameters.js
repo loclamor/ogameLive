@@ -84,6 +84,14 @@ class Parameters {
                     {value: 0, label: 'No'}
                 ],
             },
+            show_flights: {
+                label: 'Show custom flight component',
+                options: [
+                    {value: 2, label: 'Right position'},
+                    {value: 1, label: 'Left position'},
+                    {value: 0, label: 'No'}
+                ],
+            }
         }
 
     }
@@ -110,6 +118,7 @@ class Parameters {
                     '<h2>Fleet options</h2>' +
                     this._getParamSelect('show_fleet_speed') +
                     this._getParamInteger('random_system') +
+                    this._getParamSelect('show_flights') +
                 '</div>' +
             '</div>'
         );
@@ -122,10 +131,10 @@ class Parameters {
             const $target = jQuery(e.target);
             const param_key = $target.data('param');
             let value = $target.val();
-            if ($target.attr('type') === 'number') {
+            if ($target.attr('type') === 'number' || value == parseInt(value)) {
                 value = parseInt(value);
             }
-            console.log('Updating ' + param_key + ' to ' + value);
+            console.log('Updating ' + param_key + ' to ', value);
             PARAMS[param_key] = value;
             GM_setJsonValue('params', PARAMS);
             storeValue('params', PARAMS);

@@ -143,7 +143,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	console.info('OGameLive dynamic CSS inserted');
 
 	// Add base HTML
-	if (PARAMS.show_production == 1) {
+	if (PARAMS.show_production === 1) {
 		if (PARAMS.game_style === 'miner') {
 			// On miner game-style add production switcher planets/moons
 			let $switcher = jQuery('<div class="productionSwitcher">'
@@ -173,8 +173,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
 		jQuery('#planetbarcomponent').addClass('noprod');
 	}
 
-	if (PARAMS.show_flights == 1) {
+	if (PARAMS.show_flights === 1) {
 		jQuery("#left, #leftMenu").append('<div id="flights" class="' + PARAMS.game_style + '"></div>');
+	} else if (PARAMS.show_flights === 2) {
+		jQuery('#planetbarcomponent').append('<div id="flights" class="' + PARAMS.game_style + ' ' + (PARAMS.show_production === 0 ? 'noprod':'') + '"></div>');
 	}
 
 

@@ -583,14 +583,14 @@ class PlanetsProductionDisplay {
 
 			if (flightsByPlanet[planet.id] && !PLUGINS.hasOGLight) {
 				if (planet.$incomming_fleet.find('.icon_movement_reserve').length > 0) {
-					jQuery('.htmlTooltip .countdown').each(function(idx, elt) {
-						$elt = jQuery(elt);
-						const countend = $elt.data('countend');
-						$elt.html(formatTime(countend - nowTime));
-						if (countend - nowTime <= 0) {
-							// @TODO treat this case
-						}
-					});
+					// jQuery('.htmlTooltip .countdown').each(function(idx, elt) {
+					// 	$elt = jQuery(elt);
+					// 	const countend = $elt.data('countend');
+					// 	$elt.html(formatTime(countend - nowTime));
+					// 	if (countend - nowTime <= 0) {
+					// 		// @TODO treat this case
+					// 	}
+					// });
 				}
 				else {
 					planet.$incomming_fleet.html('<span class="icon_movement_reserve tooltip tooltipRight tooltipClose"></span>');
@@ -610,7 +610,7 @@ class PlanetsProductionDisplay {
 								typeIco = '<figure class="planetIcon debrisField"></figure>&nbsp;';
 								break;
 						}
-						incomming_rows += '<tr><th colspan="2">' + typeIco + 'Arrive dans <span class="countdown" data-countend="' + flight.arrivalTime + '">' + formatTime(flight.arrivalTime - nowTime) + '</span></th></tr>'
+						incomming_rows += '<tr><th colspan="2">' + typeIco + 'Arrive dans <span class="ogamelivecountdown" data-countend="' + flight.arrivalTime + '">' + formatTime(flight.arrivalTime - nowTime) + '</span></th></tr>'
 						incomming_rows += '<tr><td>M</td><td class="value">' + formatInt(flight.resources.M) + '</td></tr>';
 						incomming_rows += '<tr><td>C</td><td class="value">' + formatInt(flight.resources.C) + '</td></tr>';
 						incomming_rows += '<tr><td>D</td><td class="value">' + formatInt(flight.resources.D) + '</td></tr>';

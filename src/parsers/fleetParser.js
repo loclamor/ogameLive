@@ -14,12 +14,30 @@ class FleetParser {
 			this.getFleetData = true;
 		}
 	}
-	async parse() {
+	async parse(withFleetSlots) {
 		const constants = OgameConstants.fleet;
 		// get installations levels
 		let planetData = await this.dataManager.loadCurrentPlanetData();
 		if (!planetData.fleet) {
 			planetData.fleet = {};
+		}
+		if (withFleetSlots) {
+			let globalData = await this.dataManager.loadGlobalData();
+			let fleetText = Xpath.getStringValue(document, '//div[contains(@id,"slots")]/div[1]/span').replaceAll('\n', '').replaceAll(' ', '');
+			let subFleetText = Xpath.getStringValue(document, '//div[contains(@id,"slots")]/div[1]/span/span').replaceAll('\n', '').replaceAll(' ', '');
+			let slotsParts = fleetText.replace(subFleetText, '').split('/');
+			globalData.slots = slotsParts[1];
+			globalData.usedSlots = slotsParts[0];
+			globalData.textSlots = subFleetText;
+
+			let expeditionsText = Xpath.getStringValue(document, '//div[contains(@id,"slots")]/div[2]/span').replaceAll('\n', '').replaceAll(' ', '');
+			let subExpeditionsText = Xpath.getStringValue(document, '//div[contains(@id,"slots")]/div[2]/span/span').replaceAll('\n', '').replaceAll(' ', '');
+			let expeditionsParts = expeditionsText.replace(subExpeditionsText, '').split('/');
+			globalData.expeSlots = expeditionsParts[1];
+			globalData.usedExpeSlots = expeditionsParts[0];
+			globalData.textExpeditions = subExpeditionsText;
+
+			this.dataManager.updateGlobalData(globalData, true);
 		}
 		planetData.vaissels = 0;
 		Object.keys(constants).forEach(jQuery.proxy(function(k) {
@@ -52,5 +70,7 @@ class FleetParser {
 			}
 		}, this));
 		this.dataManager.updateCurrentPlanetData(planetData);
+		return this; // allow chaining
 	}
+
 }

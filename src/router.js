@@ -53,13 +53,13 @@ class Router {
 		}
 		// Shipyard page
 		else if (this.regShipyard.test(url)) {
-			(new FleetParser(this.app.dataManager)).parse();
+			(new FleetParser(this.app.dataManager)).parse(false);
 			new TechDetailObserver(this.app.dataManager);
 			if (PARAMS.show_cost_overlay == 1) new BetterTechDisplay(this.app.dataManager);
 		}
 		// Fleet page
 		else if (this.regFleet.test(url)) {
-			(new FleetParser(this.app.dataManager)).parse();
+			(new FleetParser(this.app.dataManager)).parse(true);
 			new BetterFleetDisplay(this.app.dataManager);
 		}
 		// Empire view

@@ -28,7 +28,7 @@ class OgameLive {
 		}
 		// Init flights display if activated
 		var flightsDisplay = false;
-		if (PARAMS.show_flights == 1) {
+		if (PARAMS.show_flights > 0) {
 			flightsDisplay = new FlightsDisplay(this.dataManager);
 			setTimeout(() => { flightsDisplay.initialize() }, 0);
 		}
@@ -48,6 +48,7 @@ class OgameLive {
 		}, 0);
 		if (PARAMS.main_refresh > 0) {
 			var interval = setInterval(function () {
+				let nowTime = (new Date()).getTime();
 				if (!app.disabledTimer) {
 					// display activated displayers
 					if (false !== productionDisplay) {
@@ -56,6 +57,14 @@ class OgameLive {
 					if (false !== flightsDisplay) {
 						flightsDisplay.display();
 					}
+					jQuery('.ogamelivecountdown').each(function(idx, elt) {
+						let $elt = jQuery(elt);
+						const countend = $elt.data('countend');
+						$elt.html(formatTime(countend - nowTime));
+						if (countend - nowTime <= 0) {
+							$elt.attr('finished', 'true');
+						}
+					});
 				} else {
 					// clear interval if timer have been disabled (empire view for exemple)
 					console.log('Main interval deactivated');

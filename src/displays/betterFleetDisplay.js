@@ -89,11 +89,24 @@ class BetterFleetDisplay {
 
 		$randomSystem.find('input').on('change', e => {
 			PARAMS.random_system = parseInt(jQuery(e.target).val());
+			console.log('random_system change !', PARAMS.random_system);
 			GM_setJsonValue('params', PARAMS);
 			storeValue('params', PARAMS);
 		});
+		console.log('exploBtn created', $exploBtn)
+		// $exploBtn[0].onclick = function(e){
+		// 	console.log('$exploBtn click ! nb_systems :', PARAMS.nb_systems);
+		// 	let request = {'nb_systems' : PARAMS.nb_systems};
+		// 	if (typeof cloneInto != 'undefined') request = cloneInto(request, document.defaultView); //required for ff
+		// 	window.dispatchEvent(new CustomEvent('ogameLive.fleetDispatcher.selectExpedition', {'detail': request}));
+		// 	e.preventDefault();
+		// 	e.stopPropagation();
+		// };
 		$exploBtn.click(function(e){
-			window.dispatchEvent(new CustomEvent('ogameLive.fleetDispatcher.selectExpedition', {'detail': {'nb_systems' : PARAMS.nb_systems}}));
+			console.log('$exploBtn click ! nb_systems :', PARAMS.nb_systems);
+			let request = {'nb_systems' : PARAMS.nb_systems};
+			if (typeof cloneInto != 'undefined') request = cloneInto(request, document.defaultView); //required for ff
+			window.dispatchEvent(new CustomEvent('ogameLive.fleetDispatcher.selectExpedition', {'detail': request}));
 			e.preventDefault();
 			e.stopPropagation();
 		});

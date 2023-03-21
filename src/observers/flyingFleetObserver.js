@@ -1,5 +1,5 @@
 class FlyingFleetObserver {
-	constructor(dataManager) {
+	constructor(dataManager, callBack) {
 		this.dataManager = dataManager
 		jQuery.get(urlUnivers + '/game/index.php?page=componentOnly&component=eventList&ajax=1', jQuery.proxy(function(dataHtml){
 			var $html = jQuery(dataHtml);
@@ -9,6 +9,7 @@ class FlyingFleetObserver {
 			const timeDelta = timeStamp - (new Date()).getTime();
 			console.log('flying timeDelta = ', timeDelta);
 			var flights = {};
+			var isNext = [];
 			var eventNodes = Xpath.getOrderedSnapshotNodes(document,'//table[contains(@id,"eventContent")]/tbody/tr', $html[0]);
 			for (var i = 0; i < eventNodes.snapshotLength; i++) {
 				try {
@@ -21,6 +22,8 @@ class FlyingFleetObserver {
 
 					var missionClass = Xpath.getStringValue(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId)+'")]/td[contains(@class,"countDown")]/span/@class', $html[0]);
 
+
+					var arrivalTime = Xpath.getStringValue(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId)+'")]/td[contains(@class,"arrivalTime")]', $html[0]);
 
 					var destCoords = Xpath.getStringValue(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId)+'")]/td[contains(@class,"destCoords")]/a', $html[0]);
 					var destCoordsLink = Xpath.getStringValue(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId)+'")]/td[contains(@class,"destCoords")]/a/@href', $html[0]);
@@ -41,6 +44,11 @@ class FlyingFleetObserver {
 						var prevFlight = Xpath.getOrderedSnapshotNodes(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId-1)+'")]', $html[0]);
 						if (prevFlight.snapshotLength > 0) {
 							hasPrevious = true;
+							if (flights[eventId-1]) {
+								flights[eventId-1].hasNext = true;
+							} else {
+								isNext.push(eventId-1);
+							}
 							// continue; //ignore this returnFlight to not count twice
 						}
 						fromCoords = destCoords;
@@ -88,6 +96,7 @@ class FlyingFleetObserver {
 					flights[eventId] = {
 						eventId: eventId,
 						arrivalTime: parseInt(event.dataset.arrivalTime)*1000 - timeDelta,
+						arrivalTimeStr: arrivalTime,
 						destination: this.dataManager.getPlanetId(destCoords),
 						destinationType: typeDest,
 						coords: {
@@ -105,6 +114,7 @@ class FlyingFleetObserver {
 						detailsFleet: detailsFleet,
 						returnFlight: event.dataset.returnFlight,
 						hasPrevious: hasPrevious,
+						hasNext: isNext.includes(eventId),
 						resources: {}
 					}
 					if (PARAMS.lifeform) {
@@ -135,6 +145,11 @@ class FlyingFleetObserver {
 			}
 			this.dataManager.setFlights(flights);
 			console.log('flights : ',flights);
+
+			if (callBack != null) {
+				console.log('calling callback');
+				callBack();
+			}
 		}, this))
 	}
 }

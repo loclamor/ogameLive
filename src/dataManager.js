@@ -84,7 +84,7 @@ class DataManager {
 	}
 
 	updateCurrentPlanetData(planet) {
-		this.updatePlanetData(this.getCurrentPlanetId(), planet)
+		this.updatePlanetData(this.getCurrentPlanetId(), planet, true, (new Date()).getTime())
 	}
 
 	getFleetData() {
@@ -151,6 +151,17 @@ class DataManager {
 		this.planetsProduction[planetId] = prod;
 		storeValue('production.'+planetId, prod, force, timestamp);
 		this.setJsonValue('production.'+planetId, prod);
+	}
+
+	loadGlobalData() {
+		return retrieveValue('globaldata', {
+
+		});
+	}
+	updateGlobalData(data, force, timestamp) {
+		this.globalData = data;
+		storeValue('globaldata', data, force, timestamp);
+		this.setJsonValue('globaldata', data);
 	}
 
 	getResearchData() {
