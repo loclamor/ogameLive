@@ -730,8 +730,9 @@ li>a.menubutton>a.empire_moon:before {
 #flights {
 	position: absolute;
 	right: 160px;
-	width: 360px;
-	top: -30px;
+	width: 380px;
+	/*top: -30px;*/
+	top: -124px;
 }
 #leftMenu #flights {
 	right: 170px;
@@ -742,7 +743,7 @@ body.ogameinfinity #flights {
 }
 
 body.ogameinfinity #leftMenu #flights {
-	right: 224px;
+	right: 172px;
 }
 
 #planetbarcomponent {
@@ -751,11 +752,11 @@ body.ogameinfinity #leftMenu #flights {
 
 #planetbarcomponent #flights {
 	left: 435px;
-	top: -40px;
+	/*top: -40px;*/
 }
 
 body.ogameinfinity #planetbarcomponent #flights {
-	top: -31px;
+	/*top: -31px;*/
 }
 
 body.ogameinfinity #planetbarcomponent #flights.noprod {
@@ -768,13 +769,14 @@ body.ogameinfinity #planetbarcomponent #flights.noprod {
 
 
 #OGameLiveEvents {
-	background: transparent url("//gf1.geo.gfsrv.net/cdn9e/4f73643e86a952be4aed7fdd61805a.gif") 5px 0px repeat-y;
+	background-color: rgb(12 16 20 / 100%);
+	/*background: transparent url("//gf1.geo.gfsrv.net/cdn9e/4f73643e86a952be4aed7fdd61805a.gif") 5px 0px repeat-y;*/
 	width: 100%;
 	margin: 0;
-	padding: 5px 10px 0 10px;
+	/*padding: 5px 10px 0 10px;*/
 	text-align: center;
 	border-spacing: 0;
-	background-size: 700px !important;
+	/*background-size: 700px !important;*/
 }
 
 #OGameLiveEvents tr {

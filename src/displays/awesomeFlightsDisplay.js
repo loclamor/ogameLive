@@ -89,12 +89,23 @@ class FlightsDisplay {
                 return; // do not show expes initial flights
             }
 
-            usedSlots++; // @TODO : do not count strangers flights
+
             if (f.missionType == '15') {
                 usedExpeSlots++;
             }
 
+            if (!this.knowEvents.includes(f.eventId - 1)) {
+                usedSlots++; // @TODO : do not count strangers flights
+            }
+
             if (!this.knowEvents.includes(f.eventId)) {
+                // if (f.arrivalTimeStr.trim() === '')
+                {
+                    const arrivalDate = new Date(f.arrivalTime);
+                    f.arrivalTimeStr = arrivalDate.getHours().toString().padStart(2, '0') + ':' +
+                        arrivalDate.getMinutes().toString().padStart(2, '0') + ':'+
+                        arrivalDate.getSeconds().toString().padStart(2, '0');
+                }
                 let html = '<tr class="eventFleet" id="OGameLiveEventRow-' + f.eventId + '" ' +
                     'data-mission-type="' + f.missionType + '" ' +
                     'data-return-flight="' + f.returnFlight + '" ' +
@@ -110,16 +121,16 @@ class FlightsDisplay {
                     '<td class="missionFleet"><img src="' + f.missionTypeIco + '"/></td>' +
                     '<td class="coordsOrigin">' +
                     (f.returnFlight === 'true' ?
-                            '   <a href="' + f.coords.destlink + '" target="_top">[' + f.coords.dest + ']</a>' :
-                            '   <a href="' + f.coords.fromlink + '" target="_top">[' + f.coords.from + ']</a>'
+                            '   <figure class="planetIcon ' + f.coords.destType + '"></figure><a href="' + f.coords.destlink + '" target="_top">[' + f.coords.dest + ']</a>' :
+                            '   <figure class="planetIcon ' + f.coords.fromType + '"></figure><a href="' + f.coords.fromlink + '" target="_top">[' + f.coords.from + ']</a>'
                     ) +
                     '</td>' +
                     '<td class="detailsFleet"><span>' + f.detailsFleet + '</span></td>' +
                     '<td class="icon_movement' + (f.returnFlight === 'true' ? '_reserve' : '') + '"><span class="tooltip tooltipRight tooltipClose" title="' + f.tooltipContent.replaceAll('"', '&quot;') + '">&nbsp;</span></td>' +
                     '<td class="destCoords">' +
                     (f.returnFlight === 'true' ?
-                            '   <a href="' + f.coords.fromlink + '" target="_top">[' + f.coords.from + ']</a>' :
-                            '   <a href="' + f.coords.destlink + '" target="_top">[' + f.coords.dest + ']</a>'
+                            '   <figure class="planetIcon ' + f.coords.fromType + '"></figure><a href="' + f.coords.fromlink + '" target="_top">[' + f.coords.from + ']</a>' :
+                            '   <figure class="planetIcon ' + f.coords.destType + '"></figure><a href="' + f.coords.destlink + '" target="_top">[' + f.coords.dest + ']</a>'
                     ) +
                     '</td>' +
                     '</tr>'
