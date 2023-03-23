@@ -42,7 +42,8 @@ if (sendButtonSelector != null) {
  * Event listner on the selectExpedition OgameLive button, to select expedition mission on target 16 of current system
  * update ogame fleetDispatcher object and send the fleet with stored params (duration and speed)
  **/
-window.addEventListener('ogameLive.fleetDispatcher.selectExpedition', function (event) {
+window.addEventListener('ogameLive.fleetDispatcher.selectExpedition', sendRandomExpe , false);
+function sendRandomExpe(event) {
 	console.log('ogameLive.fleetDispatcher.selectExpedition', event);
 	var nb_systems = event.detail.nb_systems;
 	window.fleetDispatcher.targetPlanet.position = 16;
@@ -71,4 +72,4 @@ window.addEventListener('ogameLive.fleetDispatcher.selectExpedition', function (
 		console.log('Sending expedition ' + random + ' systems arround sys ' + initialSystem + ' at sys ' + window.fleetDispatcher.targetPlanet.system);
 		window.fleetDispatcher.trySubmitFleet2();
 	}, 1000)
- }, false);
+}

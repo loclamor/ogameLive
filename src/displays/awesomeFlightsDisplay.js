@@ -114,6 +114,11 @@ class FlightsDisplay {
                     '>' +
                     '<td class="arrivalTimeStr">' +
                         f.arrivalTimeStr +
+                    // '   <div class="flying-res">' +
+                    // '       <span class="metal" style="width: 33%;"></span>' +
+                    // '       <span class="cristal" style="width: 25%;"></span>' +
+                    // '       <span class="deuterium" style="width: 12%;"></span>' +
+                    // '   </div>' +
                     '</td>' +
                     '<td class="countDown">' +
                     '   <span id="counter-ogameliveeventlist-' + f.eventId + '" class="' + f.missionClass + ' ogamelivecountdown" data-countend="' + f.arrivalTime + '" >' + formatTime(f.arrivalTime - nowTime) + '</span>' +

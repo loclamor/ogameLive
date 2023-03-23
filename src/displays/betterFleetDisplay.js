@@ -71,7 +71,7 @@ class BetterFleetDisplay {
 
 		var $customCoords = jQuery('<div class="custom-coords"></div>');
 
-		var $exploBtn = jQuery('<a class="explo" href="#" id="ebutton">' +
+		var $exploBtn = jQuery('<a class="explo" href="javascript:sendRandomExpe({detail:{nb_systems:' + PARAMS.nb_systems + '}});" id="ebutton">' +
 				'<span class="textlabel">Exploration</span>' +
 				'<span class="expeparams">' +
 					expeparams.expeditionTime + "h<br/>" +

@@ -814,6 +814,38 @@ body.ogameinfinity #planetbarcomponent #flights.noprod {
 	opacity: 1;
 }
 
+
+#OGameLiveEvents .arrivalTimeStr {
+	position: relative;
+}
+
+#OGameLiveEvents .arrivalTimeStr .flying-res {
+	position: absolute;
+	border-bottom: 1px solid rgb(85, 85, 85);
+	width: 380px;
+	bottom: 0px;
+	height: 0px;
+}
+
+#OGameLiveEvents .arrivalTimeStr .flying-res span {
+	display: inline-block;
+	border-bottom: 1px solid;
+	float: left;
+}
+
+#OGameLiveEvents .arrivalTimeStr .flying-res span.metal {
+	border-bottom-color: var(--metal);
+}
+#OGameLiveEvents .arrivalTimeStr .flying-res span.cristal {
+	border-bottom-color: var(--cristal);
+}
+#OGameLiveEvents .arrivalTimeStr .flying-res span.deuterium {
+	border-bottom-color: var(--deuterium);
+}
+
+
+
+
 #rechts .smallplanet a.alert {
 	right: auto !important;
 	left: 102px !important;
