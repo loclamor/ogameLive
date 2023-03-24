@@ -1,6 +1,6 @@
 class FlyingFleetObserver {
 	constructor(dataManager, callBack) {
-		this.dataManager = dataManager
+		this.dataManager = dataManager;
 		jQuery.get(urlUnivers + '/game/index.php?page=componentOnly&component=eventList&ajax=1', jQuery.proxy(function(dataHtml){
 			var $html = jQuery(dataHtml);
 			const timeRegex = /var timeDelta = (?<timestamp>[0-9]{13}) - \(new Date\(\)\)\.getTime\(\);/m;
@@ -65,8 +65,9 @@ class FlyingFleetObserver {
 					var detailsFleet = Xpath.getStringValue(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId)+'")]/td[contains(@class,"detailsFleet")]/span', $html[0]);
 					var tooltipSpanNode = Xpath.getSingleNode(document,'//table[contains(@id,"eventContent")]/tbody/tr[contains(@id,"eventRow-'+(eventId)+'")]/td[contains(@class,"icon_movement")]/span', $html[0]);
 					var $tooltipHtml = jQuery(tooltipSpanNode.title);
-					var tooltipContentNodes = Xpath.getOrderedSnapshotNodes(document,'//table[contains(@class,"fleetinfo")]/tbody/tr/td[contains(@class,"value")]', $tooltipHtml[0]);
-					var nbTooltipContentNodes = tooltipContentNodes.snapshotLength;
+					var tooltipContentValueNodes = Xpath.getOrderedSnapshotNodes(document,'//table[contains(@class,"fleetinfo")]/tbody/tr/td[contains(@class,"value")]', $tooltipHtml[0]);
+					var tooltipContentNameNodes = Xpath.getOrderedSnapshotNodes(document,'//table[contains(@class,"fleetinfo")]/tbody/tr/td[contains(@colspan,"2")]', $tooltipHtml[0]);
+					var nbTooltipContentNodes = tooltipContentValueNodes.snapshotLength;
 
 
 					var typeDest = 'debrisField';
@@ -115,29 +116,48 @@ class FlyingFleetObserver {
 						returnFlight: event.dataset.returnFlight,
 						hasPrevious: hasPrevious,
 						hasNext: isNext.includes(eventId),
-						resources: {}
+						resources: {},
+						vaissels: {}
 					}
+					let resRows = 0;
 					if (PARAMS.lifeform) {
 						if (missionType === OgameConstants.missionType.lifeformExpedition) {
 							flights[eventId].resources = {M: 0, C: 0, D: 0, F: 0};
 						} else {
 							flights[eventId].resources = {
-								M: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 4).textContent.split('.').join('')),
-								C: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
-								D: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
-								F: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
+								M: parseInt(tooltipContentValueNodes.snapshotItem(nbTooltipContentNodes - 4).textContent.split('.').join('')),
+								C: parseInt(tooltipContentValueNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
+								D: parseInt(tooltipContentValueNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
+								F: parseInt(tooltipContentValueNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
 							};
+							resRows = 4;
 						}
 					} else {
 						flights[eventId].resources = {
-							M: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
-							C: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
-							D: parseInt(tooltipContentNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
+							M: parseInt(tooltipContentValueNodes.snapshotItem(nbTooltipContentNodes - 3).textContent.split('.').join('')),
+							C: parseInt(tooltipContentValueNodes.snapshotItem(nbTooltipContentNodes - 2).textContent.split('.').join('')),
+							D: parseInt(tooltipContentValueNodes.snapshotItem(nbTooltipContentNodes - 1).textContent.split('.').join(''))
 						};
+						resRows = 3;
 					}
 					if (flights[eventId].destination == null && missionType !== OgameConstants.missionType.expedition) {
 						// debugger;
 					}
+
+					// Finally parse vaissels
+					let row = 0
+					while (row < nbTooltipContentNodes - resRows) {
+						let shipName = tooltipContentNameNodes.snapshotItem(row).textContent.replace(':', '').trim();
+						let nbShip = parseInt(tooltipContentValueNodes.snapshotItem(row).textContent.split('.').join(''));
+
+						let shipId = LOCALIZATIONS.techs[shipName];
+						let shipType = getKeyByValue(OgameConstants.fleet, parseInt(shipId));
+
+						console.log(shipName, nbShip);
+						flights[eventId].vaissels[shipType] = nbShip;
+						row++;
+					}
+
 				}
 				catch(e) {
 					console.error(e)
@@ -152,5 +172,6 @@ class FlyingFleetObserver {
 			}
 		}, this))
 	}
+
 }
 

@@ -192,4 +192,13 @@ function cleanCoords(coords) {
 	return coords.trim().replace(/\[|\]/g, '');
 }
 
+/**
+ * Get the key by its value on an object
+ * @param {Object} object
+ * @param {string|integer} value
+ * @returns {string}
+ */
+function getKeyByValue(object, value) {
+	return Object.keys(object).find(key => object[key] === value);
+}
 

@@ -72,9 +72,12 @@ if (Object.prototype.toString.call(res) === "[object String]") {
 }
 // Apply loaded params on defaults ones to use default values on new params
 PARAMS = { ...DEFAULT_PARAMS, ...res };
+
+var LOCALIZATIONS = GM_getJsonValue('data.localizations', {techs:{},missions:{},initialized:false});
+
 const curTime = (new Date()).getTime();
 // once a day, retrieve serverData
-if (PARAMS.top_score == null || PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 * 60 * 1000))
+if (LOCALIZATIONS.initialized === false || PARAMS.top_score == null || PARAMS.lifeform == null || PARAMS.lastServerData == null || parseInt(PARAMS.lastServerData) < (curTime - 24 * 60 * 60 * 1000))
 {
 	switch (true) {
 		case Xpath.getUnorderedSnapshotNodes(document, '//div[contains(@id,"characterclass")]/a/div[contains(@class,"' + OgameConstants.class.explorer + '")]').snapshotLength === 1:
@@ -110,6 +113,25 @@ if (PARAMS.top_score == null || PARAMS.lifeform == null || PARAMS.lastServerData
 		PARAMS.lastServerData = (new Date()).getTime();
 		GM_setJsonValue('params', PARAMS);
 		storeValue('params', PARAMS);
+	});
+
+	// and rerieve localizations
+	jQuery.get(urlUnivers + "/api/localization.xml", function (data) {
+		let $data = jQuery(data);
+		$data.find('techs>name').each((idx, elt) => {
+			let $elt = jQuery(elt);
+			LOCALIZATIONS.techs[parseInt($elt.attr('id'))] = $elt.text();
+			LOCALIZATIONS.techs[$elt.text()] = parseInt($elt.attr('id'));
+		});
+		$data.find('missions>name').each((idx, elt) => {
+			let $elt = jQuery(elt);
+			LOCALIZATIONS.missions[parseInt($elt.attr('id'))] = $elt.text();
+			LOCALIZATIONS.missions[$elt.text()] = parseInt($elt.attr('id'));
+		});
+		LOCALIZATIONS.initialized = true;
+		console.log('data.localizations', LOCALIZATIONS);
+		GM_setJsonValue('data.localizations', LOCALIZATIONS);
+		storeValue('data.localizations', LOCALIZATIONS);
 	});
 }
 

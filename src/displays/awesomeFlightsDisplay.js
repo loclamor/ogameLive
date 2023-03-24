@@ -48,7 +48,7 @@ class FlightsDisplay {
         const values = await retrieveMultipleValues([
             'flights',
             'globaldata'
-        ]);
+        ], {flights: {}, globaldata:{}});
         const flights = values.flights;
         const flightsEventsIds = Object.keys(flights);
         const globalData = values.globaldata;
@@ -106,6 +106,17 @@ class FlightsDisplay {
                         arrivalDate.getMinutes().toString().padStart(2, '0') + ':'+
                         arrivalDate.getSeconds().toString().padStart(2, '0');
                 }
+                // compute fleet capacity :
+                let capa = 0;
+                Object.keys(f.vaissels).forEach((k) => {
+                    const shipData = this.dataManager.getFleetData()[k];
+                    if (shipData && shipData.capacity && shipData.capacity.value) {
+                        capa += parseInt(shipData.capacity.value) * parseInt(f.vaissels[k]);
+                    }
+                });
+                let metalPercent = f.resources.M * 100 / capa;
+                let cristalPercent = f.resources.C * 100 / capa;
+                let deuteriumPercent = f.resources.D * 100 / capa;
                 let html = '<tr class="eventFleet" id="OGameLiveEventRow-' + f.eventId + '" ' +
                     'data-mission-type="' + f.missionType + '" ' +
                     'data-return-flight="' + f.returnFlight + '" ' +
@@ -114,11 +125,11 @@ class FlightsDisplay {
                     '>' +
                     '<td class="arrivalTimeStr">' +
                         f.arrivalTimeStr +
-                    // '   <div class="flying-res">' +
-                    // '       <span class="metal" style="width: 33%;"></span>' +
-                    // '       <span class="cristal" style="width: 25%;"></span>' +
-                    // '       <span class="deuterium" style="width: 12%;"></span>' +
-                    // '   </div>' +
+                    '   <div class="flying-res">' +
+                    '       <span class="metal" style="width: ' + metalPercent + '%;"></span>' +
+                    '       <span class="cristal" style="width: ' + cristalPercent + '%;"></span>' +
+                    '       <span class="deuterium" style="width: ' + deuteriumPercent + '%;"></span>' +
+                    '   </div>' +
                     '</td>' +
                     '<td class="countDown">' +
                     '   <span id="counter-ogameliveeventlist-' + f.eventId + '" class="' + f.missionClass + ' ogamelivecountdown" data-countend="' + f.arrivalTime + '" >' + formatTime(f.arrivalTime - nowTime) + '</span>' +
