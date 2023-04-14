@@ -102,14 +102,14 @@ class BetterFleetDisplay {
 		// 	e.preventDefault();
 		// 	e.stopPropagation();
 		// };
-		$exploBtn.click(function(e){
-			console.log('$exploBtn click ! nb_systems :', PARAMS.nb_systems);
-			let request = {'nb_systems' : PARAMS.nb_systems};
-			if (typeof cloneInto != 'undefined') request = cloneInto(request, document.defaultView); //required for ff
-			window.dispatchEvent(new CustomEvent('ogameLive.fleetDispatcher.selectExpedition', {'detail': request}));
-			e.preventDefault();
-			e.stopPropagation();
-		});
+		// $exploBtn.click(function(e){
+		// 	console.log('$exploBtn click ! nb_systems :', PARAMS.nb_systems);
+		// 	let request = {'nb_systems' : PARAMS.nb_systems};
+		// 	if (typeof cloneInto != 'undefined') request = cloneInto(request, document.defaultView); //required for ff
+		// 	window.dispatchEvent(new CustomEvent('ogameLive.fleetDispatcher.selectExpedition', {'detail': request}));
+		// 	e.preventDefault();
+		// 	e.stopPropagation();
+		// });
 	}
 
 	computeMaxExpeRessources() {

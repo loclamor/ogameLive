@@ -18,8 +18,12 @@ class Router {
 	}
 
 	handlePage(url) {
+		if (this.regOverview.test(url)) {
+			// force planet coords parse on overview (first page loaded on connexion)
+			this.app.dataManager.getPlanetCoords();
+		}
 		// Resources setting pages (2 differents url for the same page, thx GF)
-		if (this.regResourceSettingsPage.test(url) || this.regResourceSettingsComponent.test(url)) {
+		else if (this.regResourceSettingsPage.test(url) || this.regResourceSettingsComponent.test(url)) {
 			new ResourceSettingsParser(this.app.dataManager);
 		}
 		// Research page

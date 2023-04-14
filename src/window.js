@@ -45,31 +45,48 @@ if (sendButtonSelector != null) {
 window.addEventListener('ogameLive.fleetDispatcher.selectExpedition', sendRandomExpe , false);
 function sendRandomExpe(event) {
 	console.log('ogameLive.fleetDispatcher.selectExpedition', event);
+
+	// define Ajax loader observer
+	let ajaxLoaders = document.querySelector('.ajax_loading');
+	const mo = new MutationObserver((mutations) => {
+		console.log('Ajax loader mutation ', mutations, 'display:', mutations[0].target.style.display);
+		if (mutations[0].target.style.display === 'none') {
+			mo.disconnect(); // avoid multiple catch
+			// assume that ajax loader is hidden and updateTarget has success, trySubmit !
+			window.fleetDispatcher.trySubmitFleet2();
+			console.log('trySubmitFleet2 !');
+		}
+	});
+	mo.observe(ajaxLoaders,  { attributes: true, childList: false, characterData: false });
+
 	var nb_systems = event.detail.nb_systems;
 	window.fleetDispatcher.targetPlanet.position = 16;
+	var expeparams = window.localStorage.getItem('ogameLive.expeparams');
+	if (expeparams != null) {
+		expeparams = JSON.parse(expeparams);
+		expeparams.expeditionTime =  expeparams.expeditionTime < 1 ? 1 :  expeparams.expeditionTime;
+		window.fleetDispatcher.expeditionTime = expeparams.expeditionTime;
+		window.fleetDispatcher.speedPercent = expeparams.speedPercent;
+		console.log("Expe params restored !");
+	}
+	const initialSystem = window.fleetDispatcher.targetPlanet.system;
+	const nbSys = parseInt(document.getElementById('random_system').value);
+	const random = Math.floor(Math.random() * (2 * nbSys + 1) - nbSys);
+	window.fleetDispatcher.targetPlanet.system += random;
+	if (nb_systems !== null) {
+		window.fleetDispatcher.targetPlanet.system = window.fleetDispatcher.targetPlanet.system % nb_systems
+		if (window.fleetDispatcher.targetPlanet.system < 0) {
+			window.fleetDispatcher.targetPlanet.system = nb_systems + window.fleetDispatcher.targetPlanet.system;
+		}
+	}
+	console.log('Sending expedition ' + random + ' systems arround sys ' + initialSystem + ' at sys ' + window.fleetDispatcher.targetPlanet.system);
 	window.fleetDispatcher.selectMission(window.fleetDispatcher.fleetHelper.MISSION_EXPEDITION);
 	window.fleetDispatcher.refreshFleet2();
-	window.fleetDispatcher.updateTarget(true);
-	setTimeout(function() {
-		var expeparams = window.localStorage.getItem('ogameLive.expeparams');
-		if (expeparams != null) {
-			expeparams = JSON.parse(expeparams);
-			expeparams.expeditionTime =  expeparams.expeditionTime < 1 ? 1 :  expeparams.expeditionTime;
-			window.fleetDispatcher.expeditionTime = expeparams.expeditionTime;
-			window.fleetDispatcher.speedPercent = expeparams.speedPercent;
-			console.log("Expe params restored !");
-		}
-		const initialSystem = window.fleetDispatcher.targetPlanet.system;
-		const nbSys = parseInt(document.getElementById('random_system').value);
-		const random = Math.floor(Math.random() * (2 * nbSys + 1) - nbSys);
-		window.fleetDispatcher.targetPlanet.system += random;
-		if (nb_systems !== null) {
-			window.fleetDispatcher.targetPlanet.system = window.fleetDispatcher.targetPlanet.system % nb_systems
-			if (window.fleetDispatcher.targetPlanet.system < 0) {
-				window.fleetDispatcher.targetPlanet.system = nb_systems + window.fleetDispatcher.targetPlanet.system;
-			}
-		}
-		console.log('Sending expedition ' + random + ' systems arround sys ' + initialSystem + ' at sys ' + window.fleetDispatcher.targetPlanet.system);
-		window.fleetDispatcher.trySubmitFleet2();
-	}, 1000)
+	console.log('refreshFleet2...');
+	window.fleetDispatcher.updateTarget(true); // will show ajax loader
+	console.log('updateTarget...');
 }
+
+
+
+
