@@ -658,7 +658,7 @@ li>a.menubutton>a.empire_moon:before {
 }
 
 #ogameliveparamsbutton:hover {
-	color: #e9a267;
+	color: #e9a267 !important;
 }
 
 

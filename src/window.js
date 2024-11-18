@@ -52,7 +52,15 @@ function sendRandomExpe(event) {
 		console.log('Ajax loader mutation ', mutations, 'display:', mutations[0].target.style.display);
 		if (mutations[0].target.style.display === 'none') {
 			mo.disconnect(); // avoid multiple catch
-			// assume that ajax loader is hidden and updateTarget has success, trySubmit !
+			// assume that ajax loader is hidden and updateTarget has success, set durationand percent, then trySubmit !
+			var expeparams = window.localStorage.getItem('ogameLive.expeparams');
+			if (expeparams != null) {
+				expeparams = JSON.parse(expeparams);
+				expeparams.expeditionTime =  expeparams.expeditionTime < 1 ? 1 :  expeparams.expeditionTime;
+				window.fleetDispatcher.expeditionTime = expeparams.expeditionTime;
+				window.fleetDispatcher.speedPercent = expeparams.speedPercent;
+				console.log("Expe params restored !");
+			}
 			window.fleetDispatcher.trySubmitFleet2();
 			console.log('trySubmitFleet2 !');
 		}
@@ -61,14 +69,6 @@ function sendRandomExpe(event) {
 
 	var nb_systems = event.detail.nb_systems;
 	window.fleetDispatcher.targetPlanet.position = 16;
-	var expeparams = window.localStorage.getItem('ogameLive.expeparams');
-	if (expeparams != null) {
-		expeparams = JSON.parse(expeparams);
-		expeparams.expeditionTime =  expeparams.expeditionTime < 1 ? 1 :  expeparams.expeditionTime;
-		window.fleetDispatcher.expeditionTime = expeparams.expeditionTime;
-		window.fleetDispatcher.speedPercent = expeparams.speedPercent;
-		console.log("Expe params restored !");
-	}
 	const initialSystem = window.fleetDispatcher.targetPlanet.system;
 	const nbSys = parseInt(document.getElementById('random_system').value);
 	const random = Math.floor(Math.random() * (2 * nbSys + 1) - nbSys);

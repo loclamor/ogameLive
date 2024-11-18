@@ -10,7 +10,17 @@ class PlanetProductionParser {
 		var planetProd = {}; //this.dataManager.getPlanetProd(currentPlanetId);
 		for (var i = 0; i < myResourcesRes.snapshotLength; i++) {
 			var resType = resourceTypes[myResourcesRes.snapshotItem(i).id];
-			var htmlStr = myResourcesRes.snapshotItem(i).title.split('|')[1];
+			var htmlStr = '';
+			if (myResourcesRes.snapshotItem(i).dataset.tooltipTitle !== undefined) {
+				htmlStr = myResourcesRes.snapshotItem(i).dataset.tooltipTitle.split('|')[1];
+			} else if (myResourcesRes.snapshotItem(i).title !== '') {
+				htmlStr = myResourcesRes.snapshotItem(i).title.split('|')[1];
+			}
+			if (htmlStr === '') {
+				// if no tooltip html found, then skip html parsing to avoid error
+				log('ressources tooltip not found on', myResourcesRes.snapshotItem(i), LOG_LEVEL_ERROR);
+				continue;
+			}
 			var $html = jQuery(htmlStr);
 			var prodRes = Xpath.getOrderedSnapshotNodes(document,'//tr/td/span', $html[0]);
 			var nbNodes = prodRes.snapshotLength;

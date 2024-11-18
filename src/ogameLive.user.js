@@ -229,7 +229,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 			'<a class="menubutton" href="https://board.fr.ogame.gameforge.com/index.php?thread/726885-ogamelive/" target="_blank">' +
 				'<span class="textlabel">' +
 					'OgameLive ' + manifestData.version +
-					'<span id="ogameliveparamsbutton">⚙</span>' +
+					'<span id="ogameliveparamsbutton" href="#">⚙</span>' +
 				'</span>' +
 			'</a>' +
 		'</li>');
